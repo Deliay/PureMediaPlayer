@@ -1,11 +1,16 @@
+XX	已经完成，已经解决
+FT	待完成功能
+BUG	软件BUG
+WD	有待考虑/商榷/确定的功能
+
 0.2.12
-X.BUG	视频首次播放不适应屏幕bug
-X.BUG	播放列表顶置
+XX.BUG	视频首次播放不适应屏幕bug
+XX.BUG	播放列表顶置
 	Toper.Show vbModeless,Lower
-X.BUG	播放列表重复添加检测bug
-X.BUG	取消添加报错bug
-X.BUG	播放列表结束bug
-X.BUG	正则表达式测试bug
+XX.BUG	播放列表重复添加检测bug
+XX.BUG	取消添加报错bug
+XX.BUG	播放列表结束bug
+XX.BUG	正则表达式测试bug
 
 07.FT	音量调节
 08.FT	WideChar路径支持
@@ -16,5 +21,4 @@ X.BUG	正则表达式测试bug
 13.FT	注册表关联
 14.BUG	播放列表自动添加
 15.FT	整合LAV手动addFliter
-
-??.WD	外挂字幕搜索
+16.WD	外挂字幕搜索
