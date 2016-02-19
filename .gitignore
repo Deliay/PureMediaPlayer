@@ -17,4 +17,6 @@ Other/
 *.exe
 *.vbw
 *.lvw
+*.scc
+*.log
 Vb_autoBak/
