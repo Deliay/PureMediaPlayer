@@ -1,15 +1,20 @@
 0.2.12
-X.视频首次播放不适应屏幕bug
-X.播放列表顶置
+X.BUG	视频首次播放不适应屏幕bug
+X.BUG	播放列表顶置
 	Toper.Show vbModeless,Lower
-X.播放列表重复添加检测bug
-X.取消添加报错bug
-X.播放列表结束bug
-X.正则表达式测试bug
+X.BUG	播放列表重复添加检测bug
+X.BUG	取消添加报错bug
+X.BUG	播放列表结束bug
+X.BUG	正则表达式测试bug
 
-7.音量调节
-8.WideChar路径支持
-9.倍速调节
-10.播放网络文件
+07.FT	音量调节
+08.FT	WideChar路径支持
+09.FT	倍速调节
+10.FT	播放网络文件
+11.FT	支持文件拖拽
+12.FT	命令行支持
+13.FT	注册表关联
+14.BUG	播放列表自动添加
+15.FT	整合LAV手动addFliter
 
-?.外挂字幕搜索
+??.WD	外挂字幕搜索
