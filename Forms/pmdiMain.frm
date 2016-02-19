@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.1#0"; "MSCOMCTL.OCX"
 Begin VB.MDIForm frmMain 
    Appearance      =   0  'Flat
    BackColor       =   &H8000000C&
@@ -119,18 +119,18 @@ Begin VB.MDIForm frmMain
             Alignment       =   2
             AutoSize        =   1
             Bevel           =   0
-            Object.Width           =   8925
+            Object.Width           =   9084
             MinWidth        =   882
-            TextSave        =   "2016/2/19"
+            TextSave        =   "2016-02-20"
          EndProperty
          BeginProperty Panel9 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             Alignment       =   2
             AutoSize        =   2
             Bevel           =   0
-            Object.Width           =   1032
+            Object.Width           =   873
             MinWidth        =   882
-            TextSave        =   "20:41"
+            TextSave        =   "0:56"
          EndProperty
       EndProperty
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -407,3 +407,6 @@ Private Sub tmrUpdateTime_Timer()
     End If
     'Set Me.Picture = mdlGlobalPlayer.NowFrame
 End Sub
+
+
+'²âÊÔÐÞ¸ÄµÄ×¢ÊÍ
