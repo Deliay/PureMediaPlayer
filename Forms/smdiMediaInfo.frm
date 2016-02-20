@@ -23,8 +23,9 @@ Begin VB.Form frmMediaInfo
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   5250
-   ScaleWidth      =   5130
+   ScaleHeight     =   350
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   342
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'ÆÁÄ»ÖÐÐÄ
    Begin MSComctlLib.ListView lstInfo 

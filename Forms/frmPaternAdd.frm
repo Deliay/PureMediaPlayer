@@ -22,9 +22,9 @@ Begin VB.Form frmPaternAdd
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   3540
-   ScaleWidth      =   5835
-   ShowInTaskbar   =   0   'False
+   ScaleHeight     =   236
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   389
    StartUpPosition =   2  'ÆÁÄ»ÖÐÐÄ
    Begin VB.CommandButton cmdClose 
       Caption         =   "Close"

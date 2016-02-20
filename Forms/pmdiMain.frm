@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.1#0"; "MSCOMCTL.OCX"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.MDIForm frmMain 
    Appearance      =   0  'Flat
    BackColor       =   &H8000000C&
@@ -121,7 +121,7 @@ Begin VB.MDIForm frmMain
             Bevel           =   0
             Object.Width           =   9084
             MinWidth        =   882
-            TextSave        =   "2016-02-20"
+            TextSave        =   "2016/2/21"
          EndProperty
          BeginProperty Panel9 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
@@ -130,7 +130,7 @@ Begin VB.MDIForm frmMain
             Bevel           =   0
             Object.Width           =   873
             MinWidth        =   882
-            TextSave        =   "0:56"
+            TextSave        =   "0:34"
          EndProperty
       EndProperty
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -194,6 +194,18 @@ Begin VB.MDIForm frmMain
          Caption         =   "Loop"
          Checked         =   -1  'True
       End
+      Begin VB.Menu mmStatus_Spec2 
+         Caption         =   "-"
+      End
+      Begin VB.Menu mmStatus_SpeedUp 
+         Caption         =   "Speed+0.1x"
+      End
+      Begin VB.Menu mmStatus_SpeedDown 
+         Caption         =   "Speed-0.1x"
+      End
+      Begin VB.Menu mmStatus_SpeedReset 
+         Caption         =   "Reset Speed 1.0x"
+      End
    End
    Begin VB.Menu mmInfo 
       Caption         =   "Info"
@@ -229,6 +241,7 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+
 Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
 Private Sub MDIForm_Activate()
@@ -257,6 +270,7 @@ Private Sub MDIForm_Load()
     'mdlGlobalPlayer.LoadMediaFile test
     frmPlayer.Show
     frmPlayer.WindowState = 2
+    frmPlayer.Caption = StaticString(PLAYER_STATUS_IDLE)
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
@@ -297,10 +311,16 @@ Private Sub mmFile_Open_Click()
     cdlg.ShowOpen
     mmFile_Close_Click
     
-    If (Len(cdlg.FileName) > 0 And Dir(cdlg.FileName) <> "") Then
+    If (Len(cdlg.FileName) > 0 And Dir(cdlg.FileNameWiden) <> "") Then
         mdlGlobalPlayer.CloseFile
-        LoadMediaFile cdlg.FileName
-        
+        mdlGlobalPlayer.File = cdlg.FileName
+        frmPlaylist.isHide = True
+        frmPlaylist.Show vbModeless, frmMain
+        frmPlaylist.AutoPatern
+        frmPlaylist.AutoPatern
+        frmPlaylist.File_PaternFind.Enabled = True
+        RenderMediaFile
+
     End If
     
 End Sub
@@ -352,6 +372,19 @@ Private Sub mmStatus_ShowPlaylist_Click()
     
 End Sub
 
+Private Sub mmStatus_SpeedDown_Click()
+    frmPlayer.Form_KeyDown vbKeySubtract, 0
+End Sub
+
+Private Sub mmStatus_SpeedReset_Click()
+    mdlGlobalPlayer.Rate = 100
+End Sub
+
+Private Sub mmStatus_SpeedUp_Click()
+    frmPlayer.Form_KeyDown vbKeyAdd, 0
+    
+End Sub
+
 Private Sub mmStatus_Stop_Click()
     StopPlay
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
@@ -384,8 +417,9 @@ End Sub
 
 Private Sub tmrUpdateTime_Timer()
     Sleep 1
+
     If (mdlGlobalPlayer.Loaded = False) Then Exit Sub
-    UpdateStatus Round(Precent, 2) & "% (" & FormatedCurrentTime & "/" & FormatedDuration & ")", PlayTime
+    UpdateStatus mdlGlobalPlayer.Volume & "%, " & Round(mdlGlobalPlayer.Rate / 100, 2) & "x" & ", " & Format(Round(Precent, 2), "##.#0") & "% (" & FormatedCurrentTime & "/" & FormatedDuration & ")", PlayTime
     pbTimeBlock.Width = Precent / 100 * (pbTimeBar.Width / Screen.TwipsPerPixelX)
     
     If (Duration < CurrentTime + 1) Then
@@ -405,8 +439,6 @@ Private Sub tmrUpdateTime_Timer()
         End If
         
     End If
+
     'Set Me.Picture = mdlGlobalPlayer.NowFrame
 End Sub
-
-
-'²âÊÔÐÞ¸ÄµÄ×¢ÊÍ

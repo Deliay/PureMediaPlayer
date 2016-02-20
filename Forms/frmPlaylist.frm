@@ -23,8 +23,9 @@ Begin VB.Form frmPlaylist
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   5025
-   ScaleWidth      =   3735
+   ScaleHeight     =   335
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   249
    ShowInTaskbar   =   0   'False
    Begin VB.Timer tmrMovePadder 
       Interval        =   500
@@ -218,7 +219,8 @@ Private Sub lstPlaylist_DblClick()
     If (ItemSelected Is Nothing) Then Exit Sub
     If (Not (NameGet(File) = ItemSelected.Text)) Then
         mdlGlobalPlayer.CloseFile
-        mdlGlobalPlayer.LoadMediaFile mdlPlaylist.colPlayItems(ItemSelected.key).FullPath
+        mdlGlobalPlayer.File = mdlPlaylist.GetItemByPath(ItemSelected.key).FullPath
+        mdlGlobalPlayer.RenderMediaFile
         
         If Not nowPlaying Is Nothing Then nowPlaying.Bold = False
         Set nowPlaying = ItemSelected
