@@ -40,6 +40,7 @@ Public Function LoadPlaylist(ByVal strPath As String)
 End Function
 
 Public Function PlaylistPlayNext() As Boolean
+    On Error GoTo ResumePlay
     PlaylistPlayNext = False
     mdlGlobalPlayer.CloseFile
     
@@ -47,7 +48,9 @@ Public Function PlaylistPlayNext() As Boolean
     mdlGlobalPlayer.File = GetItemByPath(GetItemIDByName(frmPlaylist.nowPlaying.Text) + 1).FullPath
     mdlGlobalPlayer.RenderMediaFile
     PlaylistPlayNext = True
-    
+ResumePlay:
+    mdlGlobalPlayer.CurrentTime = 0
+    mdlGlobalPlayer.Play
 End Function
 
 Public Function GetItemIDByName(ByVal strName As String) As Long
