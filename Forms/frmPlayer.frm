@@ -43,7 +43,7 @@ Private Sub Form_DblClick()
     
 End Sub
 
-Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
+Public Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
     
     If (KeyCode = vbKeySpace) Then SwitchPlayStauts
     If (KeyCode = vbKeyEscape) Then SwitchFullScreen True
@@ -57,9 +57,26 @@ Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
         If (KeyCode = vbKeyRight) Then flag = 1
         If (flag <> 0) Then
             mdlGlobalPlayer.CurrentTime = mdlGlobalPlayer.CurrentTime + 5 * flag
-            
+            Exit Sub
+
         End If
-        
+
+        If (KeyCode = vbKeyUp) Then flag = 1
+        If (KeyCode = vbKeyDown) Then flag = -1
+        If (flag <> 0) Then
+            mdlGlobalPlayer.Volume = mdlGlobalPlayer.Volume + flag
+            Exit Sub
+
+        End If
+
+        If (KeyCode = vbKeyAdd) Then flag = 1
+        If (KeyCode = vbKeySubtract) Then flag = -1
+        If (flag <> 0) Then
+            mdlGlobalPlayer.Rate = mdlGlobalPlayer.Rate + flag * 10
+            Exit Sub
+
+        End If
+
     End If
     
 End Sub
