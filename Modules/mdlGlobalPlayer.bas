@@ -13,6 +13,8 @@ Private ifPlayback        As IVideoWindow
 
 Private ifVideo           As IBasicVideo
 
+Private ifVolume          As IBasicAudio
+
 Private ifType            As IMediaTypeInfo
 
 Public Width              As Long
@@ -50,15 +52,44 @@ Private Const WS_BORDER = &H800000
 
 Private Const WS_CAPTION = &HC00000                                             '  WS_BORDER Or WS_DLGFRAME
 
-Public Const WS_THICKFRAME = &H40000
+Private Const WS_THICKFRAME = &H40000
 
-Public Const WS_SIZEBOX = WS_THICKFRAME
+Private Const WS_SIZEBOX = WS_THICKFRAME
+
+Private Declare Sub SetLastError Lib "kernel32" (ByVal dwErrCode As Long)
+
+Public Property Let Volume(v As Long)
+
+    If (v > 100) Or (v < 0) Then Exit Property
+    ifVolume.Volume = -((100 - v) * 100)
+
+End Property
+
+Public Property Get Volume() As Long
+    Volume = 100 + ifVolume.Volume / 100
+
+End Property
 
 Public Property Get Precent() As Single
     
     If ifPostion Is Nothing Then Exit Property
     Precent = (CurrentTime / Duration) * 100
     
+End Property
+
+Public Property Get Rate() As Long
+    '0.5 per level
+    'rate 100 mean 1
+    
+    Rate = ifPostion.Rate * 100
+
+End Property
+
+Public Property Let Rate(v As Long)
+    '0.5 per level
+    'rate 100 mean 1
+    ifPostion.Rate = v / 100
+
 End Property
 
 Public Property Let Precent(value As Single)
@@ -77,63 +108,32 @@ Public Property Get File() As String
 
 End Property
 
-Public Function NowFrame() As Picture
-    
-    Dim lngSize  As Long, lngHBITMAP As Long
-    
-    Dim buffer() As Long
-    
-    ifVideo.GetCurrentImage lngSize, 0&
-    ReDim buffer(0 To lngSize)
-    ifVideo.GetCurrentImage lngSize, buffer(0)
-    lngHBITMAP = LongDIB2HBitmap(buffer)
-    Set NowFrame = HBitmap2Picture(lngHBITMAP, 0)
-    
-End Function
+Public Property Let File(v As String)
 
-Public Sub LoadMediaFile(strFilePath As String)
+    strLastestFile = v
+
+End Property
+
+Public Sub RenderMediaFile()
+
+    Dim strFilePath As String
+
     UpdateStatus StaticString(PLAYER_STATUS_LOADING), Action
     Set GlobalFilGraph = BackupFilGraph
     'Set GlobalFilGraph = FilgraphManager
-    strLastestFile = strFilePath
+    strFilePath = File
     UpdateStatus Dir(strFilePath), FileName
     frmPlayer.Caption = Dir(strFilePath)
-    frmPlaylist.isHide = True
-    frmPlaylist.Show vbModeless, frmMain
-    frmPlaylist.AutoPatern
-    frmPlaylist.AutoPatern
-    frmPlaylist.File_PaternFind.Enabled = True
-    
+
     On Error GoTo DcodeErr
     
     GlobalFilGraph.RenderFile strFilePath
     Set ifPostion = GlobalFilGraph
     
     On Error GoTo NotVideo
+
     Set ifVideo = GlobalFilGraph
-NotVideo:
     Set ifPlayback = GlobalFilGraph
-    
-    On Error GoTo 0
-    
-    mdlGlobalPlayer.CurrentTime = 0
-    mdlPlaylist.SetItemLength strFilePath, FormatedDuration
-    
-    If Not frmPlaylist.nowPlaying Is Nothing Then frmPlaylist.nowPlaying.Bold = False
-    
-    On Error GoTo notLoadPlaylist
-    
-    Set frmPlaylist.nowPlaying = frmPlaylist.lstPlaylist.ListItems(strFilePath)
-notLoadPlaylist:
-    
-    If Not frmPlaylist.nowPlaying Is Nothing Then frmPlaylist.nowPlaying.Bold = True
-    
-    boolLoadedFile = True
-    
-    UpdateStatus StaticString(PLAYER_STATUS_READY), Action
-    
-    On Error GoTo hErr
-    
     ifPlayback.Caption = "PureMediaPlayer - LayerWindow"
     ifPlayback.Owner = frmPlayer.hWnd
     ifPlayback.MessageDrain = frmPlayer.hWnd
@@ -145,7 +145,43 @@ notLoadPlaylist:
     lngSrcStyle = lngSrcStyle And Not WS_CAPTION
     lngSrcStyle = lngSrcStyle And Not WS_SIZEBOX
     ifPlayback.WindowStyle = lngSrcStyle
+NotVideo:
+
+    Resume Next
+
+    On Error GoTo 0
+    
+    On Error GoTo notAudio
+
+    Set ifVolume = GlobalFilGraph
+    
+notAudio:
+
+    Resume Next
+
+    mdlGlobalPlayer.CurrentTime = 0
+    mdlPlaylist.SetItemLength strFilePath, FormatedDuration
+    
+    If Not frmPlaylist.nowPlaying Is Nothing Then frmPlaylist.nowPlaying.Bold = False
+    
+    On Error GoTo notLoadPlaylist
+    
+    Set frmPlaylist.nowPlaying = frmPlaylist.lstPlaylist.ListItems(strFilePath)
+    
+notLoadPlaylist:
+
+    Resume Next
+
+    If Not frmPlaylist.nowPlaying Is Nothing Then frmPlaylist.nowPlaying.Bold = True
+    
+    boolLoadedFile = True
+    
+    UpdateStatus StaticString(PLAYER_STATUS_READY), Action
+    
 hErr:
+
+    Resume Next
+
     mdlGlobalPlayer.Play
     DoEvents
     mdlGlobalPlayer.ResizePlayWindow
@@ -156,7 +192,7 @@ hErr:
     
     Exit Sub
 DcodeErr:
-    MsgBox "Not Support this codes type!"
+    MsgBox "Not Support this codes type yet!"
     Exit Sub
 
     MsgBox "Unknow Err"
