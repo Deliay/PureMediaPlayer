@@ -44,7 +44,8 @@ Public Function PlaylistPlayNext() As Boolean
     mdlGlobalPlayer.CloseFile
     
     If (GetItemIDByName(frmPlaylist.nowPlaying.Text) = mdlPlaylist.colPlayItems.Count) Then Exit Function
-    mdlGlobalPlayer.LoadMediaFile colPlayItems(GetItemIDByName(frmPlaylist.nowPlaying.Text) + 1).FullPath
+    mdlGlobalPlayer.File = GetItemByPath(GetItemIDByName(frmPlaylist.nowPlaying.Text) + 1).FullPath
+    mdlGlobalPlayer.RenderMediaFile
     PlaylistPlayNext = True
     
 End Function
@@ -66,7 +67,9 @@ Public Function GetItemIDByName(ByVal strName As String) As Long
 End Function
 
 Public Function SetItemLength(strFullPath As String, Length As String)
-    colPlayItems(strFullPath).Length = Length
+
+    If (GetItemByPath(strFullPath) Is Nothing) Then Exit Function
+    GetItemByPath(strFullPath).Length = Length
     frmPlaylist.lstPlaylist.ListItems(strFullPath).SubItems(1) = Length
     
     If (strPlaylist <> "") Then SavePlaylist
@@ -109,7 +112,7 @@ notExist:
             addItem.Bold = True
             Set frmPlaylist.nowPlaying = addItem
             addItem.SubItems(1) = mdlGlobalPlayer.FormatedDuration
-            colPlayItems(File).Length = addItem.SubItems(1)
+            GetItemByPath(File).Length = addItem.SubItems(1)
             
         End If
         
@@ -146,7 +149,24 @@ Public Sub PlaylistClear()
 End Sub
 
 Public Function PlayByName(ByVal strName As String) As Boolean
-    mdlGlobalPlayer.LoadMediaFile colPlayItems(strName).FullPath
+    mdlGlobalPlayer.File = GetItemByPath(strName).FullPath
+    mdlGlobalPlayer.RenderMediaFile
+    
+End Function
+
+Public Function GetItemByPath(ByVal strPath As String) As PlayListItem
+
+    Dim playItem As Variant
+
+    For Each playItem In colPlayItems
+
+        If (playItem.FullPath = strPath) Then
+            Set GetItemByPath = playItem
+            Exit Function
+
+        End If
+
+    Next
     
 End Function
 
