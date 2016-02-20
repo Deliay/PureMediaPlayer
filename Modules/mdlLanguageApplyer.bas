@@ -1,6 +1,28 @@
 Attribute VB_Name = "mdlLanguageApplyer"
 Option Explicit
 
+Private Declare Function MultiByteToWideChar _
+                Lib "kernel32.dll" (ByVal CodePage As Long, _
+                                    ByVal dwFlags As Long, _
+                                    ByVal lpMultiByteStr As String, _
+                                    ByVal cchMultiByte As Long, _
+                                    ByVal lpWideCharStr As String, _
+                                    ByVal cchWideChar As Long) As Long
+
+Private Declare Function WideCharToMultiByte _
+                Lib "kernel32.dll" (ByVal CodePage As Long, _
+                                    ByVal dwFlags As Long, _
+                                    ByVal lpWideCharStr As Long, _
+                                    ByVal cchWideChar As Long, _
+                                    ByRef lpMultiByteStr As Any, _
+                                    ByVal cchMultiByte As Long, _
+                                    ByVal lpDefaultChar As String, _
+                                    ByVal lpUsedDefaultChar As Long) As Long
+
+Private Const CP_ACP  As Long = 0
+
+Private Const CP_UTF8 As Long = 65001
+
 Public Enum STATIC_STRING_ENUM
 
     PLAY_STATUS_PLAYING
@@ -31,6 +53,12 @@ Const DEFAULT_PLAYER_STATUS_READY    As String = "Ready"
 Const DEFAULT_PLAYER_STATUS_CLOSEING As String = "Closeing"
 
 Const DEFAULT_FILE_STATUS_NOFILE     As String = "No File Opend"
+
+Private Declare Sub CopyMemory _
+                Lib "kernel32" _
+                Alias "RtlMoveMemory" (Destination As Any, _
+                                       Source As Any, _
+                                       ByVal Length As Long)
 
 Public Function DefaultStaticString(ctype As STATIC_STRING_ENUM) As String
 
@@ -67,16 +95,30 @@ End Function
 Public Sub ApplyLanguageToForm(frm As Form)
 
     Dim objCtrl As Control
-
+    Dim boolHaveCaption As Boolean
     For Each objCtrl In frm.Controls
 
-        On Error Resume Next
+        On Error GoTo Continue
 
         Dim strVal As String
-
+        boolHaveCaption = True
         strVal = objCtrl.Caption
-
-        If (Len(strVal) > 0) Then If (strVal <> "-") Then objCtrl.Caption = GetLanguage(frm.Name, objCtrl.Name)
+        If (boolHaveCaption = False) Then GoTo Continue
+        If (Len(strVal) > 0) Then
+            If (strVal <> "-") Then
+                strVal = GetLanguage(frm.Name, objCtrl.Name)
+                If (strVal = "") Then
+                    InI.INI_WriteString App.Path & "\language.ini", frm.Name, objCtrl.Name, objCtrl.Caption
+                Else
+                    objCtrl.Caption = strVal
+                End If
+            Else
+                GoTo Continue
+            End If
+        End If
+Continue:
+        boolHaveCaption = False
+        Resume Next
     Next
 
 End Sub
