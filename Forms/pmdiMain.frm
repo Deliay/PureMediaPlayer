@@ -119,18 +119,18 @@ Begin VB.MDIForm frmMain
             Alignment       =   2
             AutoSize        =   1
             Bevel           =   0
-            Object.Width           =   9084
+            Object.Width           =   8925
             MinWidth        =   882
-            TextSave        =   "2016/2/21"
+            TextSave        =   "2016/2/22"
          EndProperty
          BeginProperty Panel9 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             Alignment       =   2
             AutoSize        =   2
             Bevel           =   0
-            Object.Width           =   873
+            Object.Width           =   1032
             MinWidth        =   882
-            TextSave        =   "0:34"
+            TextSave        =   "13:02"
          EndProperty
       EndProperty
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 

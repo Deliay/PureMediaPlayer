@@ -29,6 +29,12 @@ Private strLastestFile    As String
 
 Private VideoRatio        As Double
 
+Private hasVideo_          As Boolean
+
+Private hasAudio_          As Boolean
+
+Private hasSubtitle_       As Boolean
+
 Public Enum StatusBarEnum
 
     Action = 1
@@ -58,10 +64,10 @@ Private Const WS_SIZEBOX = WS_THICKFRAME
 
 Private Declare Sub SetLastError Lib "kernel32" (ByVal dwErrCode As Long)
 
-Public Property Let Volume(v As Long)
+Public Property Let Volume(V As Long)
 
-    If (v > 100) Or (v < 0) Then Exit Property
-    ifVolume.Volume = -((100 - v) * 100)
+    If (V > 100) Or (V < 0) Then Exit Property
+    ifVolume.Volume = -((100 - V) * 100)
 
 End Property
 
@@ -85,10 +91,10 @@ Public Property Get Rate() As Long
 
 End Property
 
-Public Property Let Rate(v As Long)
+Public Property Let Rate(V As Long)
     '0.5 per level
     'rate 100 mean 1
-    ifPostion.Rate = v / 100
+    ifPostion.Rate = V / 100
 
 End Property
 
@@ -108,9 +114,27 @@ Public Property Get File() As String
 
 End Property
 
-Public Property Let File(v As String)
+Public Property Let File(V As String)
 
-    strLastestFile = v
+    strLastestFile = V
+
+End Property
+
+Public Property Get HasVideo() As Boolean
+    
+    HasVideo = hasVideo_
+    
+End Property
+
+Public Property Get HasAudio() As Boolean
+
+    HasAudio = hasAudio_
+
+End Property
+
+Public Property Get HasSubtitle() As Boolean
+
+    HasSubtitle = hasSubtitle_
 
 End Property
 
@@ -124,41 +148,37 @@ Public Sub RenderMediaFile()
     strFilePath = File
     UpdateStatus Dir(strFilePath), FileName
     frmPlayer.Caption = Dir(strFilePath)
-
-    On Error GoTo DcodeErr
+    hasVideo_ = False: hasAudio_ = False: hasSubtitle_ = False
+    mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_
     
-    GlobalFilGraph.RenderFile strFilePath
+    On Error GoTo DcodeErr
+
     Set ifPostion = GlobalFilGraph
     
-    On Error GoTo NotVideo
-
-    Set ifVideo = GlobalFilGraph
-    Set ifPlayback = GlobalFilGraph
-    ifPlayback.Caption = "PureMediaPlayer - LayerWindow"
-    ifPlayback.Owner = frmPlayer.hWnd
-    ifPlayback.MessageDrain = frmPlayer.hWnd
-    
-    Dim lngSrcStyle As Long
-    
-    lngSrcStyle = ifPlayback.WindowStyle
-    lngSrcStyle = lngSrcStyle And Not WS_BORDER
-    lngSrcStyle = lngSrcStyle And Not WS_CAPTION
-    lngSrcStyle = lngSrcStyle And Not WS_SIZEBOX
-    ifPlayback.WindowStyle = lngSrcStyle
-NotVideo:
-
-    Resume Next
-
     On Error GoTo 0
+        
+    If (HasVideo) Then
     
-    On Error GoTo notAudio
-
-    Set ifVolume = GlobalFilGraph
+        Set ifVideo = GlobalFilGraph
+        Set ifPlayback = GlobalFilGraph
+        ifPlayback.Caption = "PureMediaPlayer - LayerWindow"
+        ifPlayback.Owner = frmPlayer.hWnd
+        ifPlayback.MessageDrain = frmPlayer.hWnd
+        
+        Dim lngSrcStyle As Long
+        
+        lngSrcStyle = ifPlayback.WindowStyle
+        lngSrcStyle = lngSrcStyle And Not WS_BORDER
+        lngSrcStyle = lngSrcStyle And Not WS_CAPTION
+        lngSrcStyle = lngSrcStyle And Not WS_SIZEBOX
+        ifPlayback.WindowStyle = lngSrcStyle
     
-notAudio:
-
-    Resume Next
-
+    End If
+    
+    If (HasAudio) Then
+        Set ifVolume = GlobalFilGraph
+    End If
+ 
     mdlGlobalPlayer.CurrentTime = 0
     mdlPlaylist.SetItemLength strFilePath, FormatedDuration
     
