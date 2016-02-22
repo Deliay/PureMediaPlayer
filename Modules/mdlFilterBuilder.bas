@@ -15,6 +15,7 @@ Private m_CurSelFilter As IFilterInfo, m_CurSelPin As IPinInfo
 Private LAVVideoIndex As Long, LAVAudioIndex As Long
 Private LAVSplitterIndex As Long, LAVSplitterSourceIndex As Long
 Private VSFilterIndex As Long
+Private VMR9Index As Long, VMR7Index As Long, VRIndex As Long
 
 Public Sub RegisterAllDecoder()
     RegisterLAVAudio
@@ -49,26 +50,41 @@ Public Sub Main()
         VSFilterIndex = -1 Or _
         LAVSplitterSourceIndex = -1) Then
     
-        MsgBox "Cannot Register Decoder! Please run me with higher"
+        MsgBox "Cannot Register Decoder! Please run me with Admin Perm"
+        End
     End If
-    
-    BuildGrph "E:\@ ”∆µ\@”Œœ∑\Films\rec.mp4", m_GraphManager
-    
 End Sub
 
-Public Function BuildGrph(ByVal srcFile As String, ByVal m_GraphManager As FilgraphManager)
+Public Function BuildGrph(ByVal srcFile As String, _
+                          ByVal m_GraphManager As FilgraphManager, _
+                          ByRef boolHasVideo As Boolean, _
+                          ByRef boolHasAudio As Boolean, _
+                          ByRef boolHasSubtitle As Boolean)
+                          
     Dim objSrcSplitterReg As IRegFilterInfo, objSrcSplitterFilter As IFilterInfo
     Dim objVideoReg As IRegFilterInfo, objVideoFilter As IFilterInfo
     Dim objAudioReg As IRegFilterInfo, objAudioFilter As IFilterInfo
-    Dim FileName As String
-    
+    Dim objPinInfo As IPinInfo
+ 
     m_GraphManager.RegFilterCollection.Item LAVSplitterSourceIndex, objSrcSplitterReg
     objSrcSplitterReg.Filter objSrcSplitterFilter
     
     CheckForFileSinkAndSetFileName objSrcSplitterFilter, srcFile
+    boolHasVideo = False
+    boolHasAudio = False
+    boolHasSubtitle = False
     
     For Each objPinInfo In objSrcSplitterFilter.Pins
-        
+        If (objPinInfo.Name = "Audio") Then
+            boolHasAudio = True
+            
+        ElseIf (objPinInfo.Name = "Video") Then
+            boolHasVideo = True
+            
+        ElseIf (objPinInfo.Name = "Subtitle") Then
+            boolHasSubtitle = True
+            
+        End If
     Next
 End Function
 
@@ -126,14 +142,14 @@ End Function
 Public Function vtblCall(ByVal pUnk As Long, ByVal vtblIdx As Long, ParamArray P() As Variant)
     Static VType(0 To 31) As Integer, VPtr(0 To 31) As Long
     Dim i As Long, V(), HResDisp As Long
-  If pUnk = 0 Then vtblCall = 5: Exit Function
+    If pUnk = 0 Then vtblCall = 5: Exit Function
 
-  V = P 'make a copy of the params, to prevent problems with VT_ByRef-Members in the ParamArray
-  For i = 0 To UBound(V)
-    VType(i) = VarType(V(i))
-    VPtr(i) = VarPtr(V(i))
-  Next i
-  
-  HResDisp = DispCallFunc(pUnk, vtblIdx * 4, 4, vbLong, i, VType(0), VPtr(0), vtblCall)
-  If HResDisp <> S_OK Then Err.Raise HResDisp, , "Error in DispCallFunc"
+    V = P 'make a copy of the params, to prevent problems with VT_ByRef-Members in the ParamArray
+    For i = 0 To UBound(V)
+        VType(i) = VarType(V(i))
+        VPtr(i) = VarPtr(V(i))
+    Next i
+    
+    HResDisp = DispCallFunc(pUnk, vtblIdx * 4, 4, vbLong, i, VType(0), VPtr(0), vtblCall)
+    If HResDisp <> S_OK Then Err.Raise HResDisp, , "Error in DispCallFunc"
 End Function
