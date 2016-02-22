@@ -28,8 +28,8 @@ Begin VB.Form frmPlaylist
    ScaleWidth      =   249
    ShowInTaskbar   =   0   'False
    Begin VB.Timer tmrMovePadder 
-      Interval        =   500
-      Left            =   1320
+      Interval        =   250
+      Left            =   1200
       Top             =   2280
    End
    Begin MSComctlLib.ListView lstPlaylist 
@@ -243,10 +243,9 @@ Private Sub lstPlaylist_KeyDown(KeyCode As Integer, Shift As Integer)
 End Sub
 
 Private Sub tmrMovePadder_Timer()
-    
     If (frmMain.Left = oldLeft) Then Exit Sub
     If (frmMain.Top = oldTop) Then Exit Sub
-    frmPlaylist.Top = frmMain.Top + frmPlaylist.Height / 2 - (35 * Screen.TwipsPerPixelY)
+    frmPlaylist.Top = frmMain.Top + ((frmMain.Height - frmPlaylist.Height))
     frmPlaylist.Left = frmMain.Left - frmPlaylist.Width
     
     If (frmPlaylist.Left < 0) Then
