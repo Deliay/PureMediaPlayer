@@ -1,27 +1,7 @@
 Attribute VB_Name = "mdlLanguageApplyer"
 Option Explicit
 
-Private Declare Function MultiByteToWideChar _
-                Lib "kernel32.dll" (ByVal CodePage As Long, _
-                                    ByVal dwFlags As Long, _
-                                    ByVal lpMultiByteStr As String, _
-                                    ByVal cchMultiByte As Long, _
-                                    ByVal lpWideCharStr As String, _
-                                    ByVal cchWideChar As Long) As Long
-
-Private Declare Function WideCharToMultiByte _
-                Lib "kernel32.dll" (ByVal CodePage As Long, _
-                                    ByVal dwFlags As Long, _
-                                    ByVal lpWideCharStr As Long, _
-                                    ByVal cchWideChar As Long, _
-                                    ByRef lpMultiByteStr As Any, _
-                                    ByVal cchMultiByte As Long, _
-                                    ByVal lpDefaultChar As String, _
-                                    ByVal lpUsedDefaultChar As Long) As Long
-
-Private Const CP_ACP  As Long = 0
-
-Private Const CP_UTF8 As Long = 65001
+Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
 Public Enum STATIC_STRING_ENUM
 
