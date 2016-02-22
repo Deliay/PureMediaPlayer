@@ -4,17 +4,17 @@ Begin VB.MDIForm frmMain
    Appearance      =   0  'Flat
    BackColor       =   &H8000000C&
    Caption         =   "Pure Media Player"
-   ClientHeight    =   7650
+   ClientHeight    =   3960
    ClientLeft      =   165
    ClientTop       =   510
-   ClientWidth     =   10815
+   ClientWidth     =   8610
    Icon            =   "pmdiMain.frx":0000
    LinkTopic       =   "MDIForm1"
    StartUpPosition =   2  'ÆÁÄ»ÖÐÐÄ
    Begin VB.Timer tmrUpdateTime 
       Enabled         =   0   'False
       Interval        =   1000
-      Left            =   0
+      Left            =   120
       Top             =   3000
    End
    Begin VB.PictureBox pbTimeBar 
@@ -27,11 +27,11 @@ Begin VB.MDIForm frmMain
       Left            =   0
       ScaleHeight     =   10
       ScaleMode       =   0  'User
-      ScaleWidth      =   721
+      ScaleWidth      =   574
       TabIndex        =   1
       TabStop         =   0   'False
-      Top             =   7200
-      Width           =   10815
+      Top             =   3510
+      Width           =   8610
       Begin VB.PictureBox pbTimeBlock 
          Appearance      =   0  'Flat
          BackColor       =   &H00C0C0FF&
@@ -53,9 +53,9 @@ Begin VB.MDIForm frmMain
       Height          =   315
       Left            =   0
       TabIndex        =   0
-      Top             =   7335
-      Width           =   10815
-      _ExtentX        =   19076
+      Top             =   3645
+      Width           =   8610
+      _ExtentX        =   15187
       _ExtentY        =   556
       _Version        =   393216
       BeginProperty Panels {8E3867A5-8586-11D1-B16A-00C0F0283628} 
@@ -119,7 +119,7 @@ Begin VB.MDIForm frmMain
             Alignment       =   2
             AutoSize        =   1
             Bevel           =   0
-            Object.Width           =   8925
+            Object.Width           =   5036
             MinWidth        =   882
             TextSave        =   "2016/2/22"
          EndProperty
@@ -130,7 +130,7 @@ Begin VB.MDIForm frmMain
             Bevel           =   0
             Object.Width           =   1032
             MinWidth        =   882
-            TextSave        =   "13:02"
+            TextSave        =   "18:31"
          EndProperty
       EndProperty
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -242,8 +242,6 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
-
 Private Sub MDIForm_Activate()
     mdlGlobalPlayer.SwitchFullScreen True, False
     
@@ -253,7 +251,7 @@ Private Sub MDIForm_Load()
     Me.Show
     Load frmPlaylist
     Load frmPaternAdd
-
+    
     If (Dir(App.Path & "\language.ini") = "") Then
         CreateLanguagePart Me
         CreateLanguagePart frmPlaylist
@@ -274,8 +272,9 @@ Private Sub MDIForm_Load()
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
-    MDIForm_Resize
-    
+    Me.Height = Screen.TwipsPerPixelY * (480 + 81)
+    Me.Width = Screen.TwipsPerPixelX * (854 + 8)
+
 End Sub
 
 Private Sub MDIForm_QueryUnload(Cancel As Integer, UnloadMode As Integer)
@@ -284,8 +283,8 @@ Private Sub MDIForm_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 End Sub
 
 Private Sub MDIForm_Resize()
-    mdlGlobalPlayer.Width = frmPlayer.Width / Screen.TwipsPerPixelX             '+ 48
-    mdlGlobalPlayer.Height = frmPlayer.Height / Screen.TwipsPerPixelY           '//+ 10
+    mdlGlobalPlayer.Width = frmPlayer.Width / Screen.TwipsPerPixelX
+    mdlGlobalPlayer.Height = frmPlayer.Height / Screen.TwipsPerPixelY
     ResizePlayWindow
     
 End Sub
@@ -309,7 +308,6 @@ End Sub
 Private Sub mmFile_Open_Click()
     cdlg.FileName = ""
     cdlg.ShowOpen
-    mmFile_Close_Click
     
     If (Len(cdlg.FileName) > 0 And Dir(cdlg.FileNameWiden) <> "") Then
         mdlGlobalPlayer.CloseFile
