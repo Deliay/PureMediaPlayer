@@ -3,9 +3,7 @@ Option Explicit
 
 Public Const DefaultTitle As String = "Pure Media Player"
 
-Public GlobalFilGraph     As FilgraphManager
-
-Private BackupFilGraph    As New FilgraphManager
+Public GlobalFilGraph     As New FilgraphManager
 
 Private ifPostion         As IMediaPosition
 
@@ -141,14 +139,15 @@ End Property
 Public Sub RenderMediaFile()
 
     Dim strFilePath As String
+    Set GlobalFilGraph = Nothing
+    Set GlobalFilGraph = New FilgraphManager
 
     UpdateStatus StaticString(PLAYER_STATUS_LOADING), Action
-    Set GlobalFilGraph = BackupFilGraph
-    'Set GlobalFilGraph = FilgraphManager
     strFilePath = File
     UpdateStatus Dir(strFilePath), FileName
     frmPlayer.Caption = Dir(strFilePath)
     hasVideo_ = False: hasAudio_ = False: hasSubtitle_ = False
+    
     mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_
     
     On Error GoTo DcodeErr
@@ -172,7 +171,7 @@ Public Sub RenderMediaFile()
         lngSrcStyle = lngSrcStyle And Not WS_CAPTION
         lngSrcStyle = lngSrcStyle And Not WS_SIZEBOX
         ifPlayback.WindowStyle = lngSrcStyle
-    
+        mdlGlobalPlayer.ResizePlayWindow
     End If
     
     If (HasAudio) Then
@@ -207,9 +206,6 @@ hErr:
     mdlGlobalPlayer.ResizePlayWindow
     
     ifPlayback.FullScreenMode = boolIsFullScreen
-    
-    Set BackupFilGraph = New FilgraphManager
-    
     Exit Sub
 DcodeErr:
     MsgBox "Not Support this codes type yet!"
@@ -326,6 +322,8 @@ End Sub
 
 Public Sub ResizePlayWindow()
     
+    If (Not hasVideo_) Then Exit Sub
+    
     If (ifVideo Is Nothing) Then Exit Sub
     
     On Error GoTo hErr
@@ -386,7 +384,7 @@ End Sub
 
 Public Sub SwitchFullScreen(Optional force As Boolean = False, _
                             Optional forceValue As Boolean = False)
-    
+    If (Not HasVideo) Then Exit Sub
     If (ifPlayback Is Nothing) Then Exit Sub
     If force = True Then
         boolIsFullScreen = forceValue
