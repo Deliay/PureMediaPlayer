@@ -29,7 +29,7 @@ Public Function LoadPlaylist(ByVal strPath As String)
     For lngIter = 0 To playlistCount - 1
         
         Dim strFullPath As String, strLength As String
-        
+        If (EOF(1)) Then Exit For
         Line Input #1, strFullPath
         Line Input #1, strLength
         AddFileToPlaylist strFullPath, strLength
@@ -42,10 +42,8 @@ End Function
 Public Function PlaylistPlayNext() As Boolean
     On Error GoTo ResumePlay
     PlaylistPlayNext = False
-    mdlGlobalPlayer.CloseFile
-    
     If (GetItemIDByName(frmPlaylist.nowPlaying.Text) = mdlPlaylist.colPlayItems.Count) Then Exit Function
-    mdlGlobalPlayer.File = GetItemByPath(GetItemIDByName(frmPlaylist.nowPlaying.Text) + 1).FullPath
+    mdlGlobalPlayer.File = colPlayItems(GetItemIDByName(frmPlaylist.nowPlaying.Text) + 1).FullPath
     mdlGlobalPlayer.RenderMediaFile
     PlaylistPlayNext = True
 ResumePlay:
