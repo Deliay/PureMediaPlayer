@@ -130,7 +130,7 @@ Begin VB.MDIForm frmMain
             Bevel           =   0
             Object.Width           =   1032
             MinWidth        =   882
-            TextSave        =   "18:49"
+            TextSave        =   "18:53"
          EndProperty
       EndProperty
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -272,8 +272,8 @@ Private Sub MDIForm_Load()
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
-    Me.Height = Screen.TwipsPerPixelX * (480 + 80)
-    Me.Width = Screen.TwipsPerPixelY * (854 + 10)
+    Me.Height = Screen.TwipsPerPixelY * (480 + 80)
+    Me.Width = Screen.TwipsPerPixelX * (854 + 10)
 
 End Sub
 
