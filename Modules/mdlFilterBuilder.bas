@@ -1,12 +1,12 @@
 Attribute VB_Name = "mdlFilterBuilder"
 Option Explicit
-Private Declare Function RegisterLAVAudio Lib "Filter\LAVAudio.ax" () As Long
-Private Declare Function RegisterLAVSplitter Lib "Filter\LAVSplitter.ax" () As Long
-Private Declare Function RegisterLAVVideo Lib "Filter\LAVVideo.ax" () As Long
-Private Declare Function RegisterVSFilter Lib "Filter\vsfilter.dll" () As Long
-''DllRegisterServer
+Private Declare Function RegisterLAVAudio Lib "LAVAudio.ax" Alias "DllRegisterServer" () As Long
+Private Declare Function RegisterLAVSplitter Lib "LAVSplitter.ax" Alias "DllRegisterServer" () As Long
+Private Declare Function RegisterLAVVideo Lib "LAVVideo.ax" Alias "DllRegisterServer" () As Long
+Private Declare Function RegisterVSFilter Lib "vsfilter.dll" Alias "DllRegisterServer" () As Long
+''
 Private Declare Function DispCallFunc& Lib "oleaut32" (ByVal ppv&, ByVal oVft&, ByVal CC As Long, ByVal rtTYP%, ByVal paCount&, paTypes%, paValues&, fuReturn)
-Private Declare Function OleCreatePropertyFrame& Lib "oleaut32" (ByVal hWndOwner&, ByVal X&, ByVal Y&, ByVal lpszCaption&, ByVal cObjects&, ByRef ppUnk&, ByVal cPages&, ByVal pPageClsID&, ByVal lcid&, ByVal dwReserved&, ByVal pvReserved&)
+Private Declare Function OleCreatePropertyFrame& Lib "oleaut32" (ByVal hwndOwner&, ByVal X&, ByVal Y&, ByVal lpszCaption&, ByVal cObjects&, ByRef ppUnk&, ByVal cPages&, ByVal pPageClsID&, ByVal lcid&, ByVal dwReserved&, ByVal pvReserved&)
 
 Private Const CLSID_ActiveMovieCategories = "{DA4E3DA0-D07D-11d0-BD50-00A0C911CE86}"
 Private Const CLSID_VideoInputDeviceCategory = "{860BB310-5D01-11d0-BD3B-00A0C911CE86}"
@@ -30,7 +30,6 @@ Public Sub Main()
     LAVSplitterSourceIndex = -1
     VSFilterIndex = -1
     VMR9Index = -1
-    Set mdlGlobalPlayer.GlobalFilGraph = New FilgraphManager
     FillDecoder mdlGlobalPlayer.GlobalFilGraph
     
     If (LAVAudioIndex = -1 Or _
@@ -68,7 +67,7 @@ Public Sub BuildGrph(ByVal srcFile As String, _
                           ByRef boolHasVideo As Boolean, _
                           ByRef boolHasAudio As Boolean, _
                           ByRef boolHasSubtitle As Boolean)
-                          
+
     Dim objSrcSplitterReg As IRegFilterInfo, objSrcSplitterFilter As IFilterInfo
     Dim objVideoReg As IRegFilterInfo, objVideoFilter As IFilterInfo, objVideoPin As IPinInfo
     Dim objAudioReg As IRegFilterInfo, objAudioFilter As IFilterInfo, objAudioPin As IPinInfo
