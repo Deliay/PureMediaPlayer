@@ -96,7 +96,7 @@ Public Function ShowSave(Optional Filters As String = "任意文件 (*.*)" & vbNullC
     If rtn < 1 Then Exit Function
     FileName = Space$(254)
     rtn = GetShortPathName(StrPtr(ofn.lpstrFile), StrPtr(FileName), 254)
-
+    If (Left$(FileName, 1) = Space$(1)) Then FileName = ofn.lpstrFile
     If (Not (InStr(1, FileName, Chr(0)) = 0)) Then
         FileName = Mid(FileName, 1, InStr(1, FileName, Chr(0)) - 1)
 
