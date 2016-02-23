@@ -57,7 +57,8 @@ Public Sub Main()
         MsgBox "Cannot Register Decoder! Please run me with Admin Perm"
         End
     End If
-    
+    'Create A Clean FilgraphManager
+    Set mdlGlobalPlayer.GlobalFilGraph = New FilgraphManager
     frmMain.Show
     
 End Sub
@@ -66,27 +67,37 @@ Public Sub BuildGrph(ByVal srcFile As String, _
                           ByRef objGraphManager As FilgraphManager, _
                           ByRef boolHasVideo As Boolean, _
                           ByRef boolHasAudio As Boolean, _
-                          ByRef boolHasSubtitle As Boolean)
-
+                          ByRef boolHasSubtitle As Boolean, Optional ByVal VMRVersion As Long = 7)
+    Dim objSrcFileFilter As IFilterInfo
     Dim objSrcSplitterReg As IRegFilterInfo, objSrcSplitterFilter As IFilterInfo
     Dim objVideoReg As IRegFilterInfo, objVideoFilter As IFilterInfo, objVideoPin As IPinInfo
     Dim objAudioReg As IRegFilterInfo, objAudioFilter As IFilterInfo, objAudioPin As IPinInfo
     Dim objSubtitleReg As IRegFilterInfo, objSubtitleFilter As IFilterInfo, objSubtitlePin As IPinInfo
     Dim objRenderReg As IRegFilterInfo, objRenderFilter As IFilterInfo ', objRenderPin As IPinInfo
     Dim objSpliterPin As IPinInfo
-    'Create Splitter
+    'Try put source file directly
+    '
+    'On Error GoTo OnlyInput
+    'objGraphManager.AddSourceFilter srcFile, objSrcSplitterFilter
+
+'    If (Not objSrcSplitterFilter Is Nothing And objSrcSplitterFilter.Pins.Count > 0) Then
+'        GoTo ParserPins
+'OnlyInput:
+'    'Create Splitter
+'        Resume Next
+'    Else
     objGraphManager.RegFilterCollection.Item LAVSplitterSourceIndex, objSrcSplitterReg
     objSrcSplitterReg.Filter objSrcSplitterFilter
-    
+    On Error GoTo NotExist
     objSrcSplitterFilter.FileName = srcFile
     'Add Src File
     CheckForFileSinkAndSetFileName objSrcSplitterFilter, srcFile
-    
+'    End If
     'Reset switch
     boolHasVideo = False
     boolHasAudio = False
     boolHasSubtitle = False
-    
+ParserPins:
     'Create Filters
     For Each objSpliterPin In objSrcSplitterFilter.Pins
         If (objSpliterPin.Name = "Audio") Then
@@ -100,8 +111,15 @@ Public Sub BuildGrph(ByVal srcFile As String, _
             boolHasVideo = True
             objGraphManager.RegFilterCollection.Item LAVVideoIndex, objVideoReg
             objVideoReg.Filter objVideoFilter
-            
-            objGraphManager.RegFilterCollection.Item VMR9Index, objRenderReg
+            Dim VMRVerSpec As Long
+            If (VMRVersion = 9) Then
+                VMRVerSpec = VMR9Index
+            ElseIf (VMRVersion = 7) Then
+                VMRVerSpec = VMR7Index
+            Else
+                VMRVerSpec = VRIndex
+            End If
+            objGraphManager.RegFilterCollection.Item VMRVerSpec, objRenderReg
             objRenderReg.Filter objRenderFilter
             
             Set objVideoPin = objSpliterPin
@@ -135,14 +153,15 @@ Public Sub BuildGrph(ByVal srcFile As String, _
             objSubtitlePin.Connect objPinVSInput
         End If
     End If
- 
+NotExist:
 End Sub
 
 
 
 Private Sub FillDecoder(m_GraphManager As FilgraphManager)
     Dim i As Long
-    Dim objRegFilter As Object
+    Dim objRegFilter As IRegFilterInfo
+    Dim objTestFilter As IFilterInfo, objTestPin As IPinInfo
     For Each objRegFilter In m_GraphManager.RegFilterCollection
         i = i + 1
         If (objRegFilter.Name = "LAV Splitter") Then
@@ -159,15 +178,32 @@ Private Sub FillDecoder(m_GraphManager As FilgraphManager)
             
         ElseIf (objRegFilter.Name = "VSFilter") Then
             VSFilterIndex = i - 1
+            
         ElseIf (objRegFilter.Name = "Video Mixing Renderer 9") Then
             VMR9Index = i - 1
+            
+        ElseIf (objRegFilter.Name = "Video Renderer") Then
+            objRegFilter.Filter objTestFilter
+            For Each objTestPin In objTestFilter.Pins
+                If (LCase$(objTestPin.Name) = "vmr input0") Then
+                    VMR7Index = i - 1
+                    Exit For
+                ElseIf (LCase$(objTestPin.Name) = "input") Then
+                    VRIndex = i - 1
+                    Exit For
+                End If
+            Next
+
         End If
         
         If (LAVAudioIndex <> -1 And _
             LAVVideoIndex <> -1 And _
             LAVSplitterIndex <> -1 And _
             VSFilterIndex <> -1 And _
-            LAVSplitterSourceIndex <> -1) Then
+            LAVSplitterSourceIndex <> -1 And _
+            VMR9Index <> -1 And _
+            VMR7Index <> -1 And _
+            VRIndex <> -1) Then
         
             Exit For
         
