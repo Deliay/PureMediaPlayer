@@ -70,6 +70,7 @@ Public Property Let Volume(V As Long)
 End Property
 
 Public Property Get Volume() As Long
+    If (ifVolume Is Nothing And Not mdlGlobalPlayer.HasAudio) Then Exit Property
     Volume = 100 + ifVolume.Volume / 100
 
 End Property

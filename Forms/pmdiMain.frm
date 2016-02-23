@@ -130,7 +130,7 @@ Begin VB.MDIForm frmMain
             Bevel           =   0
             Object.Width           =   1032
             MinWidth        =   882
-            TextSave        =   "14:46"
+            TextSave        =   "14:55"
          EndProperty
       EndProperty
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -420,24 +420,25 @@ Private Sub tmrUpdateTime_Timer()
     If (mdlGlobalPlayer.Loaded = False) Then Exit Sub
     UpdateStatus mdlGlobalPlayer.Volume & "%, " & Round(mdlGlobalPlayer.Rate / 100, 2) & "x" & ", " & Format(Round(Precent, 2), "##.#0") & "% (" & FormatedCurrentTime & "/" & FormatedDuration & ")", PlayTime
     pbTimeBlock.Width = Precent / 100 * (pbTimeBar.Width / Screen.TwipsPerPixelX)
-    
-    If (Duration < CurrentTime + 1) Then
-        tmrUpdateTime.Enabled = False
-        
-        If (mdlPlaylist.PlaylistPlayNext) Then
-            CurrentTime = 0
-            pbTimeBlock.Width = 0
-        Else
+    If (Duration > 1) Then
+        If (Duration < CurrentTime + 1) Then
+            tmrUpdateTime.Enabled = False
             
-            If (mmStatus_Loop.Checked) Then
+            If (mdlPlaylist.PlaylistPlayNext) Then
                 CurrentTime = 0
                 pbTimeBlock.Width = 0
+            Else
+                
+                If (mmStatus_Loop.Checked) Then
+                    CurrentTime = 0
+                    pbTimeBlock.Width = 0
+                    
+                End If
                 
             End If
             
         End If
-        
-    End If
 
+    End If
     'Set Me.Picture = mdlGlobalPlayer.NowFrame
 End Sub
