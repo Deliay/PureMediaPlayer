@@ -146,16 +146,15 @@ Public Sub RenderMediaFile()
     strFilePath = File
     UpdateStatus Dir(strFilePath), FileName
     frmPlayer.Caption = Dir(strFilePath)
+    
     hasVideo_ = False: hasAudio_ = False: hasSubtitle_ = False
     
     mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_
     
-    On Error GoTo DcodeErr
-
-    Set ifPostion = GlobalFilGraph
+    If (HasVideo = False And hasAudio_ = False) Then GoTo DcodeErr
     
-    On Error GoTo 0
-        
+    Set ifPostion = GlobalFilGraph
+
     If (HasVideo) Then
     
         Set ifVideo = GlobalFilGraph
