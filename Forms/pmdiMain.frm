@@ -7,7 +7,7 @@ Begin VB.MDIForm frmMain
    ClientHeight    =   3960
    ClientLeft      =   165
    ClientTop       =   510
-   ClientWidth     =   8610
+   ClientWidth     =   12930
    Icon            =   "pmdiMain.frx":0000
    LinkTopic       =   "MDIForm1"
    StartUpPosition =   2  'ÆÁÄ»ÖÐÐÄ
@@ -27,11 +27,11 @@ Begin VB.MDIForm frmMain
       Left            =   0
       ScaleHeight     =   10
       ScaleMode       =   0  'User
-      ScaleWidth      =   574
+      ScaleWidth      =   862
       TabIndex        =   1
       TabStop         =   0   'False
       Top             =   3510
-      Width           =   8610
+      Width           =   12930
       Begin VB.PictureBox pbTimeBlock 
          Appearance      =   0  'Flat
          BackColor       =   &H00C0C0FF&
@@ -54,8 +54,8 @@ Begin VB.MDIForm frmMain
       Left            =   0
       TabIndex        =   0
       Top             =   3645
-      Width           =   8610
-      _ExtentX        =   15187
+      Width           =   12930
+      _ExtentX        =   22807
       _ExtentY        =   556
       _Version        =   393216
       BeginProperty Panels {8E3867A5-8586-11D1-B16A-00C0F0283628} 
@@ -119,9 +119,9 @@ Begin VB.MDIForm frmMain
             Alignment       =   2
             AutoSize        =   1
             Bevel           =   0
-            Object.Width           =   5036
+            Object.Width           =   12656
             MinWidth        =   882
-            TextSave        =   "2016/2/22"
+            TextSave        =   "2016/2/23"
          EndProperty
          BeginProperty Panel9 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
@@ -130,7 +130,7 @@ Begin VB.MDIForm frmMain
             Bevel           =   0
             Object.Width           =   1032
             MinWidth        =   882
-            TextSave        =   "18:53"
+            TextSave        =   "14:46"
          EndProperty
       EndProperty
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -272,8 +272,8 @@ Private Sub MDIForm_Load()
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
-    Me.Height = Screen.TwipsPerPixelY * (480 + 80)
-    Me.Width = Screen.TwipsPerPixelX * (854 + 10)
+    Me.Height = 8300
+    Me.Width = 12800
 
 End Sub
 
@@ -318,6 +318,7 @@ Private Sub mmFile_Open_Click()
         frmPlaylist.AutoPatern
         frmPlaylist.File_PaternFind.Enabled = True
         RenderMediaFile
+        Me.Width = Me.Width + 10
 
     End If
     
