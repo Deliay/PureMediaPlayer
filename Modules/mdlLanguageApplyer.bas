@@ -74,31 +74,43 @@ End Function
 
 Public Sub ApplyLanguageToForm(frm As Form)
 
-    Dim objCtrl As Control
+    Dim objCtrl         As Control
+
     Dim boolHaveCaption As Boolean
+
     For Each objCtrl In frm.Controls
 
         On Error GoTo Continue
 
         Dim strVal As String
+
         boolHaveCaption = True
         strVal = objCtrl.Caption
+
         If (boolHaveCaption = False) Then GoTo Continue
         If (Len(strVal) > 0) Then
             If (strVal <> "-") Then
                 strVal = GetLanguage(frm.Name, objCtrl.Name)
+
                 If (strVal = "") Then
                     InI.INI_WriteString App.Path & "\language.ini", frm.Name, objCtrl.Name, objCtrl.Caption
                 Else
                     objCtrl.Caption = strVal
+
                 End If
+
             Else
                 GoTo Continue
+
             End If
+
         End If
+
 Continue:
         boolHaveCaption = False
+
         Resume Next
+
     Next
 
 End Sub
