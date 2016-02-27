@@ -246,16 +246,16 @@ Private Sub tmrMovePadder_Timer()
 
     If (frmMain.Left = oldLeft) Then Exit Sub
     If (frmMain.Top = oldTop) Then Exit Sub
-    frmPlaylist.Top = frmMain.Top + ((frmMain.Height - frmPlaylist.Height))
-    frmPlaylist.Left = frmMain.Left - frmPlaylist.Width
+    frmPlaylist.Top = frmMain.Top + ((frmMain.height - frmPlaylist.height))
+    frmPlaylist.Left = frmMain.Left - frmPlaylist.width
     
     If (frmPlaylist.Left < 0) Then
-        frmPlaylist.Left = frmMain.Left + frmMain.Width
+        frmPlaylist.Left = frmMain.Left + frmMain.width
         
     End If
     
-    If (frmPlaylist.Left > Screen.Width) Then
-        frmPlaylist.Left = frmMain.Left + frmMain.Width - frmPlaylist.Width
+    If (frmPlaylist.Left > Screen.width) Then
+        frmPlaylist.Left = frmMain.Left + frmMain.width - frmPlaylist.width
         
     End If
     

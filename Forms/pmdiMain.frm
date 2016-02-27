@@ -16,18 +16,18 @@ Begin VB.Form frmMain
    StartUpPosition =   2  'ÆÁÄ»ÖÐÐÄ
    Begin VB.PictureBox bbMenuBar 
       Appearance      =   0  'Flat
-      BackColor       =   &H80000002&
+      BackColor       =   &H00000000&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   495
+      Height          =   480
       Left            =   0
-      ScaleHeight     =   33
+      ScaleHeight     =   32
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   697
+      ScaleWidth      =   32
       TabIndex        =   3
       TabStop         =   0   'False
       Top             =   0
-      Width           =   10455
+      Width           =   480
    End
    Begin VB.Timer tmrUpdateTime 
       Enabled         =   0   'False
@@ -137,18 +137,18 @@ Begin VB.Form frmMain
             Alignment       =   2
             AutoSize        =   1
             Bevel           =   0
-            Object.Width           =   8290
+            Object.Width           =   8449
             MinWidth        =   882
-            TextSave        =   "2016/2/27"
+            TextSave        =   "2016/2/28"
          EndProperty
          BeginProperty Panel9 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             Alignment       =   2
             AutoSize        =   2
             Bevel           =   0
-            Object.Width           =   1032
+            Object.Width           =   873
             MinWidth        =   882
-            TextSave        =   "19:59"
+            TextSave        =   "1:48"
          EndProperty
       EndProperty
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -166,13 +166,14 @@ Begin VB.Form frmMain
       BackColor       =   &H00000000&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   5775
+      Height          =   6255
       Left            =   0
-      ScaleHeight     =   5775
-      ScaleWidth      =   10455
+      ScaleHeight     =   417
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   697
       TabIndex        =   4
       TabStop         =   0   'False
-      Top             =   480
+      Top             =   0
       Width           =   10455
    End
 End
@@ -187,10 +188,19 @@ Private Sub bbMenuBar_MouseDown(Button As Integer, _
                                 Shift As Integer, _
                                 X As Single, _
                                 Y As Single)
-    DragWindow Me.hwnd
+    'DragWindow Me.hwnd
+    Me.PopupMenu frmMenu.MenuMain
 
-    If (Button = vbRightButton) Then
-        Me.PopupMenu frmMenu.MenuMain
+End Sub
+
+Private Sub bbMenuBar_MouseMove(Button As Integer, _
+                                Shift As Integer, _
+                                X As Single, _
+                                Y As Single)
+
+    If (bbMenuBar.BackColor <> RGB(48, 48, 48)) Then
+        bbMenuBar.BackColor = RGB(48, 48, 48)
+        SwitchUI True
 
     End If
 
@@ -203,33 +213,20 @@ End Sub
 
 Private Sub Form_Load()
     Me.Show
-    'NoBorder Me.hwnd
-    
-    Load frmPlaylist
-    Load frmPaternAdd
-    
-    If (Dir(App.Path & "\language.ini") = "") Then
-        CreateLanguagePart Me
-        CreateLanguagePart frmPlaylist
-        CreateLanguagePart frmPaternAdd
-    Else
-        ApplyLanguageToForm Me
-        ApplyLanguageToForm frmPlaylist
-        ApplyLanguageToForm frmPaternAdd
-
-    End If
-
-    frmPlaylist.Hide
-    frmPaternAdd.Hide
-    
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
- 
+    SwitchUI True
+
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     SizeWindow Me.hwnd
+
+End Sub
+
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    bbMenuBar.BackColor = vbBlack
 
 End Sub
 
@@ -239,13 +236,12 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 End Sub
 
 Private Sub Form_Resize()
-    DoEvents
     Sleep 1
-    bbMenuBar.Width = Me.Width / Screen.TwipsPerPixelX
-    frmPlayer.Width = Me.Width / Screen.TwipsPerPixelX
-    frmPlayer.Height = (Me.Height / Screen.TwipsPerPixelY) - bbMenuBar.Height
-    mdlGlobalPlayer.Width = frmPlayer.Width
-    mdlGlobalPlayer.Height = pbTimeBar.Top - bbMenuBar.Height
+    'bbMenuBar.width = Me.width / Screen.TwipsPerPixelX
+    frmPlayer.width = (Me.width / Screen.TwipsPerPixelX)
+    frmPlayer.height = (Me.height / Screen.TwipsPerPixelY)
+    mdlGlobalPlayer.width = frmPlayer.width
+    mdlGlobalPlayer.height = frmPlayer.height - mdlToolBarAlphaer.UIHeightButtom - 31
     ResizePlayWindow
     
 End Sub
@@ -256,13 +252,13 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub frmPlayer_Click()
-
-    'SwitchPlayStauts
+    SwitchUI
 End Sub
 
 Private Sub frmPlayer_DblClick()
     SwitchFullScreen
-    
+    SwitchUI True
+
 End Sub
 
 Public Sub frmPlayer_KeyDown(KeyCode As Integer, Shift As Integer)
@@ -309,18 +305,30 @@ Private Sub frmPlayer_MouseDown(Button As Integer, _
                                 Y As Single)
     
     If (Button = vbRightButton) Then Me.PopupMenu frmMenu.mmStatus
-    SizeWindow Me.hwnd
 
 End Sub
 
 Private Sub CalcPercent(X As Single)
-    Precent = (X / pbTimeBar.Width) * 100
+    Precent = (X / pbTimeBar.width) * 100
     tmrUpdateTime_Timer
     
 End Sub
 
-Private Sub frmPlayer_Paint()
-    AlphaHwnd bbMenuBar.hDC, frmPlayer.hDC, 150&, bbMenuBar.Width, bbMenuBar.Height
+Private Sub frmPlayer_MouseMove(Button As Integer, _
+                                Shift As Integer, _
+                                X As Single, _
+                                Y As Single)
+
+    If (bbMenuBar.BackColor <> 0) Then
+        bbMenuBar.BackColor = 0
+        mdlToolBarAlphaer.apMenuButton.RefreshHW 32, 32
+
+    End If
+
+    If (X < 32 And Y < 32) Then
+        RefreshUI
+
+    End If
 
 End Sub
 
@@ -353,7 +361,7 @@ Private Sub tmrUpdateTime_Timer()
 
     If (mdlGlobalPlayer.Loaded = False) Then Exit Sub
     UpdateStatus mdlGlobalPlayer.Volume & "%, " & Round(mdlGlobalPlayer.Rate / 100, 2) & "x" & ", " & Format(Round(Precent, 2), "##.#0") & "% (" & FormatedCurrentTime & "/" & FormatedDuration & ")", PlayTime
-    pbTimeBlock.Width = Precent / 100 * (pbTimeBar.Width)
+    pbTimeBlock.width = Precent / 100 * (pbTimeBar.width)
 
     If (Duration > 1) Then
         If (Duration <= CurrentTime) Then
@@ -361,18 +369,19 @@ Private Sub tmrUpdateTime_Timer()
             
             If (mdlPlaylist.PlaylistPlayNext) Then
                 CurrentTime = 0
-                pbTimeBlock.Width = 0
+                pbTimeBlock.width = 0
             Else
                 
                 If (frmMenu.mmStatus_Loop.Checked) Then
                     CurrentTime = 0
-                    pbTimeBlock.Width = 0
+                    pbTimeBlock.width = 0
                     
                 End If
                 
             End If
 
         Else
+
             'resize
             Form_Resize
 
