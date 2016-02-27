@@ -1,21 +1,39 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
-Begin VB.MDIForm frmMain 
+Begin VB.Form frmMain 
    Appearance      =   0  'Flat
-   BackColor       =   &H8000000C&
+   BackColor       =   &H80000000&
    Caption         =   "Pure Media Player"
-   ClientHeight    =   3960
+   ClientHeight    =   6705
    ClientLeft      =   165
-   ClientTop       =   510
-   ClientWidth     =   12930
+   ClientTop       =   210
+   ClientWidth     =   10455
    Icon            =   "pmdiMain.frx":0000
-   LinkTopic       =   "MDIForm1"
+   LinkTopic       =   "Form1"
+   ScaleHeight     =   447
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   697
    StartUpPosition =   2  'ÆÁÄ»ÖÐÐÄ
+   Begin VB.PictureBox bbMenuBar 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000002&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   495
+      Left            =   0
+      ScaleHeight     =   33
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   697
+      TabIndex        =   3
+      TabStop         =   0   'False
+      Top             =   0
+      Width           =   10455
+   End
    Begin VB.Timer tmrUpdateTime 
       Enabled         =   0   'False
-      Interval        =   1000
+      Interval        =   1
       Left            =   120
-      Top             =   3000
+      Top             =   5760
    End
    Begin VB.PictureBox pbTimeBar 
       Align           =   2  'Align Bottom
@@ -27,11 +45,11 @@ Begin VB.MDIForm frmMain
       Left            =   0
       ScaleHeight     =   10
       ScaleMode       =   0  'User
-      ScaleWidth      =   862
+      ScaleWidth      =   697
       TabIndex        =   1
       TabStop         =   0   'False
-      Top             =   3510
-      Width           =   12930
+      Top             =   6255
+      Width           =   10455
       Begin VB.PictureBox pbTimeBlock 
          Appearance      =   0  'Flat
          BackColor       =   &H00C0C0FF&
@@ -53,9 +71,9 @@ Begin VB.MDIForm frmMain
       Height          =   315
       Left            =   0
       TabIndex        =   0
-      Top             =   3645
-      Width           =   12930
-      _ExtentX        =   22807
+      Top             =   6390
+      Width           =   10455
+      _ExtentX        =   18441
       _ExtentY        =   556
       _Version        =   393216
       BeginProperty Panels {8E3867A5-8586-11D1-B16A-00C0F0283628} 
@@ -119,9 +137,9 @@ Begin VB.MDIForm frmMain
             Alignment       =   2
             AutoSize        =   1
             Bevel           =   0
-            Object.Width           =   12656
+            Object.Width           =   8290
             MinWidth        =   882
-            TextSave        =   "2016/2/23"
+            TextSave        =   "2016/2/27"
          EndProperty
          BeginProperty Panel9 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
@@ -130,7 +148,7 @@ Begin VB.MDIForm frmMain
             Bevel           =   0
             Object.Width           =   1032
             MinWidth        =   882
-            TextSave        =   "14:55"
+            TextSave        =   "19:59"
          EndProperty
       EndProperty
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -143,96 +161,19 @@ Begin VB.MDIForm frmMain
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.Menu mmFile 
-      Caption         =   "File"
-      Begin VB.Menu mmFile_Open 
-         Caption         =   "Open"
-         Shortcut        =   ^D
-      End
-      Begin VB.Menu mmFile_Close 
-         Caption         =   "Close"
-         Shortcut        =   ^C
-      End
-      Begin VB.Menu mmFile_Spec1 
-         Caption         =   "-"
-      End
-      Begin VB.Menu mmFile_Option 
-         Caption         =   "Option"
-         Enabled         =   0   'False
-      End
-      Begin VB.Menu mmFile_Spec3 
-         Caption         =   "-"
-      End
-      Begin VB.Menu mmFile_Exit 
-         Caption         =   "Exit"
-         Shortcut        =   ^X
-      End
-   End
-   Begin VB.Menu mmStatus 
-      Caption         =   "Status"
-      Begin VB.Menu mmStatus_Play 
-         Caption         =   "Play"
-      End
-      Begin VB.Menu mmStatus_Stop 
-         Caption         =   "Stop"
-      End
-      Begin VB.Menu mmStatus_Pause 
-         Caption         =   "Pause"
-      End
-      Begin VB.Menu mmStatus_Spec1 
-         Caption         =   "-"
-      End
-      Begin VB.Menu mmStatus_Random 
-         Caption         =   "Random"
-         Enabled         =   0   'False
-      End
-      Begin VB.Menu mmStatus_ShowPlaylist 
-         Caption         =   "Playlist"
-         Shortcut        =   ^F
-      End
-      Begin VB.Menu mmStatus_Loop 
-         Caption         =   "Loop"
-         Checked         =   -1  'True
-      End
-      Begin VB.Menu mmStatus_Spec2 
-         Caption         =   "-"
-      End
-      Begin VB.Menu mmStatus_SpeedUp 
-         Caption         =   "Speed+0.1x"
-      End
-      Begin VB.Menu mmStatus_SpeedDown 
-         Caption         =   "Speed-0.1x"
-      End
-      Begin VB.Menu mmStatus_SpeedReset 
-         Caption         =   "Reset Speed 1.0x"
-      End
-   End
-   Begin VB.Menu mmInfo 
-      Caption         =   "Info"
-      Begin VB.Menu mmInfo_Media 
-         Caption         =   "Media"
-      End
-      Begin VB.Menu mmInfo_System 
-         Caption         =   "System"
-      End
-      Begin VB.Menu mmInfo_Software 
-         Caption         =   "Software"
-      End
-   End
-   Begin VB.Menu mmHelp 
-      Caption         =   "Help"
-      Begin VB.Menu mmHelp_About 
-         Caption         =   "About RnW"
-      End
-      Begin VB.Menu mmHelp_Web 
-         Caption         =   "Website"
-      End
-      Begin VB.Menu mmHelp_Spec 
-         Caption         =   "-"
-      End
-      Begin VB.Menu mmHelp_Help 
-         Caption         =   "Help"
-      End
+   Begin VB.PictureBox frmPlayer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00000000&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   5775
+      Left            =   0
+      ScaleHeight     =   5775
+      ScaleWidth      =   10455
+      TabIndex        =   4
+      TabStop         =   0   'False
+      Top             =   480
+      Width           =   10455
    End
 End
 Attribute VB_Name = "frmMain"
@@ -242,13 +183,28 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Sub MDIForm_Activate()
+Private Sub bbMenuBar_MouseDown(Button As Integer, _
+                                Shift As Integer, _
+                                X As Single, _
+                                Y As Single)
+    DragWindow Me.hwnd
+
+    If (Button = vbRightButton) Then
+        Me.PopupMenu frmMenu.MenuMain
+
+    End If
+
+End Sub
+
+Private Sub Form_Activate()
     mdlGlobalPlayer.SwitchFullScreen True, False
     
 End Sub
 
-Private Sub MDIForm_Load()
+Private Sub Form_Load()
     Me.Show
+    'NoBorder Me.hwnd
+    
     Load frmPlaylist
     Load frmPaternAdd
     
@@ -265,78 +221,96 @@ Private Sub MDIForm_Load()
 
     frmPlaylist.Hide
     frmPaternAdd.Hide
-    'mdlGlobalPlayer.LoadMediaFile test
-    frmPlayer.Show
-    frmPlayer.WindowState = 2
-    frmPlayer.Caption = StaticString(PLAYER_STATUS_IDLE)
+    
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
-    Me.Height = 8300
-    Me.Width = 12800
+ 
+End Sub
+
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    SizeWindow Me.hwnd
 
 End Sub
 
-Private Sub MDIForm_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     ExitProgram
     
 End Sub
 
-Private Sub MDIForm_Resize()
-    mdlGlobalPlayer.Width = frmPlayer.Width / Screen.TwipsPerPixelX
-    mdlGlobalPlayer.Height = frmPlayer.Height / Screen.TwipsPerPixelY
+Private Sub Form_Resize()
+    DoEvents
+    Sleep 1
+    bbMenuBar.Width = Me.Width / Screen.TwipsPerPixelX
+    frmPlayer.Width = Me.Width / Screen.TwipsPerPixelX
+    frmPlayer.Height = (Me.Height / Screen.TwipsPerPixelY) - bbMenuBar.Height
+    mdlGlobalPlayer.Width = frmPlayer.Width
+    mdlGlobalPlayer.Height = pbTimeBar.Top - bbMenuBar.Height
     ResizePlayWindow
     
 End Sub
 
-Private Sub MDIForm_Unload(Cancel As Integer)
+Private Sub Form_Unload(Cancel As Integer)
     ExitProgram
     
 End Sub
 
-Private Sub mmFile_Close_Click()
-    StopPlay
-    CloseFile
+Private Sub frmPlayer_Click()
+
+    'SwitchPlayStauts
+End Sub
+
+Private Sub frmPlayer_DblClick()
+    SwitchFullScreen
     
 End Sub
 
-Private Sub mmFile_Exit_Click()
-    ExitProgram
+Public Sub frmPlayer_KeyDown(KeyCode As Integer, Shift As Integer)
     
-End Sub
+    If (KeyCode = vbKeySpace) Then SwitchPlayStauts
+    If (KeyCode = vbKeyEscape) Then SwitchFullScreen True
+    
+    Dim flag As Long
+    
+    flag = 0
+    
+    If (mdlGlobalPlayer.Loaded) Then
+        If (KeyCode = vbKeyLeft) Then flag = -1
+        If (KeyCode = vbKeyRight) Then flag = 1
+        If (flag <> 0) Then
+            mdlGlobalPlayer.CurrentTime = mdlGlobalPlayer.CurrentTime + 5 * flag
+            Exit Sub
 
-Private Sub mmFile_Open_Click()
-    cdlg.FileName = ""
-    cdlg.ShowOpen
-    
-    If (Len(cdlg.FileName) > 0 And Dir(cdlg.FileNameWiden) <> "") Then
-        mdlGlobalPlayer.CloseFile
-        mdlGlobalPlayer.File = cdlg.FileName
-        frmPlaylist.isHide = True
-        frmPlaylist.Show vbModeless, frmMain
-        frmPlaylist.AutoPatern
-        frmPlaylist.AutoPatern
-        frmPlaylist.File_PaternFind.Enabled = True
-        RenderMediaFile
-        Me.Width = Me.Width + 10
+        End If
+
+        If (KeyCode = vbKeyUp) Then flag = 1
+        If (KeyCode = vbKeyDown) Then flag = -1
+        If (flag <> 0) Then
+            mdlGlobalPlayer.Volume = mdlGlobalPlayer.Volume + flag
+            Exit Sub
+
+        End If
+
+        If (KeyCode = vbKeyAdd) Then flag = 1
+        If (KeyCode = vbKeySubtract) Then flag = -1
+        If (flag <> 0) Then
+            mdlGlobalPlayer.Rate = mdlGlobalPlayer.Rate + flag * 10
+            Exit Sub
+
+        End If
 
     End If
     
 End Sub
 
-Private Sub mmInfo_Media_Click()
-    frmMediaInfo.Show
+Private Sub frmPlayer_MouseDown(Button As Integer, _
+                                Shift As Integer, _
+                                X As Single, _
+                                Y As Single)
     
-End Sub
+    If (Button = vbRightButton) Then Me.PopupMenu frmMenu.mmStatus
+    SizeWindow Me.hwnd
 
-Private Sub mmInfo_Software_Click()
-    MsgBox "Pure Media Player (PMP) ver " & App.Major & "." & App.Minor & "." & App.Revision
-    
-End Sub
-
-Private Sub mmInfo_System_Click()
-    frmSystemInfo.Show
-    
 End Sub
 
 Private Sub CalcPercent(X As Single)
@@ -345,49 +319,9 @@ Private Sub CalcPercent(X As Single)
     
 End Sub
 
-Private Sub mmStatus_Pause_Click()
-    Pause
-    UpdateStatus StaticString(PLAY_STATUS_PAUSED), PlayBack
-    
-End Sub
+Private Sub frmPlayer_Paint()
+    AlphaHwnd bbMenuBar.hDC, frmPlayer.hDC, 150&, bbMenuBar.Width, bbMenuBar.Height
 
-Private Sub mmStatus_Play_Click()
-    
-    If (mdlGlobalPlayer.Loaded = False) Then Exit Sub
-    Play
-    UpdateStatus StaticString(PLAY_STATUS_PLAYING), PlayBack
-    
-End Sub
-
-Private Sub mmStatus_ShowPlaylist_Click()
-    frmPlaylist.isHide = Not frmPlaylist.isHide
-    
-    If (frmPlaylist.isHide) Then
-        frmPlaylist.Show vbModeless, Me
-    Else
-        frmPlaylist.Hide
-        
-    End If
-    
-End Sub
-
-Private Sub mmStatus_SpeedDown_Click()
-    frmPlayer.Form_KeyDown vbKeySubtract, 0
-End Sub
-
-Private Sub mmStatus_SpeedReset_Click()
-    mdlGlobalPlayer.Rate = 100
-End Sub
-
-Private Sub mmStatus_SpeedUp_Click()
-    frmPlayer.Form_KeyDown vbKeyAdd, 0
-    
-End Sub
-
-Private Sub mmStatus_Stop_Click()
-    StopPlay
-    UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
-    
 End Sub
 
 Private Sub pbTimeBar_MouseDown(Button As Integer, _
@@ -396,7 +330,7 @@ Private Sub pbTimeBar_MouseDown(Button As Integer, _
                                 Y As Single)
     
     If (mdlGlobalPlayer.Loaded = False) Then Exit Sub
-    CalcPercent X * Screen.TwipsPerPixelX
+    CalcPercent X
     frmPlayer.SetFocus
     tmrUpdateTime.Enabled = True
     
@@ -408,20 +342,21 @@ Private Sub pbTimeBlock_MouseDown(Button As Integer, _
                                   Y As Single)
     
     If (mdlGlobalPlayer.Loaded = False) Then Exit Sub
-    CalcPercent X * Screen.TwipsPerPixelX
+    CalcPercent X
     frmPlayer.SetFocus
     tmrUpdateTime.Enabled = True
     
 End Sub
 
 Private Sub tmrUpdateTime_Timer()
-    Sleep 1
+    Sleep 2
 
     If (mdlGlobalPlayer.Loaded = False) Then Exit Sub
     UpdateStatus mdlGlobalPlayer.Volume & "%, " & Round(mdlGlobalPlayer.Rate / 100, 2) & "x" & ", " & Format(Round(Precent, 2), "##.#0") & "% (" & FormatedCurrentTime & "/" & FormatedDuration & ")", PlayTime
-    pbTimeBlock.Width = Precent / 100 * (pbTimeBar.Width / Screen.TwipsPerPixelX)
+    pbTimeBlock.Width = Precent / 100 * (pbTimeBar.Width)
+
     If (Duration > 1) Then
-        If (Duration < CurrentTime + 1) Then
+        If (Duration <= CurrentTime) Then
             tmrUpdateTime.Enabled = False
             
             If (mdlPlaylist.PlaylistPlayNext) Then
@@ -429,16 +364,22 @@ Private Sub tmrUpdateTime_Timer()
                 pbTimeBlock.Width = 0
             Else
                 
-                If (mmStatus_Loop.Checked) Then
+                If (frmMenu.mmStatus_Loop.Checked) Then
                     CurrentTime = 0
                     pbTimeBlock.Width = 0
                     
                 End If
                 
             End If
-            
-        End If
 
+        Else
+            'resize
+            Form_Resize
+
+            'AlphaHwnd bbMenuBar.hDC, frmPlayer.hDC, 150&, bbMenuBar.Width, bbMenuBar.Height
+        End If
+    
     End If
+
     'Set Me.Picture = mdlGlobalPlayer.NowFrame
 End Sub
