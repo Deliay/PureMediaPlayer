@@ -20,7 +20,7 @@ XX.BUG	播放列表自动添加
 XX.FT	整合LAV手动addFliter
 
 
-10.FT	播放网络文件
+10.FTWD	播放网络文件
 11.FT	支持文件拖拽
 12.FT	命令行支持
 13.FT	注册表关联

@@ -243,6 +243,7 @@ Private Sub lstPlaylist_KeyDown(KeyCode As Integer, Shift As Integer)
 End Sub
 
 Private Sub tmrMovePadder_Timer()
+
     If (frmMain.Left = oldLeft) Then Exit Sub
     If (frmMain.Top = oldTop) Then Exit Sub
     frmPlaylist.Top = frmMain.Top + ((frmMain.Height - frmPlaylist.Height))
