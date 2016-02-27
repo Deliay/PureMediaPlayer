@@ -1,26 +1,70 @@
 Attribute VB_Name = "mdlFilterBuilder"
 Option Explicit
-Private Declare Function RegisterLAVAudio Lib "LAVAudio.ax" Alias "DllRegisterServer" () As Long
-Private Declare Function RegisterLAVSplitter Lib "LAVSplitter.ax" Alias "DllRegisterServer" () As Long
-Private Declare Function RegisterLAVVideo Lib "LAVVideo.ax" Alias "DllRegisterServer" () As Long
-Private Declare Function RegisterVSFilter Lib "vsfilter.dll" Alias "DllRegisterServer" () As Long
+
+Private Declare Function RegisterLAVAudio _
+                Lib "LAVAudio.ax" _
+                Alias "DllRegisterServer" () As Long
+
+Private Declare Function RegisterLAVSplitter _
+                Lib "LAVSplitter.ax" _
+                Alias "DllRegisterServer" () As Long
+
+Private Declare Function RegisterLAVVideo _
+                Lib "LAVVideo.ax" _
+                Alias "DllRegisterServer" () As Long
+
+Private Declare Function RegisterVSFilter _
+                Lib "vsfilter.dll" _
+                Alias "DllRegisterServer" () As Long
+
+Private Declare Function RegisterMadVRFilter _
+                Lib "madVR.dll" _
+                Alias "DllRegisterServer" () As Long
+
 ''
-Private Declare Function DispCallFunc& Lib "oleaut32" (ByVal ppv&, ByVal oVft&, ByVal CC As Long, ByVal rtTYP%, ByVal paCount&, paTypes%, paValues&, fuReturn)
-Private Declare Function OleCreatePropertyFrame& Lib "oleaut32" (ByVal hwndOwner&, ByVal X&, ByVal Y&, ByVal lpszCaption&, ByVal cObjects&, ByRef ppUnk&, ByVal cPages&, ByVal pPageClsID&, ByVal lcid&, ByVal dwReserved&, ByVal pvReserved&)
+Private Declare Function DispCallFunc& _
+                Lib "oleaut32" (ByVal ppv&, _
+                                ByVal oVft&, _
+                                ByVal CC As Long, _
+                                ByVal rtTYP%, _
+                                ByVal paCount&, _
+                                paTypes%, _
+                                paValues&, _
+                                fuReturn)
+
+Private Declare Function OleCreatePropertyFrame& _
+                Lib "oleaut32" (ByVal hwndOwner&, _
+                                ByVal X&, _
+                                ByVal Y&, _
+                                ByVal lpszCaption&, _
+                                ByVal cObjects&, _
+                                ByRef ppUnk&, _
+                                ByVal cPages&, _
+                                ByVal pPageClsID&, _
+                                ByVal lcid&, _
+                                ByVal dwReserved&, _
+                                ByVal pvReserved&)
 
 Private Const CLSID_ActiveMovieCategories = "{DA4E3DA0-D07D-11d0-BD50-00A0C911CE86}"
+
 Private Const CLSID_VideoInputDeviceCategory = "{860BB310-5D01-11d0-BD3B-00A0C911CE86}"
 
-Private LAVVideoIndex As Long, LAVAudioIndex As Long
+Private LAVVideoIndex    As Long, LAVAudioIndex As Long
+
 Private LAVSplitterIndex As Long, LAVSplitterSourceIndex As Long
-Private VSFilterIndex As Long
-Private VMR9Index As Long, VMR7Index As Long, VRIndex As Long
+
+Private VSFilterIndex    As Long, EVRIndex As Long, MadVRIndex As Long
+
+Private VMR9Index        As Long, VMR7Index As Long, VRIndex As Long
+
+Public EVRFilterStorage  As IBaseFilter
 
 Public Sub RegisterAllDecoder()
     RegisterLAVAudio
     RegisterLAVSplitter
     RegisterLAVVideo
     RegisterVSFilter
+
 End Sub
 
 Public Sub Main()
@@ -30,76 +74,88 @@ Public Sub Main()
     LAVSplitterSourceIndex = -1
     VSFilterIndex = -1
     VMR9Index = -1
+    EVRIndex = -1
     FillDecoder mdlGlobalPlayer.GlobalFilGraph
     
-    If (LAVAudioIndex = -1 Or _
-        LAVVideoIndex = -1 Or _
-        LAVSplitterIndex = -1 Or _
-        VSFilterIndex = -1 Or _
-        LAVSplitterSourceIndex = -1) Then
+    If (LAVAudioIndex = -1 Or LAVVideoIndex = -1 Or LAVSplitterIndex = -1 Or VSFilterIndex = -1 Or LAVSplitterSourceIndex = -1) Then
         
         RegisterAllDecoder
         Set mdlGlobalPlayer.GlobalFilGraph = New FilgraphManager
         FillDecoder mdlGlobalPlayer.GlobalFilGraph
+
     End If
     
     If (VMR9Index = -1) Then
         MsgBox "Your computer not support VMR9 Render"
         End
+
     End If
     
-    If (LAVAudioIndex = -1 Or _
-        LAVVideoIndex = -1 Or _
-        LAVSplitterIndex = -1 Or _
-        VSFilterIndex = -1 Or _
-        LAVSplitterSourceIndex = -1) Then
+    If (LAVAudioIndex = -1 Or LAVVideoIndex = -1 Or LAVSplitterIndex = -1 Or VSFilterIndex = -1 Or LAVSplitterSourceIndex = -1) Then
     
         MsgBox "Cannot Register Decoder! Please run me with Admin Perm"
         End
+
     End If
+
     'Create A Clean FilgraphManager
     Set mdlGlobalPlayer.GlobalFilGraph = New FilgraphManager
-    frmMain.Show
+    mdlToolBarAlphaer.LoadUI
     
 End Sub
 
 Public Sub BuildGrph(ByVal srcFile As String, _
-                          ByRef objGraphManager As FilgraphManager, _
-                          ByRef boolHasVideo As Boolean, _
-                          ByRef boolHasAudio As Boolean, _
-                          ByRef boolHasSubtitle As Boolean, Optional ByVal VMRVersion As Long = 7)
-    Dim objSrcFileFilter As IFilterInfo
+                     ByRef objGraphManager As FilgraphManager, _
+                     ByRef boolHasVideo As Boolean, _
+                     ByRef boolHasAudio As Boolean, _
+                     ByRef boolHasSubtitle As Boolean, _
+                     Optional ByVal eRenderer As RenderType = VideoMixedRenderer9)
+
+    Dim objSrcFileFilter  As IFilterInfo
+
     Dim objSrcSplitterReg As IRegFilterInfo, objSrcSplitterFilter As IFilterInfo
-    Dim objVideoReg As IRegFilterInfo, objVideoFilter As IFilterInfo, objVideoPin As IPinInfo
-    Dim objAudioReg As IRegFilterInfo, objAudioFilter As IFilterInfo, objAudioPin As IPinInfo
-    Dim objSubtitleReg As IRegFilterInfo, objSubtitleFilter As IFilterInfo, objSubtitlePin As IPinInfo
-    Dim objRenderReg As IRegFilterInfo, objRenderFilter As IFilterInfo ', objRenderPin As IPinInfo
-    Dim objSpliterPin As IPinInfo
+
+    Dim objVideoReg       As IRegFilterInfo, objVideoFilter As IFilterInfo, objVideoPin As IPinInfo
+
+    Dim objAudioReg       As IRegFilterInfo, objAudioFilter As IFilterInfo, objAudioPin As IPinInfo
+
+    Dim objSubtitleReg    As IRegFilterInfo, objSubtitleFilter As IFilterInfo, objSubtitlePin As IPinInfo
+
+    Dim objRenderReg      As IRegFilterInfo, objRenderFilter As IFilterInfo ', objRenderPin As IPinInfo
+
+    Dim objSpliterPin     As IPinInfo
+
     'Try put source file directly
     '
     'On Error GoTo OnlyInput
     'objGraphManager.AddSourceFilter srcFile, objSrcSplitterFilter
 
-'    If (Not objSrcSplitterFilter Is Nothing And objSrcSplitterFilter.Pins.Count > 0) Then
-'        GoTo ParserPins
-'OnlyInput:
-'    'Create Splitter
-'        Resume Next
-'    Else
+    '    If (Not objSrcSplitterFilter Is Nothing And objSrcSplitterFilter.Pins.Count > 0) Then
+    '        GoTo ParserPins
+    'OnlyInput:
+    '    'Create Splitter
+    '        Resume Next
+    '    Else
     objGraphManager.RegFilterCollection.Item LAVSplitterSourceIndex, objSrcSplitterReg
     objSrcSplitterReg.Filter objSrcSplitterFilter
-    On Error GoTo NotExist
+
+    On Error GoTo notExist
+
     objSrcSplitterFilter.FileName = srcFile
     'Add Src File
     CheckForFileSinkAndSetFileName objSrcSplitterFilter, srcFile
-'    End If
+    '    End If
     'Reset switch
     boolHasVideo = False
     boolHasAudio = False
     boolHasSubtitle = False
 ParserPins:
+
+    On Error GoTo 0
+
     'Create Filters
     For Each objSpliterPin In objSrcSplitterFilter.Pins
+
         If (objSpliterPin.Name = "Audio") Then
             boolHasAudio = True
             objGraphManager.RegFilterCollection.Item LAVAudioIndex, objAudioReg
@@ -111,16 +167,36 @@ ParserPins:
             boolHasVideo = True
             objGraphManager.RegFilterCollection.Item LAVVideoIndex, objVideoReg
             objVideoReg.Filter objVideoFilter
+
             Dim VMRVerSpec As Long
-            If (VMRVersion = 9) Then
+
+            If (eRenderer = VideoMixedRenderer9) Then
                 VMRVerSpec = VMR9Index
-            ElseIf (VMRVersion = 7) Then
+                
+            ElseIf (eRenderer = VideoMixedRenderer) Then
                 VMRVerSpec = VMR7Index
+                
+            ElseIf (eRenderer = EnhancedVideoRenderer) Then
+                VMRVerSpec = EVRIndex
+                
+            ElseIf (eRenderer = MadVRednerer) Then
+                VMRVerSpec = MadVRIndex
+                
             Else
                 VMRVerSpec = VRIndex
+
             End If
+            
             objGraphManager.RegFilterCollection.Item VMRVerSpec, objRenderReg
             objRenderReg.Filter objRenderFilter
+                
+            If (eRenderer = EnhancedVideoRenderer) Then
+
+                Dim GraphBuilder As IGraphBuilder: Set GraphBuilder = objGraphManager
+
+                GraphBuilder.FindFilterByName "Enhanced Video Renderer", EVRFilterStorage
+
+            End If
             
             Set objVideoPin = objSpliterPin
             
@@ -132,6 +208,7 @@ ParserPins:
             Set objSubtitlePin = objSpliterPin
             
         End If
+
     Next
     
     '1. LAVSplit (Subtitle) -> (Input) VSFilter
@@ -140,30 +217,50 @@ ParserPins:
     
     '  Audio first
     If (boolHasAudio = True) Then objAudioPin.Render 'audio auto connect
+
     '  Video second
     If (boolHasVideo = True) Then
-    '  If subtitle exist
+        '  If subtitle exist
         objVideoPin.Render
+
         ' LAVSplit (Subtitle) -> (Input) VSFilter
         If (boolHasSubtitle = True) Then
+
             Dim objPinVSInput As IPinInfo
+
             For Each objPinVSInput In objSubtitleFilter.Pins
+
                 If (LCase(objPinVSInput.Name) = "input") Then Exit For
             Next
             objSubtitlePin.Connect objPinVSInput
+
         End If
+
     End If
-NotExist:
+    Exit Sub
+notExist:
+    
+    If (Dir(srcFile) <> "") Then
+        objGraphManager.AddSourceFilter srcFile, objSrcSplitterFilter
+        For Each objSpliterPin In objSrcSplitterFilter.Pins
+            objSpliterPin.Render
+            boolHasAudio = True
+        Next
+    End If
 End Sub
 
-
-
 Private Sub FillDecoder(m_GraphManager As FilgraphManager)
-    Dim i As Long
-    Dim objRegFilter As IRegFilterInfo
+
+    Dim i             As Long
+
+    Dim objRegFilter  As IRegFilterInfo
+
     Dim objTestFilter As IFilterInfo, objTestPin As IPinInfo
+
     For Each objRegFilter In m_GraphManager.RegFilterCollection
+
         i = i + 1
+
         If (objRegFilter.Name = "LAV Splitter") Then
             LAVSplitterIndex = i - 1
             
@@ -184,58 +281,79 @@ Private Sub FillDecoder(m_GraphManager As FilgraphManager)
             
         ElseIf (objRegFilter.Name = "Video Renderer") Then
             objRegFilter.Filter objTestFilter
+
             For Each objTestPin In objTestFilter.Pins
+
                 If (LCase$(objTestPin.Name) = "vmr input0") Then
                     VMR7Index = i - 1
                     Exit For
                 ElseIf (LCase$(objTestPin.Name) = "input") Then
                     VRIndex = i - 1
                     Exit For
-                End If
-            Next
 
+                End If
+
+            Next
+            
+        ElseIf (objRegFilter.Name = "Enhanced Video Renderer") Then
+            EVRIndex = i - 1
+            
+        ElseIf (objRegFilter.Name = "madVR") Then
+            MadVRIndex = i - 1
+            
         End If
         
-        If (LAVAudioIndex <> -1 And _
-            LAVVideoIndex <> -1 And _
-            LAVSplitterIndex <> -1 And _
-            VSFilterIndex <> -1 And _
-            LAVSplitterSourceIndex <> -1 And _
-            VMR9Index <> -1 And _
-            VMR7Index <> -1 And _
-            VRIndex <> -1) Then
+        If (LAVAudioIndex <> -1 And LAVVideoIndex <> -1 And LAVSplitterIndex <> -1 And VSFilterIndex <> -1 And LAVSplitterSourceIndex <> -1 And VMR9Index <> -1 And VMR7Index <> -1 And VRIndex <> -1 And EVRIndex <> -1 And MadVRIndex <> -1) Then
         
             Exit For
         
         End If
+
     Next
+
 End Sub
 
-Private Function CheckForFileSinkAndSetFileName(ByVal Flt As olelib.IUnknown, FileName As String) As Boolean
+Private Function CheckForFileSinkAndSetFileName(ByVal Flt As olelib.IUnknown, _
+                                                FileName As String) As Boolean
+
     Const IID_IFileSinkFilter = "{A2104830-7C70-11CF-8BCE-00AA00A3F1A6}", VTbl_SetFileName = 3
+
     Dim oUnkFSink As stdole.IUnknown
 
     Set oUnkFSink = CastToUnkByIID(Flt, IID_IFileSinkFilter)
     CheckForFileSinkAndSetFileName = vtblCall(ObjPtr(oUnkFSink), VTbl_SetFileName, StrPtr(FileName), 0&) = S_OK
+
 End Function
 
-Private Function CastToUnkByIID(ByVal ObjToCastFrom As olelib.IUnknown, IID As String) As stdole.IUnknown
+Public Function CastToUnkByIID(ByVal ObjToCastFrom As olelib.IUnknown, _
+                               IID As String) As stdole.IUnknown
+
     Dim UUID As olelib.UUID
+
     olelib.CLSIDFromString IID, UUID
     ObjToCastFrom.QueryInterface UUID, CastToUnkByIID
+
 End Function
 
-Private Function vtblCall(ByVal pUnk As Long, ByVal vtblIdx As Long, ParamArray P() As Variant)
+Public Function vtblCall(ByVal pUnk As Long, _
+                         ByVal vtblIdx As Long, _
+                         ParamArray P() As Variant)
+
     Static VType(0 To 31) As Integer, VPtr(0 To 31) As Long
+
     Dim i As Long, V(), HResDisp As Long
+
     If pUnk = 0 Then vtblCall = 5: Exit Function
 
     V = P 'make a copy of the params, to prevent problems with VT_ByRef-Members in the ParamArray
+
     For i = 0 To UBound(V)
         VType(i) = VarType(V(i))
         VPtr(i) = VarPtr(V(i))
     Next i
     
     HResDisp = DispCallFunc(pUnk, vtblIdx * 4, 4, vbLong, i, VType(0), VPtr(0), vtblCall)
-    If HResDisp <> S_OK Then Err.Raise HResDisp, , "Error in DispCallFunc"
+
+    If HResDisp <> S_OK Then Err.Raise HResDisp
+
 End Function

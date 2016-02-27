@@ -1,9 +1,23 @@
 Attribute VB_Name = "mdlGlobalPlayer"
 Option Explicit
 
+Public Enum RenderType
+
+    VideoRenderer
+    VideoMixedRenderer
+    VideoMixedRenderer9
+    EnhancedVideoRenderer
+    MadVRednerer
+
+End Enum
+
 Public Const DefaultTitle As String = "Pure Media Player"
 
 Public GlobalFilGraph     As New FilgraphManager
+
+Private lngStorageH       As Long, lngStorageW As Long
+
+Private lngStorageT       As Long, lngStorageL As Long
 
 Private ifPostion         As IMediaPosition
 
@@ -15,9 +29,11 @@ Private ifVolume          As IBasicAudio
 
 Private ifType            As IMediaTypeInfo
 
-Public Width              As Long
+Private eRenderType       As RenderType
 
-Public Height             As Long
+Public width              As Long
+
+Public height             As Long
 
 Private boolLoadedFile    As Boolean
 
@@ -27,11 +43,11 @@ Private strLastestFile    As String
 
 Private VideoRatio        As Double
 
-Private hasVideo_          As Boolean
+Private hasVideo_         As Boolean
 
-Private hasAudio_          As Boolean
+Private hasAudio_         As Boolean
 
-Private hasSubtitle_       As Boolean
+Private hasSubtitle_      As Boolean
 
 Public Enum StatusBarEnum
 
@@ -62,6 +78,11 @@ Private Const WS_SIZEBOX = WS_THICKFRAME
 
 Private Declare Sub SetLastError Lib "kernel32" (ByVal dwErrCode As Long)
 
+Public Property Get IsWindowed() As Boolean
+    IsWindowed = Not boolIsFullScreen
+
+End Property
+
 Public Property Let Volume(V As Long)
 
     If (V > 100) Or (V < 0) Then Exit Property
@@ -70,6 +91,7 @@ Public Property Let Volume(V As Long)
 End Property
 
 Public Property Get Volume() As Long
+
     If (ifVolume Is Nothing And Not mdlGlobalPlayer.HasAudio) Then Exit Property
     Volume = 100 + ifVolume.Volume / 100
 
@@ -91,8 +113,10 @@ Public Property Get Rate() As Long
 End Property
 
 Public Property Let Rate(V As Long)
+
     '0.5 per level
     'rate 100 mean 1
+    If (V > 400) Then Exit Property
     ifPostion.Rate = V / 100
 
 End Property
@@ -140,29 +164,39 @@ End Property
 Public Sub RenderMediaFile()
 
     Dim strFilePath As String
+
     Set GlobalFilGraph = Nothing
     Set GlobalFilGraph = New FilgraphManager
 
     UpdateStatus StaticString(PLAYER_STATUS_LOADING), Action
     strFilePath = File
     UpdateStatus Dir(strFilePath), FileName
-    frmPlayer.Caption = Dir(strFilePath)
-    
+ 
     hasVideo_ = False: hasAudio_ = False: hasSubtitle_ = False
     
-    mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_
+    eRenderType = MadVRednerer
+    
+    mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, eRenderType
     
     If (HasVideo = False And hasAudio_ = False) Then GoTo DcodeErr
-    
+    UpdateTitle Dir(File)
     Set ifPostion = GlobalFilGraph
 
+    If (eRenderType = EnhancedVideoRenderer) Then
+
+        Dim i As New EVRRenderer
+
+        i.CreateInterface mdlFilterBuilder.EVRFilterStorage
+
+    End If
+
     If (HasVideo) Then
-    
+        
         Set ifVideo = GlobalFilGraph
         Set ifPlayback = GlobalFilGraph
-        ifPlayback.Caption = "PureMediaPlayer - LayerWindow"
-        ifPlayback.Owner = frmPlayer.hWnd
-        ifPlayback.MessageDrain = frmPlayer.hWnd
+        'ifPlayback.Caption = "PureMediaPlayer - LayerWindow"
+        ifPlayback.Owner = frmMain.frmPlayer.hwnd
+        ifPlayback.MessageDrain = frmMain.frmPlayer.hwnd
         
         Dim lngSrcStyle As Long
         
@@ -172,10 +206,13 @@ Public Sub RenderMediaFile()
         lngSrcStyle = lngSrcStyle And Not WS_SIZEBOX
         ifPlayback.WindowStyle = lngSrcStyle
         mdlGlobalPlayer.ResizePlayWindow
+        ifPlayback.HideCursor False
+
     End If
     
     If (HasAudio) Then
         Set ifVolume = GlobalFilGraph
+
     End If
  
     mdlGlobalPlayer.CurrentTime = 0
@@ -205,7 +242,6 @@ hErr:
     DoEvents
     mdlGlobalPlayer.ResizePlayWindow
     
-    ifPlayback.FullScreenMode = boolIsFullScreen
     Exit Sub
 DcodeErr:
     MsgBox "Not Support this codes type yet!"
@@ -314,7 +350,7 @@ End Sub
 Public Sub CloseFile()
     UpdateStatus StaticString(PLAYER_STATUS_CLOSEING), Action
     strLastestFile = ""
-    frmPlayer.Caption = StaticString(PLAYER_STATUS_IDLE)
+    UpdateTitle StaticString(PLAYER_STATUS_IDLE)
     DoEvents
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     
@@ -325,8 +361,8 @@ Public Sub ResizePlayWindow()
     If (Not hasVideo_) Then Exit Sub
     
     If (ifVideo Is Nothing) Then Exit Sub
-    
-    On Error GoTo hErr
+
+    'On Error GoTo hErr
     
     Dim commonW As Long, commonH As Long
     
@@ -336,17 +372,17 @@ Public Sub ResizePlayWindow()
     
     ifVideo.GetVideoSize commonW, commonH
     VideoRatio = commonW / commonH
-    resultW = Width
-    resultH = Width / VideoRatio
+    resultW = width
+    resultH = width / VideoRatio
     
-    If (resultH > Height) Then
-        resultW = VideoRatio * Height
-        resultH = Height
+    If (resultH > height) Then
+        resultW = VideoRatio * height
+        resultH = height
         
     End If
     
-    resultT = (Height - resultH) / 2
-    resultL = (Width - resultW) / 2
+    resultT = (height - resultH) / 2
+    resultL = (width - resultW) / 2
     ifPlayback.SetWindowPosition resultL, resultT, resultW, resultH
 hErr:
     frmMain.pbTimeBar.ZOrder 0
@@ -356,6 +392,11 @@ End Sub
 Public Sub UpdateStatus(strCaption As String, Target As StatusBarEnum)
     frmMain.sbStatusBar.Panels.Item(CLng(Target) * 2 - 1).Text = strCaption
     
+End Sub
+
+Public Sub UpdateTitle(strCaption As String)
+    frmMain.Caption = DefaultTitle & " - " & strCaption
+
 End Sub
 
 Public Sub RaiseMediaFilter(list As ListView)
@@ -369,7 +410,7 @@ Public Sub RaiseMediaFilter(list As ListView)
     
     For Each objFilter In GlobalFilGraph.FilterCollection
         
-        list.ListItems.Add(, , objFilter.Name).SubItems(1) = objFilter.VendorInfo
+        list.ListItems.Add , , objFilter.Name
         
     Next
     
@@ -384,16 +425,45 @@ End Sub
 
 Public Sub SwitchFullScreen(Optional force As Boolean = False, _
                             Optional forceValue As Boolean = False)
+
     If (Not HasVideo) Then Exit Sub
     If (ifPlayback Is Nothing) Then Exit Sub
     If force = True Then
         boolIsFullScreen = forceValue
-        ifPlayback.FullScreenMode = forceValue
+        ResizeFullScreen
         Exit Sub
-        
+
     End If
     
     boolIsFullScreen = Not boolIsFullScreen
-    ifPlayback.FullScreenMode = boolIsFullScreen
+    ResizeFullScreen
+
+End Sub
+
+Public Sub ResizeFullScreen()
+
+    If (boolIsFullScreen) Then
+        lngStorageW = frmMain.width
+        lngStorageH = frmMain.height
+        lngStorageT = frmMain.Top
+        lngStorageL = frmMain.Left
+        frmMain.BorderStyle = 0
+        UpdateTitle Dir(File)
+        frmMain.WindowState = 2
+    Else
+    
+        frmMain.BorderStyle = 2
+        UpdateTitle Dir(File)
+        frmMain.WindowState = 0
+
+        If (lngStorageW <> 0) Then
+            frmMain.width = lngStorageW
+            frmMain.height = lngStorageH
+            frmMain.Top = lngStorageT
+            frmMain.Left = lngStorageL
+
+        End If
+
+    End If
     
 End Sub
