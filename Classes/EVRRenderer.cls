@@ -18,44 +18,30 @@ Const IID_IMFVideoDisplayCtrl = "{A490B1E4-AB84-4D31-A1B2-181E03B1077A}"
 
 Const IID_IMFGetServices = "{FA993888-4383-415A-A930-DD472A8CF6F7}"
 
-Private Type GUID
+Const IID_MR_VIDEO_RENDER_SERVICE = "{1092a86c-ab1a-459a-a336-831fbc4d11ff}"
 
-    data1 As Long
-    data2 As Integer
-    data3 As Integer
-    data4(7) As Byte
-
-End Type
-
-Private byteGUID(14) As Byte
-
-Private Declare Function CLSIDFromString _
-                Lib "ole32" (ByVal lpszCLSID As Long, _
-                             clsid As GUID) As Long
-
-Private ifPlayback As olelib.IUnknown
+Private ifPlayback As IMFVideoDisplayControl
 
 Private ifServices As IMFGetService
 
-Private Declare Sub CopyMemory _
-                Lib "kernel32" _
-                Alias "RtlMoveMemory" (Destination As Any, _
-                                       Source As Any, _
-                                       ByVal Length As Long)
-
 Public Sub CreateInterface(baseFilter As olelib.IUnknown)
 
-    Dim uuidGetServices As UUID, uuidVideoDisplayCtrl As GUID
+    Dim uuidGetServices As UUID, uuidVideoDisplayCtrl As UUID, uuidMVR As UUID
 
     Dim result          As Long, b As Variant
     
     olelib.CLSIDFromString IID_IMFGetServices, uuidGetServices
-    CLSIDFromString byteGUID(0), uuidVideoDisplayCtrl
-    
+    olelib.CLSIDFromString IID_IMFVideoDisplayCtrl, uuidVideoDisplayCtrl
+    olelib.CLSIDFromString IID_MR_VIDEO_RENDER_SERVICE, uuidMVR
     result = baseFilter.QueryInterface(uuidGetServices, ifServices)
     Set ifServices = baseFilter
     
+    Set ifPlayback = ifServices.GetService(uuidMVR, uuidVideoDisplayCtrl)
+    ifPlayback.SetVideoWindow frmMain.frmPlayer.hWnd
     If (result <> 0) Then Err.Raise result
      
 End Sub
 
+Public Function GetInterface() As IMFVideoDisplayControl
+    Set GetInterface = ifPlayback
+End Function

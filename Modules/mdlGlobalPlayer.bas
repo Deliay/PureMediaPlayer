@@ -31,6 +31,8 @@ Private ifType            As IMediaTypeInfo
 
 Private eRenderType       As RenderType
 
+Private EVRHoster         As EVRRenderer
+
 Public width              As Long
 
 Public height             As Long
@@ -60,7 +62,7 @@ End Enum
 
 Public Enum PlayStatus
 
-    Playing
+    playing
     Paused
     Stoped
 
@@ -183,31 +185,37 @@ Public Sub RenderMediaFile()
     Set ifPostion = GlobalFilGraph
 
     If (eRenderType = EnhancedVideoRenderer) Then
-
-        Dim i As New EVRRenderer
-
-        i.CreateInterface mdlFilterBuilder.EVRFilterStorage
-
+        Set EVRHoster = New EVRRenderer
+        EVRHoster.CreateInterface mdlFilterBuilder.EVRFilterStorage
     End If
 
     If (HasVideo) Then
+        If (eRenderType <> EnhancedVideoRenderer) Then
+            Set ifVideo = GlobalFilGraph
+            Set ifPlayback = GlobalFilGraph
+            'ifPlayback.Caption = "PureMediaPlayer - LayerWindow"
+            ifPlayback.Owner = frmMain.frmPlayer.hWnd
+            ifPlayback.MessageDrain = frmMain.frmPlayer.hWnd
+            
+            Dim lngSrcStyle As Long
+            
+            lngSrcStyle = ifPlayback.WindowStyle
+            lngSrcStyle = lngSrcStyle And Not WS_BORDER
+            lngSrcStyle = lngSrcStyle And Not WS_CAPTION
+            lngSrcStyle = lngSrcStyle And Not WS_SIZEBOX
+            ifPlayback.WindowStyle = lngSrcStyle
+            mdlGlobalPlayer.ResizePlayWindow
+            ifPlayback.HideCursor False
+        Else
+            Dim pos1 As MFVideoNormalizedRect, rect As EVRImport2.tagRECT
+            rect.Left = 0
+            rect.Top = 0
+            rect.Right = width
+            rect.Bottom = height
+            EVRHoster.GetInterface.SetAspectRatioMode 0
+            EVRHoster.GetInterface.SetVideoPosition 0&, VarPtr(rect)
+        End If
         
-        Set ifVideo = GlobalFilGraph
-        Set ifPlayback = GlobalFilGraph
-        'ifPlayback.Caption = "PureMediaPlayer - LayerWindow"
-        ifPlayback.Owner = frmMain.frmPlayer.hWnd
-        ifPlayback.MessageDrain = frmMain.frmPlayer.hWnd
-        
-        Dim lngSrcStyle As Long
-        
-        lngSrcStyle = ifPlayback.WindowStyle
-        lngSrcStyle = lngSrcStyle And Not WS_BORDER
-        lngSrcStyle = lngSrcStyle And Not WS_CAPTION
-        lngSrcStyle = lngSrcStyle And Not WS_SIZEBOX
-        ifPlayback.WindowStyle = lngSrcStyle
-        mdlGlobalPlayer.ResizePlayWindow
-        ifPlayback.HideCursor False
-
     End If
     
     If (HasAudio) Then
@@ -307,7 +315,7 @@ Public Sub Play()
     
 hErr:
     GlobalFilGraph.Run
-    GlobalPlayStatus = Playing
+    GlobalPlayStatus = playing
     
     frmMain.tmrUpdateTime.Enabled = True
     
@@ -329,14 +337,14 @@ Public Sub StopPlay()
     GlobalPlayStatus = Stoped
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     
-    If Not GlobalFilGraph Is Nothing Then GlobalFilGraph.Stop
+    If Not GlobalFilGraph Is Nothing Then GlobalFilGraph.Pause
     
 End Sub
 
 Public Sub SwitchPlayStauts()
     
     If (mdlGlobalPlayer.Loaded) Then
-        If (GlobalPlayStatus = Playing) Then
+        If (GlobalPlayStatus = playing) Then
             mdlGlobalPlayer.Pause
         ElseIf (GlobalPlayStatus = Paused) Then
             mdlGlobalPlayer.Play
@@ -344,7 +352,7 @@ Public Sub SwitchPlayStauts()
         End If
         
     End If
-    
+    PlayPauseSwitch
 End Sub
 
 Public Sub CloseFile()
@@ -390,7 +398,12 @@ hErr:
 End Sub
 
 Public Sub UpdateStatus(strCaption As String, Target As StatusBarEnum)
-    'frmMain.sbStatusBar.Panels.Item(CLng(Target) * 2 - 1).Text = strCaption
+    If (Target = PlayBack) Then
+        frmMain.Label2.Caption = strCaption
+    ElseIf Target = PlayTime Then
+        frmMain.Label1.Caption = strCaption
+    End If
+    
     
 End Sub
 
