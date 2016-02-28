@@ -35,7 +35,7 @@ Private Declare Function CLSIDFromString _
 
 Private ifPlayback As olelib.IUnknown
 
-Private ifServices As olelib.IUnknown
+Private ifServices As IMFGetService
 
 Private Declare Sub CopyMemory _
                 Lib "kernel32" _
@@ -53,6 +53,7 @@ Public Sub CreateInterface(baseFilter As olelib.IUnknown)
     CLSIDFromString byteGUID(0), uuidVideoDisplayCtrl
     
     result = baseFilter.QueryInterface(uuidGetServices, ifServices)
+    Set ifServices = baseFilter
     
     If (result <> 0) Then Err.Raise result
      
