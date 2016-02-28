@@ -137,7 +137,7 @@ Begin VB.Form frmMain
             Alignment       =   2
             AutoSize        =   1
             Bevel           =   0
-            Object.Width           =   8449
+            Object.Width           =   8290
             MinWidth        =   882
             TextSave        =   "2016/2/28"
          EndProperty
@@ -146,9 +146,9 @@ Begin VB.Form frmMain
             Alignment       =   2
             AutoSize        =   2
             Bevel           =   0
-            Object.Width           =   873
+            Object.Width           =   1032
             MinWidth        =   882
-            TextSave        =   "1:48"
+            TextSave        =   "13:27"
          EndProperty
       EndProperty
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -175,6 +175,21 @@ Begin VB.Form frmMain
       TabStop         =   0   'False
       Top             =   0
       Width           =   10455
+      Begin VB.PictureBox bbPlaylist 
+         Appearance      =   0  'Flat
+         BackColor       =   &H00000000&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   720
+         Left            =   10080
+         ScaleHeight     =   48
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   24
+         TabIndex        =   5
+         TabStop         =   0   'False
+         Top             =   2760
+         Width           =   360
+      End
    End
 End
 Attribute VB_Name = "frmMain"
@@ -206,6 +221,15 @@ Private Sub bbMenuBar_MouseMove(Button As Integer, _
 
 End Sub
 
+Private Sub bbPlaylist_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    If (bbPlaylist.BackColor <> RGB(48, 48, 48)) Then
+        bbPlaylist.BackColor = RGB(48, 48, 48)
+        SwitchUI True
+
+    End If
+
+End Sub
+
 Private Sub Form_Activate()
     mdlGlobalPlayer.SwitchFullScreen True, False
     
@@ -221,7 +245,7 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    SizeWindow Me.hwnd
+    SizeWindow Me.hWnd
 
 End Sub
 
@@ -237,13 +261,19 @@ End Sub
 
 Private Sub Form_Resize()
     Sleep 1
-    'bbMenuBar.width = Me.width / Screen.TwipsPerPixelX
+    ReCalcPlayWindow
+    RefreshUI
+    DoEvents
+End Sub
+
+Public Sub ReCalcPlayWindow()
     frmPlayer.width = (Me.width / Screen.TwipsPerPixelX)
     frmPlayer.height = (Me.height / Screen.TwipsPerPixelY)
     mdlGlobalPlayer.width = frmPlayer.width
     mdlGlobalPlayer.height = frmPlayer.height - mdlToolBarAlphaer.UIHeightButtom - 31
+    bbPlaylist.Left = frmPlayer.width - 32
+    bbPlaylist.Top = frmPlayer.height / 2 - bbPlaylist.height
     ResizePlayWindow
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -253,6 +283,7 @@ End Sub
 
 Private Sub frmPlayer_Click()
     SwitchUI
+
 End Sub
 
 Private Sub frmPlayer_DblClick()
@@ -324,10 +355,13 @@ Private Sub frmPlayer_MouseMove(Button As Integer, _
         mdlToolBarAlphaer.apMenuButton.RefreshHW 32, 32
 
     End If
+    If (bbPlaylist.BackColor <> 0) Then
+        bbPlaylist.BackColor = 0
+        mdlToolBarAlphaer.apPlaylistHint.RefreshHW 24, 48
 
-    If (X < 32 And Y < 32) Then
+    End If
+    If (X < 32 And Y < 32) Or (X > bbPlaylist.Left And Y > bbPlaylist.Top And Y < bbPlaylist.Top + bbPlaylist.height) Then
         RefreshUI
-
     End If
 
 End Sub
@@ -383,7 +417,7 @@ Private Sub tmrUpdateTime_Timer()
         Else
 
             'resize
-            Form_Resize
+            ReCalcPlayWindow
 
             'AlphaHwnd bbMenuBar.hDC, frmPlayer.hDC, 150&, bbMenuBar.Width, bbMenuBar.Height
         End If

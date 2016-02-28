@@ -5,7 +5,7 @@ Private Declare Function ReleaseCapture Lib "user32" () As Long
 
 Private Declare Function SendMessage _
                 Lib "user32" _
-                Alias "SendMessageA" (ByVal hwnd As Long, _
+                Alias "SendMessageA" (ByVal hWnd As Long, _
                                       ByVal wMsg As Long, _
                                       ByVal wParam As Long, _
                                       lParam As Any) As Long
@@ -18,13 +18,40 @@ Private Const HTGROWBOX = 4
 
 Private Const HTSIZE = HTGROWBOX
 
+Public Const RGN_OR = 2
+
 Private Declare Function SetWindowLong _
                 Lib "user32" _
-                Alias "SetWindowLongA" (ByVal hwnd As Long, _
+                Alias "SetWindowLongA" (ByVal hWnd As Long, _
                                         ByVal nIndex As Long, _
                                         ByVal dwNewLong As Long) As Long
+                                        
+Private Declare Function GetPixel _
+                Lib "gdi32" (ByVal hDC As Long, _
+                             ByVal X As Long, _
+                             ByVal Y As Long) As Long
+
+Private Declare Function SetWindowRgn _
+                Lib "user32" (ByVal hWnd As Long, _
+                              ByVal hRgn As Long, _
+                              ByVal bRedraw As Boolean) As Long
+
+Private Declare Function CreateRectRgn _
+                Lib "gdi32" (ByVal X1 As Long, _
+                             ByVal Y1 As Long, _
+                             ByVal X2 As Long, _
+                             ByVal Y2 As Long) As Long
+
+Private Declare Function CombineRgn _
+                Lib "gdi32" (ByVal hDestRgn As Long, _
+                             ByVal hSrcRgn1 As Long, _
+                             ByVal hSrcRgn2 As Long, _
+                             ByVal nCombineMode As Long) As Long
+
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
 Public apMenuButton   As New AlphaPicture
+Public apPlaylistHint   As New AlphaPicture
 
 Public UIHeightButtom As Long
 
@@ -51,13 +78,14 @@ Public Sub LoadUI()
         ApplyLanguageToForm frmPaternAdd
 
     End If
-
+    
     frmPlaylist.Hide
     frmPaternAdd.Hide
     frmMain.Show
     apMenuButton.hDC = frmMain.bbMenuBar.hDC
-    apMenuButton.LoadImageWH App.Path & "\Image\Menu.png", frmMain.bbMenuBar.height, frmMain.bbMenuBar.height
-    
+    apMenuButton.LoadImageWH App.Path & "\Image\Menu.png", 32, 32
+    apPlaylistHint.hDC = frmMain.bbPlaylist.hDC
+    apPlaylistHint.LoadImageWH App.Path & "\Image\playlist_hint.png", 24, 48
 End Sub
 
 Public Sub RefreshUI()
@@ -71,11 +99,15 @@ Public Sub RefreshUI()
         .pbTimeBar.Visible = True
         .bbMenuBar.Visible = True
         .bbMenuBar.Refresh
+        .bbPlaylist.Visible = True
+        .bbPlaylist.Refresh
         apMenuButton.RefreshHW 32, 32
+        apPlaylistHint.RefreshHW 24, 48
         UIHeightButtom = UIHeightButtom + .pbTimeBar.height
         UIHeightButtom = UIHeightButtom + .sbStatusBar.height
         
         UIHeightTop = .bbMenuBar.height
+
     End With
 
 End Sub
@@ -90,7 +122,7 @@ Public Sub HideUI()
         .pbTimeBar.Visible = False
         .sbStatusBar.Visible = False
         .bbMenuBar.Visible = False
-        
+        .bbPlaylist.Visible = False
     End With
 
 End Sub
