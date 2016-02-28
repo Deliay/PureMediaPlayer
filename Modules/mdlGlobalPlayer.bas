@@ -195,8 +195,8 @@ Public Sub RenderMediaFile()
         Set ifVideo = GlobalFilGraph
         Set ifPlayback = GlobalFilGraph
         'ifPlayback.Caption = "PureMediaPlayer - LayerWindow"
-        ifPlayback.Owner = frmMain.frmPlayer.hwnd
-        ifPlayback.MessageDrain = frmMain.frmPlayer.hwnd
+        ifPlayback.Owner = frmMain.frmPlayer.hWnd
+        ifPlayback.MessageDrain = frmMain.frmPlayer.hWnd
         
         Dim lngSrcStyle As Long
         
