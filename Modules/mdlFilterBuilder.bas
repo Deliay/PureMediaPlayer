@@ -237,16 +237,21 @@ ParserPins:
         End If
 
     End If
+
     Exit Sub
 notExist:
     
     If (Dir(srcFile) <> "") Then
         objGraphManager.AddSourceFilter srcFile, objSrcSplitterFilter
+
         For Each objSpliterPin In objSrcSplitterFilter.Pins
+
             objSpliterPin.Render
             boolHasAudio = True
         Next
+
     End If
+
 End Sub
 
 Private Sub FillDecoder(m_GraphManager As FilgraphManager)

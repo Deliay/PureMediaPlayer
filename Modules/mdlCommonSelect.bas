@@ -54,7 +54,7 @@ Private Declare Function GetShortPathName _
 
 Public Function ShowOpen(Optional Filters As String = "任意文件 (*.*)" & vbNullChar & "*.*")
     ofn.lStructSize = Len(ofn)
-    ofn.hwndOwner = frmMain.hwnd
+    ofn.hwndOwner = frmMain.hWnd
     ofn.hInstance = App.hInstance
     ofn.lpstrFilter = StrPtr(Filters)
     ofn.lpstrFile = Space(254)
@@ -81,7 +81,7 @@ End Function
 
 Public Function ShowSave(Optional Filters As String = "任意文件 (*.*)" & vbNullChar & "*.*")
     ofn.lStructSize = Len(ofn)
-    ofn.hwndOwner = frmMain.hwnd
+    ofn.hwndOwner = frmMain.hWnd
     ofn.hInstance = App.hInstance
     ofn.lpstrFilter = StrPtr(Filters)
     ofn.lpstrFile = Space(254)
