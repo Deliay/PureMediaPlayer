@@ -50,25 +50,38 @@ Private Declare Function CombineRgn _
 
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
-Public apMenuButton   As New AlphaPicture
-Public apPlaylistHint   As New AlphaPicture
+Public Enum PlayControl
 
-Public UIHeightButtom As Long
+    CTRL_PLAYPAUSE
+    CTRL_STOP
+    CTRL_NEXT
+    CTRL_PREV
+    CTRL_VOICE
 
-Public UIHeightTop    As Long
+End Enum
 
-Public UIWidthLeft    As Long
+Public apMenuButton       As New AlphaPicture
 
-Public UIWidthRight   As Long
+Public apPlaylistHint     As New AlphaPicture
 
-Private boolUIStatus  As Boolean
+Public apPlayControl(4)   As New AlphaPicture
+
+Public UIHeightButtom     As Long
+
+Public UIHeightTop        As Long
+
+Public UIWidthLeft        As Long
+
+Public UIWidthRight       As Long
+
+Private boolUIStatus      As Boolean
 
 Public boolPlaylistStatus As Boolean
 
 Public Sub LoadUI()
     Load frmMain
     Load frmPaternAdd
-    
+
     If (Dir(App.Path & "\language.ini") = "") Then
         CreateLanguagePart frmMenu
         CreateLanguagePart frmPaternAdd
@@ -84,6 +97,14 @@ Public Sub LoadUI()
     apMenuButton.LoadImageWH App.Path & "\Image\Menu.png", 32, 32
     apPlaylistHint.hDC = frmMain.bbPlaylist.hDC
     apPlaylistHint.LoadImageWH App.Path & "\Image\playlist_hint.png", 24, 48
+    
+    Dim i As Long
+
+    For i = 0 To 4
+        apPlayControl(i).hDC = frmMain.bbPlaystatus(i).hDC
+        apPlayControl(i).LoadImageWH App.Path & "\Image\playcontrol_" & i & ".png", 32, 32
+    Next
+
 End Sub
 
 Public Sub RefreshUI()
@@ -93,7 +114,7 @@ Public Sub RefreshUI()
         UIHeightTop = 0
         UIWidthLeft = 0
         UIWidthRight = 0
-        '.sbStatusBar.Visible = True
+        .sbStatusBar.Visible = True
         .pbTimeBar.Visible = True
         .bbMenuBar.Visible = True
         .bbMenuBar.Refresh
@@ -104,9 +125,17 @@ Public Sub RefreshUI()
         apMenuButton.RefreshHW 32, 32
         apPlaylistHint.RefreshHW 24, 48
         UIHeightButtom = UIHeightButtom + .pbTimeBar.height
-        'UIHeightButtom = UIHeightButtom + .sbStatusBar.height
+        UIHeightButtom = UIHeightButtom + .sbStatusBar.height
         
         UIHeightTop = .bbMenuBar.height
+
+        Dim i As Long
+
+        For i = 0 To 4
+            .bbPlaystatus(i).Visible = True
+            .bbPlaystatus(i).Refresh
+            apPlayControl(i).RefreshHW 32, 32
+        Next
 
     End With
 
@@ -120,9 +149,16 @@ Public Sub HideUI()
         UIWidthLeft = 0
         UIWidthRight = 0
         .pbTimeBar.Visible = False
-        '.sbStatusBar.Visible = False
+        .sbStatusBar.Visible = False
         .bbMenuBar.Visible = False
         .bbPlaylist.Visible = False
+
+        Dim i As Long
+
+        For i = 0 To 4
+            .bbPlaystatus(i).Visible = False
+        Next
+
     End With
 
 End Sub
@@ -171,6 +207,7 @@ Public Sub PlaylistShow()
     frmMain.lstPlaylist.Left = (frmMain.width / Screen.TwipsPerPixelX) - frmMain.lstPlaylist.width
     frmMain.ReCalcPlayWindow
     boolPlaylistStatus = True
+
 End Sub
 
 Public Sub PlaylistHide()
@@ -178,4 +215,16 @@ Public Sub PlaylistHide()
     frmMain.lstPlaylist.Left = (frmMain.width / Screen.TwipsPerPixelX) + frmMain.lstPlaylist.width
     frmMain.ReCalcPlayWindow
     boolPlaylistStatus = False
+
+End Sub
+
+Public Sub PlayPauseSwitch()
+    frmMain.bbPlaystatus(PlayControl.CTRL_PLAYPAUSE).Cls
+    If (mdlGlobalPlayer.GlobalPlayStatus = playing) Then
+        apPlayControl(PlayControl.CTRL_PLAYPAUSE).LoadImageWH App.Path & "\Image\playcontrol_" & PlayControl.CTRL_PLAYPAUSE & "_.png", 32, 32
+    Else
+        apPlayControl(PlayControl.CTRL_PLAYPAUSE).LoadImageWH App.Path & "\Image\playcontrol_" & PlayControl.CTRL_PLAYPAUSE & ".png", 32, 32
+
+    End If
+
 End Sub

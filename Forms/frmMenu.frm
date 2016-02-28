@@ -144,7 +144,6 @@ Private Sub mmStatus_ShowPlaylist_Click()
     If (frmMain.isHide) Then
 
     Else
-
         
     End If
     

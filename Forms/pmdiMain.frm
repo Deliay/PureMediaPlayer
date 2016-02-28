@@ -17,17 +17,98 @@ Begin VB.Form frmMain
    Begin VB.PictureBox sbStatusBar 
       Align           =   2  'Align Bottom
       Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
+      BackColor       =   &H00000000&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   1095
+      Height          =   855
       Left            =   0
-      ScaleHeight     =   1095
-      ScaleWidth      =   10455
+      ScaleHeight     =   57
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   697
       TabIndex        =   4
       TabStop         =   0   'False
-      Top             =   5610
+      Top             =   5850
       Width           =   10455
+      Begin VB.PictureBox bbPlaystatus 
+         Appearance      =   0  'Flat
+         BackColor       =   &H00000000&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   480
+         Index           =   4
+         Left            =   9840
+         ScaleHeight     =   32
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   32
+         TabIndex        =   11
+         TabStop         =   0   'False
+         Top             =   240
+         Width           =   480
+      End
+      Begin VB.PictureBox bbPlaystatus 
+         Appearance      =   0  'Flat
+         BackColor       =   &H00000000&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   480
+         Index           =   3
+         Left            =   120
+         ScaleHeight     =   32
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   32
+         TabIndex        =   10
+         TabStop         =   0   'False
+         Top             =   240
+         Width           =   480
+      End
+      Begin VB.PictureBox bbPlaystatus 
+         Appearance      =   0  'Flat
+         BackColor       =   &H00000000&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   480
+         Index           =   2
+         Left            =   1920
+         ScaleHeight     =   32
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   32
+         TabIndex        =   9
+         TabStop         =   0   'False
+         Top             =   240
+         Width           =   480
+      End
+      Begin VB.PictureBox bbPlaystatus 
+         Appearance      =   0  'Flat
+         BackColor       =   &H00000000&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   480
+         Index           =   1
+         Left            =   1320
+         ScaleHeight     =   32
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   32
+         TabIndex        =   8
+         TabStop         =   0   'False
+         Top             =   240
+         Width           =   480
+      End
+      Begin VB.PictureBox bbPlaystatus 
+         Appearance      =   0  'Flat
+         BackColor       =   &H00000000&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   480
+         Index           =   0
+         Left            =   720
+         ScaleHeight     =   32
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   32
+         TabIndex        =   7
+         TabStop         =   0   'False
+         Top             =   240
+         Width           =   480
+      End
       Begin VB.PictureBox pbTimeBar 
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
@@ -40,7 +121,7 @@ Begin VB.Form frmMain
          ScaleWidth      =   697
          TabIndex        =   5
          TabStop         =   0   'False
-         Top             =   240
+         Top             =   0
          Width           =   10455
          Begin VB.PictureBox pbTimeBlock 
             Appearance      =   0  'Flat
@@ -57,6 +138,31 @@ Begin VB.Form frmMain
             Top             =   0
             Width           =   375
          End
+      End
+      Begin VB.Label Label2 
+         Alignment       =   1  'Right Justify
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "Stop"
+         ForeColor       =   &H00FFFFFF&
+         Height          =   180
+         Left            =   2520
+         TabIndex        =   13
+         Top             =   360
+         Width           =   540
+      End
+      Begin VB.Label Label1 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "0:00/0:00"
+         ForeColor       =   &H00FFFFFF&
+         Height          =   300
+         Left            =   3360
+         TabIndex        =   12
+         Top             =   360
+         Width           =   1050
       End
    End
    Begin MSComctlLib.ListView lstPlaylist 
@@ -76,8 +182,8 @@ Begin VB.Form frmMain
       HideColumnHeaders=   -1  'True
       FullRowSelect   =   -1  'True
       _Version        =   393217
-      ForeColor       =   -2147483640
-      BackColor       =   -2147483643
+      ForeColor       =   16777215
+      BackColor       =   0
       Appearance      =   0
       NumItems        =   2
       BeginProperty ColumnHeader(1) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
@@ -109,7 +215,7 @@ Begin VB.Form frmMain
       Enabled         =   0   'False
       Interval        =   1
       Left            =   4320
-      Top             =   2640
+      Top             =   2760
    End
    Begin VB.PictureBox frmPlayer 
       Appearance      =   0  'Flat
@@ -178,23 +284,58 @@ Private Sub bbMenuBar_MouseMove(Button As Integer, _
 End Sub
 
 Private Sub bbPlaylist_Click()
+
     If (boolPlaylistStatus = True) Then
         PlaylistHide
     Else
         PlaylistShow
+
     End If
     
 End Sub
 
-Private Sub bbPlaylist_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub bbPlaylist_MouseMove(Button As Integer, _
+                                 Shift As Integer, _
+                                 X As Single, _
+                                 Y As Single)
+
     If (bbPlaylist.BackColor <> RGB(48, 48, 48)) Then
         bbPlaylist.BackColor = RGB(48, 48, 48)
         
         If (Not mdlToolBarAlphaer.boolPlaylistStatus) Then
             SwitchUI True
+
         End If
+
     End If
 
+End Sub
+
+Private Sub bbPlaystatus_Click(Index As Integer)
+
+    Dim clickType As PlayControl
+
+    clickType = Index
+    
+    Select Case clickType
+
+        Case PlayControl.CTRL_PLAYPAUSE
+            'PlayPauseSwitch
+            mdlGlobalPlayer.SwitchPlayStauts
+
+        Case PlayControl.CTRL_STOP
+            mdlGlobalPlayer.StopPlay
+
+        Case PlayControl.CTRL_NEXT
+            mdlPlaylist.PlaylistPlayNext
+
+        Case PlayControl.CTRL_PREV
+            mdlPlaylist.PlaylistPlayNext True
+
+        Case PlayControl.CTRL_VOICE
+
+    End Select
+    frmPlayer.SetFocus
 End Sub
 
 Private Sub Form_Activate()
@@ -231,6 +372,7 @@ Private Sub Form_Resize()
     ReCalcPlayWindow
     RefreshUI
     DoEvents
+
 End Sub
 
 Public Sub ReCalcPlayWindow()
@@ -240,11 +382,15 @@ Public Sub ReCalcPlayWindow()
     bbPlaylist.Left = frmPlayer.width - 32 - mdlToolBarAlphaer.UIWidthRight
     bbPlaylist.Top = frmPlayer.height / 2 - bbPlaylist.height
     lstPlaylist.Left = frmPlayer.width - mdlToolBarAlphaer.UIWidthRight
-    lstPlaylist.height = Me.height
+    
     frmPlayer.width = (Me.width / Screen.TwipsPerPixelX) - mdlToolBarAlphaer.UIWidthRight
     mdlGlobalPlayer.width = frmPlayer.width
-    mdlGlobalPlayer.height = frmPlayer.height - mdlToolBarAlphaer.UIHeightButtom - frmMain.pbTimeBar.height
+    mdlGlobalPlayer.height = frmPlayer.height - mdlToolBarAlphaer.UIHeightButtom - 23
+    lstPlaylist.height = mdlGlobalPlayer.height
+    pbTimeBar.width = (Me.width / Screen.TwipsPerPixelX)
+    bbPlaystatus(4).Left = sbStatusBar.width - bbPlaystatus(4).width - 4
     ResizePlayWindow
+
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -326,13 +472,16 @@ Private Sub frmPlayer_MouseMove(Button As Integer, _
         mdlToolBarAlphaer.apMenuButton.RefreshHW 32, 32
 
     End If
+
     If (bbPlaylist.BackColor <> 0) Then
         bbPlaylist.BackColor = 0
         mdlToolBarAlphaer.apPlaylistHint.RefreshHW 24, 48
 
     End If
+
     If (X < 32 And Y < 32) Then
         RefreshUI
+
     End If
 
 End Sub
@@ -365,7 +514,7 @@ Private Sub tmrUpdateTime_Timer()
     Sleep 2
 
     If (mdlGlobalPlayer.Loaded = False) Then Exit Sub
-    UpdateStatus mdlGlobalPlayer.Volume & "%, " & Round(mdlGlobalPlayer.Rate / 100, 2) & "x" & ", " & Format(Round(Precent, 2), "##.#0") & "% (" & FormatedCurrentTime & "/" & FormatedDuration & ")", PlayTime
+    UpdateStatus FormatedCurrentTime & "/" & FormatedDuration, PlayTime
     pbTimeBlock.width = Precent / 100 * (pbTimeBar.width)
 
     If (Duration > 1) Then
@@ -405,7 +554,6 @@ Public Sub AutoPatern()
     frmPaternAdd.cmdAddToList_Click
     
 End Sub
-
 
 Private Sub lstPlaylist_DblClick()
     

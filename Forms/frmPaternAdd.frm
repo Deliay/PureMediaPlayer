@@ -210,5 +210,6 @@ Public Sub Form_Load()
     txtNowName.Text = Dir(mdlGlobalPlayer.File)
     txtRegExp.Text = "*" & Mid$(Dir(mdlGlobalPlayer.File), InStrRev(Dir(mdlGlobalPlayer.File), "."))
     cmdTestParten_Click
+
 End Sub
 

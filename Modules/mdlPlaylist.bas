@@ -40,14 +40,20 @@ Public Function LoadPlaylist(ByVal strPath As String)
     
 End Function
 
-Public Function PlaylistPlayNext() As Boolean
+Public Function PlaylistPlayNext(Optional Prev As Boolean = False) As Boolean
 
     On Error GoTo ResumePlay
 
     PlaylistPlayNext = False
 
+    Dim flag As Long
+
     If (GetItemIDByName(frmMain.nowPlaying.Text) = mdlPlaylist.colPlayItems.Count) Then Exit Function
-    mdlGlobalPlayer.File = colPlayItems(GetItemIDByName(frmMain.nowPlaying.Text) + 1).FullPath
+    flag = 1
+
+    If (Prev = True) Then flag = -1
+    
+    mdlGlobalPlayer.File = colPlayItems(GetItemIDByName(frmMain.nowPlaying.Text) + flag).FullPath
     mdlGlobalPlayer.RenderMediaFile
     PlaylistPlayNext = True
 ResumePlay:
