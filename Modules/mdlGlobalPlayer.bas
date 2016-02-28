@@ -218,17 +218,17 @@ Public Sub RenderMediaFile()
     mdlGlobalPlayer.CurrentTime = 0
     mdlPlaylist.SetItemLength strFilePath, FormatedDuration
     
-    If Not frmPlaylist.nowPlaying Is Nothing Then frmPlaylist.nowPlaying.Bold = False
+    If Not frmMain.nowPlaying Is Nothing Then frmMain.nowPlaying.Bold = False
     
     On Error GoTo notLoadPlaylist
     
-    Set frmPlaylist.nowPlaying = frmPlaylist.lstPlaylist.ListItems(strFilePath)
+    Set frmMain.nowPlaying = frmMain.lstPlaylist.ListItems(strFilePath)
     
 notLoadPlaylist:
 
     Resume Next
 
-    If Not frmPlaylist.nowPlaying Is Nothing Then frmPlaylist.nowPlaying.Bold = True
+    If Not frmMain.nowPlaying Is Nothing Then frmMain.nowPlaying.Bold = True
     
     boolLoadedFile = True
     
@@ -390,7 +390,7 @@ hErr:
 End Sub
 
 Public Sub UpdateStatus(strCaption As String, Target As StatusBarEnum)
-    frmMain.sbStatusBar.Panels.Item(CLng(Target) * 2 - 1).Text = strCaption
+    'frmMain.sbStatusBar.Panels.Item(CLng(Target) * 2 - 1).Text = strCaption
     
 End Sub
 

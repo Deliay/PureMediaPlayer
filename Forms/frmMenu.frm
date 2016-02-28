@@ -139,12 +139,12 @@ Private Sub mmStatus_Play_Click()
 End Sub
 
 Private Sub mmStatus_ShowPlaylist_Click()
-    frmPlaylist.isHide = Not frmPlaylist.isHide
+    frmMain.isHide = Not frmMain.isHide
     
-    If (frmPlaylist.isHide) Then
-        frmPlaylist.Show vbModeless, Me
+    If (frmMain.isHide) Then
+
     Else
-        frmPlaylist.Hide
+
         
     End If
     
@@ -189,11 +189,8 @@ Private Sub mmFile_Open_Click()
     If (Len(cdlg.FileName) > 0 And Dir(cdlg.FileNameWiden) <> "") Then
         mdlGlobalPlayer.CloseFile
         mdlGlobalPlayer.File = cdlg.FileName
-        frmPlaylist.isHide = True
-        frmPlaylist.Show vbModeless, frmMain
-        frmPlaylist.AutoPatern
-        frmPlaylist.AutoPatern
-        frmPlaylist.File_PaternFind.Enabled = True
+        frmMain.isHide = True
+        frmMain.AutoPatern
         RenderMediaFile
 
     End If

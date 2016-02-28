@@ -63,23 +63,21 @@ Public UIWidthRight   As Long
 
 Private boolUIStatus  As Boolean
 
+Public boolPlaylistStatus As Boolean
+
 Public Sub LoadUI()
     Load frmMain
-    Load frmPlaylist
     Load frmPaternAdd
     
     If (Dir(App.Path & "\language.ini") = "") Then
         CreateLanguagePart frmMenu
-        CreateLanguagePart frmPlaylist
         CreateLanguagePart frmPaternAdd
     Else
         ApplyLanguageToForm frmMenu
-        ApplyLanguageToForm frmPlaylist
         ApplyLanguageToForm frmPaternAdd
 
     End If
     
-    frmPlaylist.Hide
     frmPaternAdd.Hide
     frmMain.Show
     apMenuButton.hDC = frmMain.bbMenuBar.hDC
@@ -95,16 +93,18 @@ Public Sub RefreshUI()
         UIHeightTop = 0
         UIWidthLeft = 0
         UIWidthRight = 0
-        .sbStatusBar.Visible = True
+        '.sbStatusBar.Visible = True
         .pbTimeBar.Visible = True
         .bbMenuBar.Visible = True
         .bbMenuBar.Refresh
+        .bbMenuBar.ZOrder 0
         .bbPlaylist.Visible = True
         .bbPlaylist.Refresh
+        .bbPlaylist.ZOrder 0
         apMenuButton.RefreshHW 32, 32
         apPlaylistHint.RefreshHW 24, 48
         UIHeightButtom = UIHeightButtom + .pbTimeBar.height
-        UIHeightButtom = UIHeightButtom + .sbStatusBar.height
+        'UIHeightButtom = UIHeightButtom + .sbStatusBar.height
         
         UIHeightTop = .bbMenuBar.height
 
@@ -120,7 +120,7 @@ Public Sub HideUI()
         UIWidthLeft = 0
         UIWidthRight = 0
         .pbTimeBar.Visible = False
-        .sbStatusBar.Visible = False
+        '.sbStatusBar.Visible = False
         .bbMenuBar.Visible = False
         .bbPlaylist.Visible = False
     End With
@@ -163,5 +163,19 @@ End Sub
 
 Public Sub NoBorder(ByVal lngHwnd As Long)
     SetWindowLong lngHwnd, (-16), &H80000000 Or &H20000 Or &H80000 Or &H10000000
+    
+End Sub
 
+Public Sub PlaylistShow()
+    mdlToolBarAlphaer.UIWidthRight = frmMain.lstPlaylist.width
+    frmMain.lstPlaylist.Left = (frmMain.width / Screen.TwipsPerPixelX) - frmMain.lstPlaylist.width
+    frmMain.ReCalcPlayWindow
+    boolPlaylistStatus = True
+End Sub
+
+Public Sub PlaylistHide()
+    mdlToolBarAlphaer.UIWidthRight = 0
+    frmMain.lstPlaylist.Left = (frmMain.width / Screen.TwipsPerPixelX) + frmMain.lstPlaylist.width
+    frmMain.ReCalcPlayWindow
+    boolPlaylistStatus = False
 End Sub

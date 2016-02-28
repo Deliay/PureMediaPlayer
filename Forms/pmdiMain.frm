@@ -2,7 +2,7 @@ VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form frmMain 
    Appearance      =   0  'Flat
-   BackColor       =   &H80000000&
+   BackColor       =   &H80000002&
    Caption         =   "Pure Media Player"
    ClientHeight    =   6705
    ClientLeft      =   165
@@ -14,6 +14,82 @@ Begin VB.Form frmMain
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   697
    StartUpPosition =   2  'ÆÁÄ»ÖÐÐÄ
+   Begin VB.PictureBox sbStatusBar 
+      Align           =   2  'Align Bottom
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   1095
+      Left            =   0
+      ScaleHeight     =   1095
+      ScaleWidth      =   10455
+      TabIndex        =   4
+      TabStop         =   0   'False
+      Top             =   5610
+      Width           =   10455
+      Begin VB.PictureBox pbTimeBar 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   135
+         Left            =   0
+         ScaleHeight     =   10
+         ScaleMode       =   0  'User
+         ScaleWidth      =   697
+         TabIndex        =   5
+         TabStop         =   0   'False
+         Top             =   240
+         Width           =   10455
+         Begin VB.PictureBox pbTimeBlock 
+            Appearance      =   0  'Flat
+            BackColor       =   &H00C0C0FF&
+            BorderStyle     =   0  'None
+            ForeColor       =   &H80000008&
+            Height          =   135
+            Left            =   0
+            ScaleHeight     =   9
+            ScaleMode       =   3  'Pixel
+            ScaleWidth      =   25
+            TabIndex        =   6
+            TabStop         =   0   'False
+            Top             =   0
+            Width           =   375
+         End
+      End
+   End
+   Begin MSComctlLib.ListView lstPlaylist 
+      Height          =   6255
+      Left            =   10440
+      TabIndex        =   3
+      Top             =   0
+      Width           =   3735
+      _ExtentX        =   6588
+      _ExtentY        =   11033
+      View            =   3
+      Arrange         =   1
+      LabelEdit       =   1
+      MultiSelect     =   -1  'True
+      LabelWrap       =   -1  'True
+      HideSelection   =   0   'False
+      HideColumnHeaders=   -1  'True
+      FullRowSelect   =   -1  'True
+      _Version        =   393217
+      ForeColor       =   -2147483640
+      BackColor       =   -2147483643
+      Appearance      =   0
+      NumItems        =   2
+      BeginProperty ColumnHeader(1) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
+         Text            =   "Name"
+         Object.Width           =   4941
+      EndProperty
+      BeginProperty ColumnHeader(2) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
+         SubItemIndex    =   1
+         Text            =   "Time"
+         Object.Width           =   1235
+      EndProperty
+   End
    Begin VB.PictureBox bbMenuBar 
       Appearance      =   0  'Flat
       BackColor       =   &H00000000&
@@ -24,7 +100,7 @@ Begin VB.Form frmMain
       ScaleHeight     =   32
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   32
-      TabIndex        =   3
+      TabIndex        =   0
       TabStop         =   0   'False
       Top             =   0
       Width           =   480
@@ -32,134 +108,8 @@ Begin VB.Form frmMain
    Begin VB.Timer tmrUpdateTime 
       Enabled         =   0   'False
       Interval        =   1
-      Left            =   120
-      Top             =   5760
-   End
-   Begin VB.PictureBox pbTimeBar 
-      Align           =   2  'Align Bottom
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   135
-      Left            =   0
-      ScaleHeight     =   10
-      ScaleMode       =   0  'User
-      ScaleWidth      =   697
-      TabIndex        =   1
-      TabStop         =   0   'False
-      Top             =   6255
-      Width           =   10455
-      Begin VB.PictureBox pbTimeBlock 
-         Appearance      =   0  'Flat
-         BackColor       =   &H00C0C0FF&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   135
-         Left            =   0
-         ScaleHeight     =   9
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   25
-         TabIndex        =   2
-         TabStop         =   0   'False
-         Top             =   0
-         Width           =   375
-      End
-   End
-   Begin MSComctlLib.StatusBar sbStatusBar 
-      Align           =   2  'Align Bottom
-      Height          =   315
-      Left            =   0
-      TabIndex        =   0
-      Top             =   6390
-      Width           =   10455
-      _ExtentX        =   18441
-      _ExtentY        =   556
-      _Version        =   393216
-      BeginProperty Panels {8E3867A5-8586-11D1-B16A-00C0F0283628} 
-         NumPanels       =   9
-         BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
-            AutoSize        =   2
-            Bevel           =   0
-            Enabled         =   0   'False
-            Object.Width           =   900
-            MinWidth        =   882
-            Text            =   "Wait"
-            TextSave        =   "Wait"
-         EndProperty
-         BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
-            Bevel           =   0
-            Object.Width           =   353
-            MinWidth        =   353
-            Text            =   "|"
-            TextSave        =   "|"
-         EndProperty
-         BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
-            AutoSize        =   2
-            Bevel           =   0
-            Object.Width           =   1402
-            MinWidth        =   882
-            Text            =   "Stoped."
-            TextSave        =   "Stoped."
-         EndProperty
-         BeginProperty Panel4 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
-            Bevel           =   0
-            Object.Width           =   353
-            MinWidth        =   353
-            Text            =   "|"
-            TextSave        =   "|"
-         EndProperty
-         BeginProperty Panel5 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
-            AutoSize        =   2
-            Bevel           =   0
-            Object.Width           =   2408
-            MinWidth        =   882
-            Text            =   "0% (0:00/0:00)"
-            TextSave        =   "0% (0:00/0:00)"
-         EndProperty
-         BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
-            Bevel           =   0
-            Object.Width           =   353
-            MinWidth        =   353
-            Text            =   "|"
-            TextSave        =   "|"
-         EndProperty
-         BeginProperty Panel7 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
-            AutoSize        =   2
-            Bevel           =   0
-            Object.Width           =   2646
-            MinWidth        =   882
-            Text            =   "No File Open....."
-            TextSave        =   "No File Open....."
-         EndProperty
-         BeginProperty Panel8 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
-            Style           =   6
-            Alignment       =   2
-            AutoSize        =   1
-            Bevel           =   0
-            Object.Width           =   8290
-            MinWidth        =   882
-            TextSave        =   "2016/2/28"
-         EndProperty
-         BeginProperty Panel9 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
-            Style           =   5
-            Alignment       =   2
-            AutoSize        =   2
-            Bevel           =   0
-            Object.Width           =   1032
-            MinWidth        =   882
-            TextSave        =   "13:27"
-         EndProperty
-      EndProperty
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Î¢ÈíÑÅºÚ"
-         Size            =   9
-         Charset         =   134
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      Left            =   4320
+      Top             =   2640
    End
    Begin VB.PictureBox frmPlayer 
       Appearance      =   0  'Flat
@@ -171,7 +121,7 @@ Begin VB.Form frmMain
       ScaleHeight     =   417
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   697
-      TabIndex        =   4
+      TabIndex        =   1
       TabStop         =   0   'False
       Top             =   0
       Width           =   10455
@@ -181,13 +131,13 @@ Begin VB.Form frmMain
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
          Height          =   720
-         Left            =   10080
+         Left            =   9840
          ScaleHeight     =   48
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   24
-         TabIndex        =   5
+         TabIndex        =   2
          TabStop         =   0   'False
-         Top             =   2760
+         Top             =   2880
          Width           =   360
       End
    End
@@ -198,6 +148,12 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+
+Public nowPlaying    As ListItem
+
+Public isHide        As Boolean
+
+Private ItemSelected As ListItem
 
 Private Sub bbMenuBar_MouseDown(Button As Integer, _
                                 Shift As Integer, _
@@ -221,11 +177,22 @@ Private Sub bbMenuBar_MouseMove(Button As Integer, _
 
 End Sub
 
+Private Sub bbPlaylist_Click()
+    If (boolPlaylistStatus = True) Then
+        PlaylistHide
+    Else
+        PlaylistShow
+    End If
+    
+End Sub
+
 Private Sub bbPlaylist_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If (bbPlaylist.BackColor <> RGB(48, 48, 48)) Then
         bbPlaylist.BackColor = RGB(48, 48, 48)
-        SwitchUI True
-
+        
+        If (Not mdlToolBarAlphaer.boolPlaylistStatus) Then
+            SwitchUI True
+        End If
     End If
 
 End Sub
@@ -269,10 +236,14 @@ End Sub
 Public Sub ReCalcPlayWindow()
     frmPlayer.width = (Me.width / Screen.TwipsPerPixelX)
     frmPlayer.height = (Me.height / Screen.TwipsPerPixelY)
-    mdlGlobalPlayer.width = frmPlayer.width
-    mdlGlobalPlayer.height = frmPlayer.height - mdlToolBarAlphaer.UIHeightButtom - 31
-    bbPlaylist.Left = frmPlayer.width - 32
+
+    bbPlaylist.Left = frmPlayer.width - 32 - mdlToolBarAlphaer.UIWidthRight
     bbPlaylist.Top = frmPlayer.height / 2 - bbPlaylist.height
+    lstPlaylist.Left = frmPlayer.width - mdlToolBarAlphaer.UIWidthRight
+    lstPlaylist.height = Me.height
+    frmPlayer.width = (Me.width / Screen.TwipsPerPixelX) - mdlToolBarAlphaer.UIWidthRight
+    mdlGlobalPlayer.width = frmPlayer.width
+    mdlGlobalPlayer.height = frmPlayer.height - mdlToolBarAlphaer.UIHeightButtom - frmMain.pbTimeBar.height
     ResizePlayWindow
 End Sub
 
@@ -360,7 +331,7 @@ Private Sub frmPlayer_MouseMove(Button As Integer, _
         mdlToolBarAlphaer.apPlaylistHint.RefreshHW 24, 48
 
     End If
-    If (X < 32 And Y < 32) Or (X > bbPlaylist.Left And Y > bbPlaylist.Top And Y < bbPlaylist.Top + bbPlaylist.height) Then
+    If (X < 32 And Y < 32) Then
         RefreshUI
     End If
 
@@ -426,3 +397,41 @@ Private Sub tmrUpdateTime_Timer()
 
     'Set Me.Picture = mdlGlobalPlayer.NowFrame
 End Sub
+
+Public Sub AutoPatern()
+    Load frmPaternAdd
+    frmPaternAdd.Show vbModeless, Me
+    frmPaternAdd.Form_Load
+    frmPaternAdd.cmdAddToList_Click
+    
+End Sub
+
+
+Private Sub lstPlaylist_DblClick()
+    
+    If (ItemSelected Is Nothing) Then Exit Sub
+    If (Not (NameGet(File) = ItemSelected.Text)) Then
+        mdlGlobalPlayer.CloseFile
+        mdlGlobalPlayer.File = mdlPlaylist.GetItemByPath(ItemSelected.key).FullPath
+        mdlGlobalPlayer.RenderMediaFile
+        
+        If Not nowPlaying Is Nothing Then nowPlaying.Bold = False
+        Set nowPlaying = ItemSelected
+        
+        If Not nowPlaying Is Nothing Then nowPlaying.Bold = True
+        
+    End If
+    
+End Sub
+
+Private Sub lstPlaylist_ItemClick(ByVal Item As MSComctlLib.ListItem)
+    Set ItemSelected = Item
+    
+End Sub
+
+Private Sub lstPlaylist_KeyDown(KeyCode As Integer, Shift As Integer)
+    
+    If (KeyCode = vbKeySpace) Then SwitchPlayStauts
+    
+End Sub
+

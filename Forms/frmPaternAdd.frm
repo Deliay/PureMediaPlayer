@@ -206,9 +206,9 @@ ErrExp:
     
 End Sub
 
-Private Sub Form_Load()
+Public Sub Form_Load()
     txtNowName.Text = Dir(mdlGlobalPlayer.File)
     txtRegExp.Text = "*" & Mid$(Dir(mdlGlobalPlayer.File), InStrRev(Dir(mdlGlobalPlayer.File), "."))
     cmdTestParten_Click
-    
 End Sub
+

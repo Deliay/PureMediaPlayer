@@ -1,5 +1,4 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form frmPlaylist 
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
@@ -31,36 +30,6 @@ Begin VB.Form frmPlaylist
       Interval        =   250
       Left            =   1200
       Top             =   2280
-   End
-   Begin MSComctlLib.ListView lstPlaylist 
-      Height          =   4935
-      Left            =   0
-      TabIndex        =   0
-      Top             =   0
-      Width           =   3735
-      _ExtentX        =   6588
-      _ExtentY        =   8705
-      View            =   3
-      Arrange         =   1
-      LabelEdit       =   1
-      MultiSelect     =   -1  'True
-      LabelWrap       =   -1  'True
-      HideSelection   =   0   'False
-      FullRowSelect   =   -1  'True
-      _Version        =   393217
-      ForeColor       =   -2147483640
-      BackColor       =   -2147483643
-      Appearance      =   0
-      NumItems        =   2
-      BeginProperty ColumnHeader(1) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
-         Text            =   "Name"
-         Object.Width           =   4941
-      EndProperty
-      BeginProperty ColumnHeader(2) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
-         SubItemIndex    =   1
-         Text            =   "Time"
-         Object.Width           =   1235
-      EndProperty
    End
    Begin VB.Menu File 
       Caption         =   "File"
@@ -126,11 +95,6 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Public nowPlaying    As ListItem
-
-Public isHide        As Boolean
-
-Private ItemSelected As ListItem
 
 Private oldTop       As Long
 
@@ -150,9 +114,9 @@ Private Sub File_Clear_Click()
 End Sub
 
 Private Sub File_Close_Click()
-    frmPlaylist.isHide = Not frmPlaylist.isHide
+    frmMain.isHide = Not frmMain.isHide
     
-    If (frmPlaylist.isHide) Then
+    If (frmMain.isHide) Then
         frmPlaylist.Show vbModeless, frmMain
     Else
         frmPlaylist.Hide
