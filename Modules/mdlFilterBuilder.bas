@@ -18,7 +18,7 @@ Private Declare Function RegisterVSFilter _
                 Alias "DllRegisterServer" () As Long
 
 Private Declare Function RegisterMadVRFilter _
-                Lib "madVR.dll" _
+                Lib "madVR.ax" _
                 Alias "DllRegisterServer" () As Long
 
 ''
