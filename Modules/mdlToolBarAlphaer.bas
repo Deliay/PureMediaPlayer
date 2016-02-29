@@ -92,7 +92,7 @@ Public Sub LoadUI()
     End If
     
     frmPaternAdd.Hide
-    frmMain.Show
+    
     apMenuButton.hDC = frmMain.bbMenuBar.hDC
     apMenuButton.LoadImageWH App.Path & "\Image\Menu.png", 32, 32
     apPlaylistHint.hDC = frmMain.bbPlaylist.hDC
@@ -104,7 +104,18 @@ Public Sub LoadUI()
         apPlayControl(i).hDC = frmMain.bbPlaystatus(i).hDC
         apPlayControl(i).LoadImageWH App.Path & "\Image\playcontrol_" & i & ".png", 32, 32
     Next
+    frmMain.Show
+End Sub
 
+Public Sub RenderUI()
+    apMenuButton.RefreshHW 32, 32
+    apPlaylistHint.RefreshHW 24, 48
+
+    Dim i As Long
+
+    For i = 0 To 4
+        apPlayControl(i).RefreshHW 32, 32
+    Next
 End Sub
 
 Public Sub RefreshUI()
@@ -122,21 +133,22 @@ Public Sub RefreshUI()
         .bbPlaylist.Visible = True
         .bbPlaylist.Refresh
         .bbPlaylist.ZOrder 0
-        apMenuButton.RefreshHW 32, 32
-        apPlaylistHint.RefreshHW 24, 48
-        UIHeightButtom = UIHeightButtom + .pbTimeBar.height
-        UIHeightButtom = UIHeightButtom + .sbStatusBar.height
+            
+        frmMain.bbPlaystatus(4).Left = frmMain.sbStatusBar.Width - frmMain.bbPlaystatus(4).Width - 4
+    
+
+        UIHeightButtom = UIHeightButtom + .pbTimeBar.Height
+        UIHeightButtom = UIHeightButtom + .sbStatusBar.Height
         
-        UIHeightTop = .bbMenuBar.height
-
+        UIHeightTop = .bbMenuBar.Height
         Dim i As Long
-
+    
         For i = 0 To 4
             .bbPlaystatus(i).Visible = True
             .bbPlaystatus(i).Refresh
-            apPlayControl(i).RefreshHW 32, 32
         Next
-
+        
+        RenderUI
     End With
 
 End Sub
@@ -160,7 +172,7 @@ Public Sub HideUI()
         Next
 
     End With
-
+    
 End Sub
 
 Public Sub SwitchUI(Optional force As Boolean = False, Optional val As Boolean = True)
@@ -182,7 +194,8 @@ refreshDirect:
         HideUI
         
     End If
-
+    frmMain.ReCalcPlayWindow
+    frmMain.srcH = 0
 End Sub
 
 Public Sub DragWindow(ByVal lngHwnd As Long)
@@ -203,8 +216,8 @@ Public Sub NoBorder(ByVal lngHwnd As Long)
 End Sub
 
 Public Sub PlaylistShow()
-    mdlToolBarAlphaer.UIWidthRight = frmMain.lstPlaylist.width
-    frmMain.lstPlaylist.Left = (frmMain.width / Screen.TwipsPerPixelX) - frmMain.lstPlaylist.width
+    mdlToolBarAlphaer.UIWidthRight = frmMain.lstPlaylist.Width
+    frmMain.lstPlaylist.Left = (frmMain.Width / Screen.TwipsPerPixelX) - frmMain.lstPlaylist.Width
     frmMain.ReCalcPlayWindow
     boolPlaylistStatus = True
 
@@ -212,7 +225,7 @@ End Sub
 
 Public Sub PlaylistHide()
     mdlToolBarAlphaer.UIWidthRight = 0
-    frmMain.lstPlaylist.Left = (frmMain.width / Screen.TwipsPerPixelX) + frmMain.lstPlaylist.width
+    frmMain.lstPlaylist.Left = (frmMain.Width / Screen.TwipsPerPixelX) + frmMain.lstPlaylist.Width
     frmMain.ReCalcPlayWindow
     boolPlaylistStatus = False
 
@@ -220,6 +233,7 @@ End Sub
 
 Public Sub PlayPauseSwitch()
     frmMain.bbPlaystatus(PlayControl.CTRL_PLAYPAUSE).Cls
+
     If (mdlGlobalPlayer.GlobalPlayStatus = playing) Then
         apPlayControl(PlayControl.CTRL_PLAYPAUSE).LoadImageWH App.Path & "\Image\playcontrol_" & PlayControl.CTRL_PLAYPAUSE & "_.png", 32, 32
     Else
