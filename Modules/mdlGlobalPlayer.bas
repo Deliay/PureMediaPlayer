@@ -29,13 +29,13 @@ Private ifVolume          As IBasicAudio
 
 Private ifType            As IMediaTypeInfo
 
-Private eRenderType       As RenderType
+Public GlobalRenderType   As RenderType
 
 Private EVRHoster         As EVRRenderer
 
-Public width              As Long
+Public Width              As Long
 
-Public height             As Long
+Public Height             As Long
 
 Private boolLoadedFile    As Boolean
 
@@ -175,22 +175,21 @@ Public Sub RenderMediaFile()
     UpdateStatus Dir(strFilePath), FileName
  
     hasVideo_ = False: hasAudio_ = False: hasSubtitle_ = False
-    
-    eRenderType = MadVRednerer
-    
-    mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, eRenderType
+
+    mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
     
     If (HasVideo = False And hasAudio_ = False) Then GoTo DcodeErr
     UpdateTitle Dir(File)
     Set ifPostion = GlobalFilGraph
 
-    If (eRenderType = EnhancedVideoRenderer) Then
+    If (GlobalRenderType = EnhancedVideoRenderer) Then
         Set EVRHoster = New EVRRenderer
         EVRHoster.CreateInterface mdlFilterBuilder.EVRFilterStorage
+
     End If
 
     If (HasVideo) Then
-        If (eRenderType <> EnhancedVideoRenderer) Then
+        If (GlobalRenderType <> EnhancedVideoRenderer) Then
             Set ifVideo = GlobalFilGraph
             Set ifPlayback = GlobalFilGraph
             'ifPlayback.Caption = "PureMediaPlayer - LayerWindow"
@@ -207,13 +206,8 @@ Public Sub RenderMediaFile()
             mdlGlobalPlayer.ResizePlayWindow
             ifPlayback.HideCursor False
         Else
-            Dim pos1 As MFVideoNormalizedRect, rect As EVRImport2.tagRECT
-            rect.Left = 0
-            rect.Top = 0
-            rect.Right = width
-            rect.Bottom = height
-            EVRHoster.GetInterface.SetAspectRatioMode 0
-            EVRHoster.GetInterface.SetVideoPosition 0&, VarPtr(rect)
+            EVRHoster.SetPlayBackWindow frmMain.frmPlayer.hWnd
+            mdlGlobalPlayer.ResizePlayWindow
         End If
         
     End If
@@ -247,6 +241,7 @@ hErr:
     Resume Next
 
     mdlGlobalPlayer.Play
+    PlayPauseSwitch
     DoEvents
     mdlGlobalPlayer.ResizePlayWindow
     
@@ -352,14 +347,15 @@ Public Sub SwitchPlayStauts()
         End If
         
     End If
+
     PlayPauseSwitch
+
 End Sub
 
 Public Sub CloseFile()
     UpdateStatus StaticString(PLAYER_STATUS_CLOSEING), Action
     strLastestFile = ""
     UpdateTitle StaticString(PLAYER_STATUS_IDLE)
-    DoEvents
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     
 End Sub
@@ -368,8 +364,11 @@ Public Sub ResizePlayWindow()
     
     If (Not hasVideo_) Then Exit Sub
     
-    If (ifVideo Is Nothing) Then Exit Sub
-
+    If (ifVideo Is Nothing) Then
+        If (GlobalRenderType <> EnhancedVideoRenderer) Then
+            Exit Sub
+        End If
+    End If
     'On Error GoTo hErr
     
     Dim commonW As Long, commonH As Long
@@ -377,33 +376,48 @@ Public Sub ResizePlayWindow()
     Dim resultW As Long, resultH As Long
     
     Dim resultT As Long, resultL As Long
-    
-    ifVideo.GetVideoSize commonW, commonH
+
+    If (GlobalRenderType = EnhancedVideoRenderer) Then
+        EVRHoster.GetVideoSize commonW, commonH
+    Else
+        ifVideo.GetVideoSize commonW, commonH
+
+    End If
+
     VideoRatio = commonW / commonH
-    resultW = width
-    resultH = width / VideoRatio
+    resultW = Width
+    resultH = Width / VideoRatio
     
-    If (resultH > height) Then
-        resultW = VideoRatio * height
-        resultH = height
+    If (resultH > Height) Then
+        resultW = VideoRatio * Height
+        resultH = Height
         
     End If
     
-    resultT = (height - resultH) / 2
-    resultL = (width - resultW) / 2
-    ifPlayback.SetWindowPosition resultL, resultT, resultW, resultH
+    resultT = (Height - resultH) / 2
+    resultL = (Width - resultW) / 2
+
+    If (GlobalRenderType = EnhancedVideoRenderer) Then
+        EVRHoster.SetVideoSize resultL, resultT, resultW, resultH
+        
+    Else
+        ifPlayback.SetWindowPosition resultL, resultT, resultW, resultH
+
+    End If
+
 hErr:
     frmMain.pbTimeBar.ZOrder 0
     
 End Sub
 
 Public Sub UpdateStatus(strCaption As String, Target As StatusBarEnum)
+
     If (Target = PlayBack) Then
         frmMain.Label2.Caption = strCaption
     ElseIf Target = PlayTime Then
         frmMain.Label1.Caption = strCaption
+
     End If
-    
     
 End Sub
 
@@ -440,7 +454,11 @@ Public Sub SwitchFullScreen(Optional force As Boolean = False, _
                             Optional forceValue As Boolean = False)
 
     If (Not HasVideo) Then Exit Sub
-    If (ifPlayback Is Nothing) Then Exit Sub
+    If (ifVideo Is Nothing) Then
+        If (GlobalRenderType <> EnhancedVideoRenderer) Then
+            Exit Sub
+        End If
+    End If
     If force = True Then
         boolIsFullScreen = forceValue
         ResizeFullScreen
@@ -456,8 +474,8 @@ End Sub
 Public Sub ResizeFullScreen()
 
     If (boolIsFullScreen) Then
-        lngStorageW = frmMain.width
-        lngStorageH = frmMain.height
+        lngStorageW = frmMain.Width
+        lngStorageH = frmMain.Height
         lngStorageT = frmMain.Top
         lngStorageL = frmMain.Left
         frmMain.BorderStyle = 0
@@ -470,8 +488,8 @@ Public Sub ResizeFullScreen()
         frmMain.WindowState = 0
 
         If (lngStorageW <> 0) Then
-            frmMain.width = lngStorageW
-            frmMain.height = lngStorageH
+            frmMain.Width = lngStorageW
+            frmMain.Height = lngStorageH
             frmMain.Top = lngStorageT
             frmMain.Left = lngStorageL
 

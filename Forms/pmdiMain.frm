@@ -2,13 +2,14 @@ VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form frmMain 
    Appearance      =   0  'Flat
-   BackColor       =   &H80000002&
+   BackColor       =   &H00000000&
    Caption         =   "Pure Media Player"
    ClientHeight    =   6705
    ClientLeft      =   165
    ClientTop       =   210
    ClientWidth     =   10455
    Icon            =   "pmdiMain.frx":0000
+   KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    ScaleHeight     =   447
    ScaleMode       =   3  'Pixel
@@ -19,7 +20,7 @@ Begin VB.Form frmMain
       Appearance      =   0  'Flat
       BackColor       =   &H00000000&
       BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+      ForeColor       =   &H00000000&
       Height          =   855
       Left            =   0
       ScaleHeight     =   57
@@ -184,6 +185,7 @@ Begin VB.Form frmMain
       _Version        =   393217
       ForeColor       =   16777215
       BackColor       =   0
+      BorderStyle     =   1
       Appearance      =   0
       NumItems        =   2
       BeginProperty ColumnHeader(1) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
@@ -221,6 +223,7 @@ Begin VB.Form frmMain
       Appearance      =   0  'Flat
       BackColor       =   &H00000000&
       BorderStyle     =   0  'None
+      FillStyle       =   0  'Solid
       ForeColor       =   &H80000008&
       Height          =   6255
       Left            =   0
@@ -261,6 +264,8 @@ Public isHide        As Boolean
 
 Private ItemSelected As ListItem
 
+Public srcH As Long, srcW As Long
+
 Private Sub bbMenuBar_MouseDown(Button As Integer, _
                                 Shift As Integer, _
                                 X As Single, _
@@ -290,6 +295,7 @@ Private Sub bbPlaylist_Click()
     Else
         PlaylistShow
 
+        'RefreshUI
     End If
     
 End Sub
@@ -335,12 +341,19 @@ Private Sub bbPlaystatus_Click(Index As Integer)
         Case PlayControl.CTRL_VOICE
 
     End Select
+
     frmPlayer.SetFocus
+
 End Sub
 
 Private Sub Form_Activate()
     mdlGlobalPlayer.SwitchFullScreen True, False
     
+End Sub
+
+Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
+    frmPlayer_KeyDown KeyCode, Shift
+
 End Sub
 
 Private Sub Form_Load()
@@ -369,26 +382,30 @@ End Sub
 
 Private Sub Form_Resize()
     Sleep 1
+    RenderUI
     ReCalcPlayWindow
-    RefreshUI
-    DoEvents
-
+    Sleep 100
+    frmPlayer.Cls
+    frmPlayer.Refresh
+    RenderUI
 End Sub
 
 Public Sub ReCalcPlayWindow()
-    frmPlayer.width = (Me.width / Screen.TwipsPerPixelX)
-    frmPlayer.height = (Me.height / Screen.TwipsPerPixelY)
+    frmPlayer.Width = (Me.Width / Screen.TwipsPerPixelX)
+    frmPlayer.Height = (Me.Height / Screen.TwipsPerPixelY)
 
-    bbPlaylist.Left = frmPlayer.width - 32 - mdlToolBarAlphaer.UIWidthRight
-    bbPlaylist.Top = frmPlayer.height / 2 - bbPlaylist.height
-    lstPlaylist.Left = frmPlayer.width - mdlToolBarAlphaer.UIWidthRight
+    bbPlaylist.Left = frmPlayer.Width - 32 - mdlToolBarAlphaer.UIWidthRight
+    bbPlaylist.Top = frmPlayer.Height / 2 - bbPlaylist.Height
+    lstPlaylist.Left = frmPlayer.Width - mdlToolBarAlphaer.UIWidthRight
     
-    frmPlayer.width = (Me.width / Screen.TwipsPerPixelX) - mdlToolBarAlphaer.UIWidthRight
-    mdlGlobalPlayer.width = frmPlayer.width
-    mdlGlobalPlayer.height = frmPlayer.height - mdlToolBarAlphaer.UIHeightButtom - 23
-    lstPlaylist.height = mdlGlobalPlayer.height
-    pbTimeBar.width = (Me.width / Screen.TwipsPerPixelX)
-    bbPlaystatus(4).Left = sbStatusBar.width - bbPlaystatus(4).width - 4
+    frmPlayer.Width = (Me.Width / Screen.TwipsPerPixelX) - mdlToolBarAlphaer.UIWidthRight
+    mdlGlobalPlayer.Width = frmPlayer.Width
+    mdlGlobalPlayer.Height = frmPlayer.Height - mdlToolBarAlphaer.UIHeightButtom - 23
+    
+    lstPlaylist.Height = mdlGlobalPlayer.Height
+    
+    pbTimeBar.Width = (Me.Width / Screen.TwipsPerPixelX)
+    
     ResizePlayWindow
 
 End Sub
@@ -457,7 +474,7 @@ Private Sub frmPlayer_MouseDown(Button As Integer, _
 End Sub
 
 Private Sub CalcPercent(X As Single)
-    Precent = (X / pbTimeBar.width) * 100
+    Precent = (X / pbTimeBar.Width) * 100
     tmrUpdateTime_Timer
     
 End Sub
@@ -515,7 +532,7 @@ Private Sub tmrUpdateTime_Timer()
 
     If (mdlGlobalPlayer.Loaded = False) Then Exit Sub
     UpdateStatus FormatedCurrentTime & "/" & FormatedDuration, PlayTime
-    pbTimeBlock.width = Precent / 100 * (pbTimeBar.width)
+    pbTimeBlock.Width = Precent / 100 * (pbTimeBar.Width)
 
     If (Duration > 1) Then
         If (Duration <= CurrentTime) Then
@@ -523,12 +540,12 @@ Private Sub tmrUpdateTime_Timer()
             
             If (mdlPlaylist.PlaylistPlayNext) Then
                 CurrentTime = 0
-                pbTimeBlock.width = 0
+                pbTimeBlock.Width = 0
             Else
                 
                 If (frmMenu.mmStatus_Loop.Checked) Then
                     CurrentTime = 0
-                    pbTimeBlock.width = 0
+                    pbTimeBlock.Width = 0
                     
                 End If
                 
@@ -537,8 +554,11 @@ Private Sub tmrUpdateTime_Timer()
         Else
 
             'resize
-            ReCalcPlayWindow
-
+            If (srcH <> Me.Height Or srcW <> Me.Width) Then
+                Form_Resize
+                srcH = Me.Height
+                srcW = Me.Width
+            End If
             'AlphaHwnd bbMenuBar.hDC, frmPlayer.hDC, 150&, bbMenuBar.Width, bbMenuBar.Height
         End If
     
