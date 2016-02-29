@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form frmMenu 
    BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Form1"
-   ClientHeight    =   3135
+   ClientHeight    =   -360
    ClientLeft      =   150
-   ClientTop       =   795
-   ClientWidth     =   4680
+   ClientTop       =   1125
+   ClientWidth     =   840
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,8 +18,8 @@ Begin VB.Form frmMenu
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   3135
-   ScaleWidth      =   4680
+   ScaleHeight     =   -360
+   ScaleWidth      =   840
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  '´°¿ÚÈ±Ê¡
    Begin VB.Menu MenuMain 
@@ -86,6 +86,29 @@ Begin VB.Form frmMenu
          End
          Begin VB.Menu mmStatus_SpeedReset 
             Caption         =   "Reset Speed 1.0x"
+         End
+      End
+      Begin VB.Menu Renderer 
+         Caption         =   "Renderer"
+         Begin VB.Menu Renderers 
+            Caption         =   "Video Renderer"
+            Index           =   0
+         End
+         Begin VB.Menu Renderers 
+            Caption         =   "VMR7"
+            Index           =   1
+         End
+         Begin VB.Menu Renderers 
+            Caption         =   "VRM9(Windowless)"
+            Index           =   2
+         End
+         Begin VB.Menu Renderers 
+            Caption         =   "EVR(CP)"
+            Index           =   3
+         End
+         Begin VB.Menu Renderers 
+            Caption         =   "MADVR"
+            Index           =   4
          End
       End
       Begin VB.Menu mmInfo 
@@ -211,3 +234,13 @@ Private Sub mmInfo_System_Click()
     
 End Sub
 
+Public Sub Renderers_Click(Index As Integer)
+
+    frmMenu.Renderers(val(getConfig("Renderer"))).Checked = False
+    
+    saveConfig "Renderer", CStr(Index)
+    frmMenu.Renderers(Index).Checked = True
+    
+    GlobalRenderType = Index
+
+End Sub

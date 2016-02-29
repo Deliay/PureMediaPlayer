@@ -309,7 +309,7 @@ Public Function LoadImage(Path)
 
 End Function
 
-Public Function LoadImageWH(Path, width As Long, height As Long)
+Public Function LoadImageWH(Path, Width As Long, Height As Long)
 
     If phDC = 0 Then Exit Function
     If gImage = 0 Then GdiPlusExports.GdipCreateFromHDC phDC, gImage
@@ -319,7 +319,7 @@ Public Function LoadImageWH(Path, width As Long, height As Long)
         'MsgBox "ERROR!"
     End If
 
-    If GdipDrawImageRect(gImage, lImage, 0, 0, width, height) <> Ok Then
+    If GdipDrawImageRect(gImage, lImage, 0, 0, Width, Height) <> Ok Then
 
         'MsgBox "ERROR!"
     End If
@@ -329,17 +329,17 @@ End Function
 Public Function Refresh()
 
     If (gImage = 0 Or lImage = 0) Then Exit Function
-    If GdipDrawImageRect(gImage, lImage, 0, 0, width, height) <> Ok Then
+    If GdipDrawImageRect(gImage, lImage, 0, 0, Width, Height) <> Ok Then
 
         'MsgBox "ERROR!"
     End If
 
 End Function
 
-Public Function RefreshHW(width As Long, height As Long)
+Public Function RefreshHW(Width As Long, Height As Long)
 
     If (gImage = 0 Or lImage = 0) Then Exit Function
-    If GdipDrawImageRect(gImage, lImage, 0, 0, width, height) <> Ok Then
+    If GdipDrawImageRect(gImage, lImage, 0, 0, Width, Height) <> Ok Then
         MsgBox "err"
 
     End If

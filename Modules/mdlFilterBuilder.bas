@@ -64,7 +64,8 @@ Public Sub RegisterAllDecoder()
     RegisterLAVSplitter
     RegisterLAVVideo
     RegisterVSFilter
-
+    RegisterMadVRFilter
+    
 End Sub
 
 Public Sub Main()
@@ -75,9 +76,10 @@ Public Sub Main()
     VSFilterIndex = -1
     VMR9Index = -1
     EVRIndex = -1
+    MadVRIndex = -1
     FillDecoder mdlGlobalPlayer.GlobalFilGraph
     
-    If (LAVAudioIndex = -1 Or LAVVideoIndex = -1 Or LAVSplitterIndex = -1 Or VSFilterIndex = -1 Or LAVSplitterSourceIndex = -1) Then
+    If (LAVAudioIndex = -1 Or LAVVideoIndex = -1 Or LAVSplitterIndex = -1 Or VSFilterIndex = -1 Or LAVSplitterSourceIndex = -1 Or MadVRIndex = -1) Then
         
         RegisterAllDecoder
         Set mdlGlobalPlayer.GlobalFilGraph = New FilgraphManager
@@ -85,16 +87,35 @@ Public Sub Main()
 
     End If
     
-    If (VMR9Index = -1) Then
-        MsgBox "Your computer not support VMR9 Render"
+    If (VMR9Index = -1 And EVRIndex = -1 And VMR7Index = -1) Then
+        MsgBox "Bad Renderer Support!"
         End
 
     End If
     
-    If (LAVAudioIndex = -1 Or LAVVideoIndex = -1 Or LAVSplitterIndex = -1 Or VSFilterIndex = -1 Or LAVSplitterSourceIndex = -1) Then
+    If (LAVAudioIndex = -1 Or LAVVideoIndex = -1 Or LAVSplitterIndex = -1 Or VSFilterIndex = -1 Or LAVSplitterSourceIndex = -1 Or MadVRIndex = -1) Then
     
-        MsgBox "Cannot Register Decoder! Please run me with Admin Perm"
+        MsgBox "Cannot Register Decoder! Please run again with Administrator Permission"
         End
+
+    End If
+
+    Load frmMenu
+
+    If (VMR9Index = -1) Then
+        frmMenu.Renderers(RenderType.VideoMixedRenderer9).Enabled = False
+
+    End If
+
+    If (EVRIndex = -1) Then
+        frmMenu.Renderers(RenderType.EnhancedVideoRenderer).Enabled = False
+
+    End If
+
+    If (getConfig("Renderer") = "") Then
+        frmMenu.Renderers_Click RenderType.MadVRednerer
+    Else
+        frmMenu.Renderers_Click val(getConfig("Renderer"))
 
     End If
 
