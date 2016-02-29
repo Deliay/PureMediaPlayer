@@ -108,14 +108,18 @@ Public Sub LoadUI()
 End Sub
 
 Public Sub RenderUI()
+    frmMain.bbMenuBar.Cls
+    frmMain.bbPlaylist.Cls
     apMenuButton.RefreshHW 32, 32
     apPlaylistHint.RefreshHW 24, 48
 
     Dim i As Long
-
     For i = 0 To 4
+        frmMain.bbPlaystatus(i).Cls
         apPlayControl(i).RefreshHW 32, 32
     Next
+    
+
 End Sub
 
 Public Sub RefreshUI()
