@@ -1,5 +1,5 @@
 Type=Exe
-Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\Windows\SysWOW64\stdole2.tlb#OLE Automation
+Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\Windows\SysWow64\stdole2.tlb#OLE Automation
 Reference=*\G{56A868B0-0AD4-11CE-B03A-0020AF0BA770}#1.0#0#C:\Windows\System32\quartz.dll#ActiveMovie control type library
 Reference=*\G{3F4DACA7-160D-11D2-A8E9-00104B365C9F}#5.5#0#C:\Windows\SysWOW64\vbscript.dll\3#Microsoft VBScript Regular Expressions 5.5
 Reference=*\G{3181A65A-CC39-4CDE-A4DF-2E889E6F1AF1}#1.51#0#Other\NewGraphBuilder\olelib.tlb#Edanmo's OLE interfaces & functions v1.81
@@ -37,7 +37,7 @@ HelpContextID="0"
 CompatibleMode="0"
 MajorVer=0
 MinorVer=2
-RevisionVer=29
+RevisionVer=33
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionCompanyName="RemiliaWorkstation"
