@@ -90,10 +90,10 @@ Public Sub ApplyLanguageToForm(frm As Form)
         If (boolHaveCaption = False) Then GoTo Continue
         If (Len(strVal) > 0) Then
             If (strVal <> "-") Then
-                strVal = GetLanguage(frm.Name, objCtrl.Name)
+                strVal = GetLanguage(frm.Name, objCtrl.Name & objCtrl.Index)
 
                 If (strVal = "") Then
-                    InI.INI_WriteString App.Path & "\language.ini", frm.Name, objCtrl.Name, objCtrl.Caption
+                    InI.INI_WriteString App.Path & "\language.ini", frm.Name, objCtrl.Name & objCtrl.Index, objCtrl.Caption
                 Else
                     objCtrl.Caption = strVal
 
@@ -108,6 +108,7 @@ Public Sub ApplyLanguageToForm(frm As Form)
 
 Continue:
         boolHaveCaption = False
+        strVal = GetLanguage(frm.Name, objCtrl.Name)
 
         Resume Next
 
@@ -133,7 +134,7 @@ Public Sub CreateLanguagePart(frm As Form)
         strVal = objCtrl.Caption
 
         If (Len(strVal) <> 0) Then
-            If (strVal <> "-") Then InI.INI_WriteString App.Path & "\language.ini", frm.Name, objCtrl.Name, strVal
+            If (strVal <> "-") Then InI.INI_WriteString App.Path & "\language.ini", frm.Name, objCtrl.Name & objCtrl.Index, strVal
 
         End If
 
