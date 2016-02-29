@@ -137,6 +137,12 @@ Begin VB.Form frmMenu
          Begin VB.Menu Propertys_Renderer 
             Caption         =   "Renderer"
          End
+         Begin VB.Menu Propertys_Split1 
+            Caption         =   "-"
+         End
+         Begin VB.Menu Propertys_Subtitle 
+            Caption         =   "Subtitle"
+         End
       End
       Begin VB.Menu mmHelp 
          Caption         =   "Help"
@@ -259,6 +265,10 @@ End Sub
 
 Private Sub Propertys_Splitter_Click()
     mdlFilterBuilder.ShowSpliterConfig
+End Sub
+
+Private Sub Propertys_Subtitle_Click()
+    mdlFilterBuilder.ShowSubtitleConfig
 End Sub
 
 Private Sub Propertys_Video_Click()
