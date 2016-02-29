@@ -2,12 +2,12 @@ VERSION 5.00
 Begin VB.Form frmMenu 
    BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Form1"
-   ClientHeight    =   -360
+   ClientHeight    =   3165
    ClientLeft      =   150
-   ClientTop       =   1125
-   ClientWidth     =   840
+   ClientTop       =   795
+   ClientWidth     =   4710
    BeginProperty Font 
-      Name            =   "Tahoma"
+      Name            =   "Î¢ÈíÑÅºÚ"
       Size            =   8.25
       Charset         =   0
       Weight          =   400
@@ -18,8 +18,8 @@ Begin VB.Form frmMenu
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   -360
-   ScaleWidth      =   840
+   ScaleHeight     =   3165
+   ScaleWidth      =   4710
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  '´°¿ÚÈ±Ê¡
    Begin VB.Menu MenuMain 
@@ -121,6 +121,21 @@ Begin VB.Form frmMenu
          End
          Begin VB.Menu mmInfo_Software 
             Caption         =   "Software"
+         End
+      End
+      Begin VB.Menu Propertys 
+         Caption         =   "Property"
+         Begin VB.Menu Propertys_Video 
+            Caption         =   "Video"
+         End
+         Begin VB.Menu Propertys_Audio 
+            Caption         =   "Audio"
+         End
+         Begin VB.Menu Propertys_Splitter 
+            Caption         =   "Splitter"
+         End
+         Begin VB.Menu Propertys_Renderer 
+            Caption         =   "Renderer"
          End
       End
       Begin VB.Menu mmHelp 
@@ -234,13 +249,27 @@ Private Sub mmInfo_System_Click()
     
 End Sub
 
+Private Sub Propertys_Audio_Click()
+    mdlFilterBuilder.ShowAudioDecoderConfig
+End Sub
+
+Private Sub Propertys_Renderer_Click()
+    mdlFilterBuilder.ShowRendererConfig
+End Sub
+
+Private Sub Propertys_Splitter_Click()
+    mdlFilterBuilder.ShowSpliterConfig
+End Sub
+
+Private Sub Propertys_Video_Click()
+    mdlFilterBuilder.ShowVideoDecoderConfig
+End Sub
+
 Public Sub Renderers_Click(Index As Integer)
 
     frmMenu.Renderers(val(getConfig("Renderer"))).Checked = False
     
     saveConfig "Renderer", CStr(Index)
     frmMenu.Renderers(Index).Checked = True
-    
-    GlobalRenderType = Index
 
 End Sub

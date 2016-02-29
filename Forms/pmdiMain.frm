@@ -8,6 +8,15 @@ Begin VB.Form frmMain
    ClientLeft      =   165
    ClientTop       =   210
    ClientWidth     =   10455
+   BeginProperty Font 
+      Name            =   "Î¢ÈíÑÅºÚ"
+      Size            =   9
+      Charset         =   134
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
    Icon            =   "pmdiMain.frx":0000
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
@@ -147,11 +156,11 @@ Begin VB.Form frmMain
          BackStyle       =   0  'Transparent
          Caption         =   "Stop"
          ForeColor       =   &H00FFFFFF&
-         Height          =   180
+         Height          =   300
          Left            =   2520
          TabIndex        =   13
          Top             =   360
-         Width           =   540
+         Width           =   660
       End
       Begin VB.Label Label1 
          Appearance      =   0  'Flat
@@ -187,6 +196,15 @@ Begin VB.Form frmMain
       BackColor       =   0
       BorderStyle     =   1
       Appearance      =   0
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Î¢ÈíÑÅºÚ"
+         Size            =   9
+         Charset         =   134
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       NumItems        =   2
       BeginProperty ColumnHeader(1) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
          Text            =   "Name"
@@ -221,9 +239,19 @@ Begin VB.Form frmMain
    End
    Begin VB.PictureBox frmPlayer 
       Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
       BackColor       =   &H00000000&
       BorderStyle     =   0  'None
       FillStyle       =   0  'Solid
+      BeginProperty Font 
+         Name            =   "ËÎÌå"
+         Size            =   9
+         Charset         =   134
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H80000008&
       Height          =   6255
       Left            =   0
@@ -348,7 +376,7 @@ End Sub
 
 Private Sub Form_Activate()
     mdlGlobalPlayer.SwitchFullScreen True, False
-    
+    RenderUI
 End Sub
 
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
@@ -362,7 +390,7 @@ Private Sub Form_Load()
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
     SwitchUI True
-
+    RenderUI
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
@@ -380,14 +408,9 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
 End Sub
 
-Private Sub Form_Resize()
-    Sleep 1
-    RenderUI
+Public Sub Form_Resize()
     ReCalcPlayWindow
-    Sleep 100
-    frmPlayer.Cls
-    frmPlayer.Refresh
-    RenderUI
+    If (mdlToolBarAlphaer.UIStatus = True) Then RefreshUI
 End Sub
 
 Public Sub ReCalcPlayWindow()
@@ -528,7 +551,7 @@ Private Sub pbTimeBlock_MouseDown(Button As Integer, _
 End Sub
 
 Private Sub tmrUpdateTime_Timer()
-    Sleep 2
+    Sleep 1
 
     If (mdlGlobalPlayer.Loaded = False) Then Exit Sub
     UpdateStatus FormatedCurrentTime & "/" & FormatedDuration, PlayTime
