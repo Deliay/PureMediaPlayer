@@ -58,14 +58,22 @@ Private VSFilterIndex    As Long, EVRIndex As Long, MadVRIndex As Long
 Private VMR9Index        As Long, VMR7Index As Long, VRIndex As Long
 
 Public EVRFilterStorage  As IBaseFilter
+Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 
 Public Sub RegisterAllDecoder()
+    ShellExecute 0, "open", "regsvr32.exe", "/u /s LAVAudio.ax", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/u /s LAVSplitter.ax", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/u /s LAVVideo.ax", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/u /s madVR.ax", App.Path & "\", 0
     RegisterLAVAudio
     RegisterLAVSplitter
     RegisterLAVVideo
     RegisterVSFilter
     RegisterMadVRFilter
-    
+    ShellExecute 0, "open", "regsvr32.exe", "/s LAVAudio.ax", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/s LAVSplitter.ax", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/s LAVVideo.ax", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/s madVR.ax", App.Path & "\", 0
 End Sub
 
 Public Sub Main()
@@ -151,13 +159,10 @@ Public Sub BuildGrph(ByVal srcFile As String, _
     'On Error GoTo OnlyInput
     'objGraphManager.AddSourceFilter srcFile, objSrcSplitterFilter
 
-    '    If (Not objSrcSplitterFilter Is Nothing And objSrcSplitterFilter.Pins.Count > 0) Then
-    '        GoTo ParserPins
-    'OnlyInput:
-    '    'Create Splitter
-    '        Resume Next
-    '    Else
+    'If (Not objSrcSplitterFilter Is Nothing And objSrcSplitterFilter.Pins.Count > 0) Then GoTo ParserPins
+
     objGraphManager.RegFilterCollection.Item LAVSplitterSourceIndex, objSrcSplitterReg
+    On Error GoTo regControl
     objSrcSplitterReg.Filter objSrcSplitterFilter
 
     On Error GoTo notExist
@@ -272,7 +277,9 @@ notExist:
         Next
 
     End If
-
+Exit Sub
+regControl:
+    mdlFilterBuilder.RegisterAllDecoder
 End Sub
 
 Private Sub FillDecoder(m_GraphManager As FilgraphManager)
@@ -351,7 +358,7 @@ Private Function CheckForFileSinkAndSetFileName(ByVal Flt As olelib.IUnknown, _
 
 End Function
 
-Public Function CastToUnkByIID(ByVal ObjToCastFrom As olelib.IUnknown, _
+Private Function CastToUnkByIID(ByVal ObjToCastFrom As olelib.IUnknown, _
                                IID As String) As stdole.IUnknown
 
     Dim UUID As olelib.UUID
@@ -361,7 +368,7 @@ Public Function CastToUnkByIID(ByVal ObjToCastFrom As olelib.IUnknown, _
 
 End Function
 
-Public Function vtblCall(ByVal pUnk As Long, _
+Private Function vtblCall(ByVal pUnk As Long, _
                          ByVal vtblIdx As Long, _
                          ParamArray P() As Variant)
 
