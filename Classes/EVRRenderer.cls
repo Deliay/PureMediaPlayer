@@ -68,7 +68,8 @@ Public Function SetVideoSize(Left As Long, Top As Long, Width As Long, Height As
         ifPlayback.SetVideoPosition 0&, VarPtr(rect)
     End If
     If (srcW <> Width Or srcH <> Height Or srcT <> Top Or srcL <> Left) Then
-        frmMain.frmPlayer.Cls
+        ifPlayback.RepaintVideo
+        
         srcW = Width
         srcH = Height
         srcT = Top
