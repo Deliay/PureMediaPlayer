@@ -175,7 +175,7 @@ Public Sub RenderMediaFile()
     UpdateStatus Dir(strFilePath), FileName
  
     hasVideo_ = False: hasAudio_ = False: hasSubtitle_ = False
-
+    GlobalRenderType = val(getConfig("Renderer"))
     mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
     
     If (HasVideo = False And hasAudio_ = False) Then GoTo DcodeErr

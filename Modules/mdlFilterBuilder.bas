@@ -49,6 +49,18 @@ Private Const CLSID_ActiveMovieCategories = "{DA4E3DA0-D07D-11d0-BD50-00A0C911CE
 
 Private Const CLSID_VideoInputDeviceCategory = "{860BB310-5D01-11d0-BD3B-00A0C911CE86}"
 
+Private objSrcSplitterReg As IRegFilterInfo, objSrcSplitterFilter As IFilterInfo
+
+Private objVideoReg       As IRegFilterInfo, objVideoFilter As IFilterInfo, objVideoPin As IPinInfo
+
+Private objAudioReg       As IRegFilterInfo, objAudioFilter As IFilterInfo, objAudioPin As IPinInfo
+
+Private objSubtitleReg    As IRegFilterInfo, objSubtitleFilter As IFilterInfo, objSubtitlePin As IPinInfo
+
+Private objRenderReg      As IRegFilterInfo, objRenderFilter As IFilterInfo ', objRenderPin As IPinInfo
+
+Private objSpliterPin     As IPinInfo
+
 Private LAVVideoIndex    As Long, LAVAudioIndex As Long
 
 Private LAVSplitterIndex As Long, LAVSplitterSourceIndex As Long
@@ -58,7 +70,7 @@ Private VSFilterIndex    As Long, EVRIndex As Long, MadVRIndex As Long
 Private VMR9Index        As Long, VMR7Index As Long, VRIndex As Long
 
 Public EVRFilterStorage  As IBaseFilter
-Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 
 Public Sub RegisterAllDecoder()
     ShellExecute 0, "open", "regsvr32.exe", "/u /s LAVAudio.ax", App.Path & "\", 0
@@ -140,19 +152,7 @@ Public Sub BuildGrph(ByVal srcFile As String, _
                      ByRef boolHasSubtitle As Boolean, _
                      Optional ByVal eRenderer As RenderType = VideoMixedRenderer9)
 
-    Dim objSrcFileFilter  As IFilterInfo
 
-    Dim objSrcSplitterReg As IRegFilterInfo, objSrcSplitterFilter As IFilterInfo
-
-    Dim objVideoReg       As IRegFilterInfo, objVideoFilter As IFilterInfo, objVideoPin As IPinInfo
-
-    Dim objAudioReg       As IRegFilterInfo, objAudioFilter As IFilterInfo, objAudioPin As IPinInfo
-
-    Dim objSubtitleReg    As IRegFilterInfo, objSubtitleFilter As IFilterInfo, objSubtitlePin As IPinInfo
-
-    Dim objRenderReg      As IRegFilterInfo, objRenderFilter As IFilterInfo ', objRenderPin As IPinInfo
-
-    Dim objSpliterPin     As IPinInfo
 
     'Try put source file directly
     '
@@ -266,17 +266,7 @@ ParserPins:
 
     Exit Sub
 notExist:
-    
-    If (Dir(srcFile) <> "") Then
-        objGraphManager.AddSourceFilter srcFile, objSrcSplitterFilter
-
-        For Each objSpliterPin In objSrcSplitterFilter.Pins
-
-            objSpliterPin.Render
-            boolHasAudio = True
-        Next
-
-    End If
+    Set GlobalFilGraph = Nothing
 Exit Sub
 regControl:
     mdlFilterBuilder.RegisterAllDecoder
@@ -389,4 +379,38 @@ Private Function vtblCall(ByVal pUnk As Long, _
 
     If HResDisp <> S_OK Then Err.Raise HResDisp
 
+End Function
+
+Public Function ShowVideoDecoderConfig()
+    If (HasVideo) Then ShowPropertyPage objVideoFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
+End Function
+
+Public Function ShowAudioDecoderConfig()
+    If (HasAudio) Then ShowPropertyPage objAudioFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
+End Function
+
+Public Function ShowSpliterConfig()
+    ShowPropertyPage objSrcSplitterFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
+End Function
+
+Public Function ShowSubtitleConfig()
+    If (HasSubtitle) Then ShowPropertyPage objSrcSplitterFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
+End Function
+
+Public Function ShowRendererConfig()
+    If (HasVideo) Then ShowPropertyPage objRenderFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
+End Function
+
+Public Function ShowPropertyPage(ByVal FilterOrPin As olelib.IUnknown, Optional Caption As String, Optional ByVal hwndOwner As Long) As Boolean
+    Const IID_ISpecifyPropertyPages = "{B196B28B-BAB4-101A-B69C-00AA00341D07}", VTbl_GetPages = 3
+    Dim oUnkSpPP As stdole.IUnknown, CAUUID(0 To 1) As Long
+    Set oUnkSpPP = CastToUnkByIID(FilterOrPin, IID_ISpecifyPropertyPages)
+
+    If vtblCall(ObjPtr(oUnkSpPP), VTbl_GetPages, VarPtr(CAUUID(0))) Then Exit Function
+    If CAUUID(0) = 0 Then Exit Function 'no PropPageCount was returned
+
+    OleCreatePropertyFrame hwndOwner, 0, 0, StrPtr(Caption), 1, ObjPtr(FilterOrPin), CAUUID(0), CAUUID(1), 0, 0, 0
+
+    CoTaskMemFree CAUUID(1)
+    ShowPropertyPage = True
 End Function

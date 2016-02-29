@@ -78,6 +78,10 @@ Private boolUIStatus      As Boolean
 
 Public boolPlaylistStatus As Boolean
 
+Public Property Get UIStatus() As Boolean
+    UIStatus = boolUIStatus
+End Property
+
 Public Sub LoadUI()
     Load frmMain
     Load frmPaternAdd
@@ -198,7 +202,7 @@ refreshDirect:
         HideUI
         
     End If
-    frmMain.ReCalcPlayWindow
+    frmMain.Form_Resize
     frmMain.srcH = 0
 End Sub
 
