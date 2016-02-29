@@ -141,10 +141,6 @@ Public Sub RefreshUI()
         .bbPlaylist.Visible = True
         .bbPlaylist.Refresh
         .bbPlaylist.ZOrder 0
-            
-        frmMain.bbPlaystatus(4).Left = frmMain.sbStatusBar.Width - frmMain.bbPlaystatus(4).Width - 4
-    
-
         UIHeightButtom = UIHeightButtom + .pbTimeBar.Height
         UIHeightButtom = UIHeightButtom + .sbStatusBar.Height
         

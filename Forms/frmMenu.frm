@@ -194,7 +194,7 @@ Private Sub mmStatus_ShowPlaylist_Click()
 End Sub
 
 Private Sub mmStatus_SpeedDown_Click()
-    frmMain.frmPlayer_KeyDown vbKeySubtract, 0
+    frmMain.Form_KeyDown vbKeySubtract, 0
 
 End Sub
 
@@ -204,7 +204,7 @@ Private Sub mmStatus_SpeedReset_Click()
 End Sub
 
 Private Sub mmStatus_SpeedUp_Click()
-    frmMain.frmPlayer_KeyDown vbKeyAdd, 0
+    frmMain.Form_KeyDown vbKeyAdd, 0
     
 End Sub
 

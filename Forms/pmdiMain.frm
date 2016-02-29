@@ -46,7 +46,8 @@ Begin VB.Form frmMain
          ForeColor       =   &H80000008&
          Height          =   480
          Index           =   4
-         Left            =   9840
+         Left            =   2520
+         MousePointer    =   7  'Size N S
          ScaleHeight     =   32
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   32
@@ -157,19 +158,20 @@ Begin VB.Form frmMain
          Caption         =   "Stop"
          ForeColor       =   &H00FFFFFF&
          Height          =   300
-         Left            =   2520
+         Left            =   4200
          TabIndex        =   13
          Top             =   360
          Width           =   660
       End
       Begin VB.Label Label1 
+         Alignment       =   1  'Right Justify
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
          Caption         =   "0:00/0:00"
          ForeColor       =   &H00FFFFFF&
          Height          =   300
-         Left            =   3360
+         Left            =   3000
          TabIndex        =   12
          Top             =   360
          Width           =   1050
@@ -365,9 +367,9 @@ Private Sub bbPlaystatus_Click(Index As Integer)
 
         Case PlayControl.CTRL_PREV
             mdlPlaylist.PlaylistPlayNext True
-
+        
         Case PlayControl.CTRL_VOICE
-
+            
     End Select
 
     frmPlayer.SetFocus
@@ -379,9 +381,41 @@ Private Sub Form_Activate()
     RenderUI
 End Sub
 
-Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-    frmPlayer_KeyDown KeyCode, Shift
+Public Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
 
+    If (KeyCode = vbKeySpace) Then SwitchPlayStauts
+    If (KeyCode = vbKeyEscape) Then SwitchFullScreen True
+    
+    Dim flag As Long
+    
+    flag = 0
+    
+    If (mdlGlobalPlayer.Loaded) Then
+        If (KeyCode = vbKeyLeft) Then flag = -1
+        If (KeyCode = vbKeyRight) Then flag = 1
+        If (flag <> 0) Then
+            mdlGlobalPlayer.CurrentTime = mdlGlobalPlayer.CurrentTime + 5 * flag
+            Exit Sub
+
+        End If
+
+        If (KeyCode = vbKeyUp) Then flag = 1
+        If (KeyCode = vbKeyDown) Then flag = -1
+        If (flag <> 0) Then
+            mdlGlobalPlayer.Volume = mdlGlobalPlayer.Volume + flag
+            Exit Sub
+
+        End If
+
+        If (KeyCode = vbKeyAdd) Then flag = 1
+        If (KeyCode = vbKeySubtract) Then flag = -1
+        If (flag <> 0) Then
+            mdlGlobalPlayer.Rate = mdlGlobalPlayer.Rate + flag * 10
+            Exit Sub
+
+        End If
+
+    End If
 End Sub
 
 Private Sub Form_Load()
@@ -448,45 +482,7 @@ Private Sub frmPlayer_DblClick()
     SwitchUI True
 
 End Sub
-
-Public Sub frmPlayer_KeyDown(KeyCode As Integer, Shift As Integer)
-    
-    If (KeyCode = vbKeySpace) Then SwitchPlayStauts
-    If (KeyCode = vbKeyEscape) Then SwitchFullScreen True
-    
-    Dim flag As Long
-    
-    flag = 0
-    
-    If (mdlGlobalPlayer.Loaded) Then
-        If (KeyCode = vbKeyLeft) Then flag = -1
-        If (KeyCode = vbKeyRight) Then flag = 1
-        If (flag <> 0) Then
-            mdlGlobalPlayer.CurrentTime = mdlGlobalPlayer.CurrentTime + 5 * flag
-            Exit Sub
-
-        End If
-
-        If (KeyCode = vbKeyUp) Then flag = 1
-        If (KeyCode = vbKeyDown) Then flag = -1
-        If (flag <> 0) Then
-            mdlGlobalPlayer.Volume = mdlGlobalPlayer.Volume + flag
-            Exit Sub
-
-        End If
-
-        If (KeyCode = vbKeyAdd) Then flag = 1
-        If (KeyCode = vbKeySubtract) Then flag = -1
-        If (flag <> 0) Then
-            mdlGlobalPlayer.Rate = mdlGlobalPlayer.Rate + flag * 10
-            Exit Sub
-
-        End If
-
-    End If
-    
-End Sub
-
+ 
 Private Sub frmPlayer_MouseDown(Button As Integer, _
                                 Shift As Integer, _
                                 X As Single, _
