@@ -19,12 +19,17 @@ XX.FT	倍速调节
 XX.BUG	播放列表自动添加
 XX.FT	整合LAV手动addFliter
 
+0.2.40
+XX.FT	界面重做
+XX.FT	EVR渲染器
+XX.FT	madVR渲染器
+XX.FT	VMR9渲染器
 
+Pending list:
 10.FTWD	播放网络文件
 11.FT	支持文件拖拽
 12.FT	命令行支持
 13.FT	注册表关联
 16.WD	外挂字幕搜索
 17.FT	播放列表项顺序调整
-18.FT	界面重做
 19.FT	历史播放记录(文件，进度)
