@@ -394,7 +394,7 @@ Public Function ShowSpliterConfig()
 End Function
 
 Public Function ShowSubtitleConfig()
-    ShowPropertyPage objSrcSplitterFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
+    ShowPropertyPage objSubtitleFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
 End Function
 
 Public Function ShowRendererConfig()

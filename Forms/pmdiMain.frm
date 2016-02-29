@@ -448,8 +448,14 @@ Public Sub Form_Resize()
 End Sub
 
 Public Sub ReCalcPlayWindow()
+    If (Me.Width = 0) Then Exit Sub
+    If (Me.Height = 0) Then Exit Sub
+    
     frmPlayer.Width = (Me.Width / Screen.TwipsPerPixelX)
     frmPlayer.Height = (Me.Height / Screen.TwipsPerPixelY)
+
+    If (frmPlayer.Width <= 160) Then Exit Sub
+    If (frmPlayer.Height <= 100) Then Exit Sub
 
     bbPlaylist.Left = frmPlayer.Width - 32 - mdlToolBarAlphaer.UIWidthRight
     bbPlaylist.Top = frmPlayer.Height / 2 - bbPlaylist.Height
@@ -462,7 +468,7 @@ Public Sub ReCalcPlayWindow()
     lstPlaylist.Height = mdlGlobalPlayer.Height
     
     pbTimeBar.Width = (Me.Width / Screen.TwipsPerPixelX)
-    
+    RenderUI
     ResizePlayWindow
 
 End Sub
