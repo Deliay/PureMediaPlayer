@@ -386,19 +386,19 @@ Public Function ShowVideoDecoderConfig()
 End Function
 
 Public Function ShowAudioDecoderConfig()
-    If (HasAudio) Then ShowPropertyPage objAudioFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
+    If (HasAudio) Then ShowPropertyPage objAudioFilter.Filter, "PureMediaPlayer - " & objAudioFilter.Name, frmMain.hWnd
 End Function
 
 Public Function ShowSpliterConfig()
-    ShowPropertyPage objSrcSplitterFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
+    If (mdlGlobalPlayer.Loaded) Then ShowPropertyPage objSrcSplitterFilter.Filter, "PureMediaPlayer - " & objSrcSplitterFilter.Name, frmMain.hWnd
 End Function
 
 Public Function ShowSubtitleConfig()
-    ShowPropertyPage objSubtitleFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
+    If (HasSubtitle) Then ShowPropertyPage objSubtitleFilter.Filter, "PureMediaPlayer - " & objSubtitleFilter.Name, frmMain.hWnd
 End Function
 
 Public Function ShowRendererConfig()
-    If (HasVideo) Then ShowPropertyPage objRenderFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
+    If (HasVideo) Then ShowPropertyPage objRenderFilter.Filter, "PureMediaPlayer - " & objRenderFilter.Name, frmMain.hWnd
 End Function
 
 Public Function ShowPropertyPage(ByVal FilterOrPin As olelib.IUnknown, Optional Caption As String, Optional ByVal hwndOwner As Long) As Boolean
