@@ -21,7 +21,6 @@ Private Declare Function RegisterMadVRFilter _
                 Lib "madVR.ax" _
                 Alias "DllRegisterServer" () As Long
 
-''
 Private Declare Function DispCallFunc& _
                 Lib "oleaut32" (ByVal ppv&, _
                                 ByVal oVft&, _
@@ -382,23 +381,43 @@ Private Function vtblCall(ByVal pUnk As Long, _
 End Function
 
 Public Function ShowVideoDecoderConfig()
-    If (HasVideo) Then ShowPropertyPage objVideoFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
+    If (HasVideo) Then
+        ShowPropertyPage objVideoFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
+    Else
+        MsgBox "Current dose not have any Video Decoder"
+    End If
 End Function
 
 Public Function ShowAudioDecoderConfig()
-    If (HasAudio) Then ShowPropertyPage objAudioFilter.Filter, "PureMediaPlayer - " & objAudioFilter.Name, frmMain.hWnd
+    If (HasAudio) Then
+        ShowPropertyPage objAudioFilter.Filter, "PureMediaPlayer - " & objAudioFilter.Name, frmMain.hWnd
+    Else
+        MsgBox "Current dose not have any Audio Decoder"
+    End If
 End Function
 
 Public Function ShowSpliterConfig()
-    If (mdlGlobalPlayer.Loaded) Then ShowPropertyPage objSrcSplitterFilter.Filter, "PureMediaPlayer - " & objSrcSplitterFilter.Name, frmMain.hWnd
+    If (mdlGlobalPlayer.Loaded) Then
+        ShowPropertyPage objSrcSplitterFilter.Filter, "PureMediaPlayer - " & objSrcSplitterFilter.Name, frmMain.hWnd
+    Else
+        MsgBox "Current dose not have any Spliterer"
+    End If
 End Function
 
 Public Function ShowSubtitleConfig()
-    If (HasSubtitle) Then ShowPropertyPage objSubtitleFilter.Filter, "PureMediaPlayer - " & objSubtitleFilter.Name, frmMain.hWnd
+    If (HasSubtitle) Then
+        ShowPropertyPage objSubtitleFilter.Filter, "PureMediaPlayer - " & objSubtitleFilter.Name, frmMain.hWnd
+    Else
+        MsgBox "Current dose not have any Subtitle"
+    End If
 End Function
 
 Public Function ShowRendererConfig()
-    If (HasVideo) Then ShowPropertyPage objRenderFilter.Filter, "PureMediaPlayer - " & objRenderFilter.Name, frmMain.hWnd
+    If (HasVideo) Then
+        ShowPropertyPage objRenderFilter.Filter, "PureMediaPlayer - " & objRenderFilter.Name, frmMain.hWnd
+    Else
+        MsgBox "Current dose not have any Video Renderer"
+    End If
 End Function
 
 Public Function ShowPropertyPage(ByVal FilterOrPin As olelib.IUnknown, Optional Caption As String, Optional ByVal hwndOwner As Long) As Boolean
