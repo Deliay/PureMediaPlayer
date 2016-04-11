@@ -69,22 +69,22 @@ Private VSFilterIndex    As Long, EVRIndex As Long, MadVRIndex As Long
 Private VMR9Index        As Long, VMR7Index As Long, VRIndex As Long
 
 Public EVRFilterStorage  As IBaseFilter
-Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 
 Public Sub RegisterAllDecoder()
-    ShellExecute 0, "open", "regsvr32.exe", "/u /s LAVAudio.ax", App.Path & "\", 0
-    ShellExecute 0, "open", "regsvr32.exe", "/u /s LAVSplitter.ax", App.Path & "\", 0
-    ShellExecute 0, "open", "regsvr32.exe", "/u /s LAVVideo.ax", App.Path & "\", 0
-    ShellExecute 0, "open", "regsvr32.exe", "/u /s madVR.ax", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\" & "LAVAudio.ax", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\" & "LAVSplitter.ax", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\" & "LAVVideo.ax", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\" & "madVR.ax", App.Path & "\", 0
     RegisterLAVAudio
     RegisterLAVSplitter
     RegisterLAVVideo
     RegisterVSFilter
     RegisterMadVRFilter
-    ShellExecute 0, "open", "regsvr32.exe", "/s LAVAudio.ax", App.Path & "\", 0
-    ShellExecute 0, "open", "regsvr32.exe", "/s LAVSplitter.ax", App.Path & "\", 0
-    ShellExecute 0, "open", "regsvr32.exe", "/s LAVVideo.ax", App.Path & "\", 0
-    ShellExecute 0, "open", "regsvr32.exe", "/s madVR.ax", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\" & "LAVAudio.ax", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\" & "LAVSplitter.ax", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\" & "LAVVideo.ax", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\" & "madVR.ax", App.Path & "\", 0
 End Sub
 
 Public Sub Main()
@@ -382,7 +382,7 @@ End Function
 
 Public Function ShowVideoDecoderConfig()
     If (HasVideo) Then
-        ShowPropertyPage objVideoFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
+        ShowPropertyPage objVideoFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hwnd
     Else
         MsgBox "Current dose not have any Video Decoder"
     End If
@@ -390,7 +390,7 @@ End Function
 
 Public Function ShowAudioDecoderConfig()
     If (HasAudio) Then
-        ShowPropertyPage objAudioFilter.Filter, "PureMediaPlayer - " & objAudioFilter.Name, frmMain.hWnd
+        ShowPropertyPage objAudioFilter.Filter, "PureMediaPlayer - " & objAudioFilter.Name, frmMain.hwnd
     Else
         MsgBox "Current dose not have any Audio Decoder"
     End If
@@ -398,7 +398,7 @@ End Function
 
 Public Function ShowSpliterConfig()
     If (mdlGlobalPlayer.Loaded) Then
-        ShowPropertyPage objSrcSplitterFilter.Filter, "PureMediaPlayer - " & objSrcSplitterFilter.Name, frmMain.hWnd
+        ShowPropertyPage objSrcSplitterFilter.Filter, "PureMediaPlayer - " & objSrcSplitterFilter.Name, frmMain.hwnd
     Else
         MsgBox "Current dose not have any Spliterer"
     End If
@@ -406,7 +406,7 @@ End Function
 
 Public Function ShowSubtitleConfig()
     If (HasSubtitle) Then
-        ShowPropertyPage objSubtitleFilter.Filter, "PureMediaPlayer - " & objSubtitleFilter.Name, frmMain.hWnd
+        ShowPropertyPage objSubtitleFilter.Filter, "PureMediaPlayer - " & objSubtitleFilter.Name, frmMain.hwnd
     Else
         MsgBox "Current dose not have any Subtitle"
     End If
@@ -414,7 +414,7 @@ End Function
 
 Public Function ShowRendererConfig()
     If (HasVideo) Then
-        ShowPropertyPage objRenderFilter.Filter, "PureMediaPlayer - " & objRenderFilter.Name, frmMain.hWnd
+        ShowPropertyPage objRenderFilter.Filter, "PureMediaPlayer - " & objRenderFilter.Name, frmMain.hwnd
     Else
         MsgBox "Current dose not have any Video Renderer"
     End If

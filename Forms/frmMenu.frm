@@ -4,7 +4,7 @@ Begin VB.Form frmMenu
    Caption         =   "Form1"
    ClientHeight    =   3165
    ClientLeft      =   150
-   ClientTop       =   795
+   ClientTop       =   780
    ClientWidth     =   4710
    BeginProperty Font 
       Name            =   "Î¢ÈíÑÅºÚ"
@@ -167,6 +167,20 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+
+Private Sub mmHelp_About_Click()
+    MsgBox "Remilia(Net) Workstation(admin@remiliascarlet.com)"
+End Sub
+
+Private Sub mmHelp_Help_Click()
+    MsgBox "Free to use"
+End Sub
+
+Private Sub mmHelp_Web_Click()
+    ShellExecute 0, "open", "http://www.remiliascarlet.com", vbNullString, vbNullString, 0
+    
+End Sub
 
 Private Sub mmStatus_Pause_Click()
     Pause
