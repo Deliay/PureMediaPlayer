@@ -220,7 +220,7 @@ Public Sub RenderMediaFile()
     mdlGlobalPlayer.CurrentTime = 0
     mdlPlaylist.SetItemLength strFilePath, FormatedDuration
     
-    If Not frmMain.nowPlaying Is Nothing Then frmMain.nowPlaying.Bold = False
+    If Not frmMain.nowPlaying Is Nothing Then frmMain.nowPlaying.ForeColor = vbWhite
     
     On Error GoTo notLoadPlaylist
     
@@ -230,7 +230,7 @@ notLoadPlaylist:
 
     Resume Next
 
-    If Not frmMain.nowPlaying Is Nothing Then frmMain.nowPlaying.Bold = True
+    If Not frmMain.nowPlaying Is Nothing Then frmMain.nowPlaying.ForeColor = vbGrayText
     
     boolLoadedFile = True
     
@@ -288,7 +288,7 @@ Public Property Get FormatedDuration() As String
 
 End Property
 
-Public Sub RaiseRegFileter(list As ListView)
+Public Sub RaiseRegFileter(list As vbalListViewCtl)
     
     Dim objRegFilter As IRegFilterInfo
     
@@ -426,11 +426,11 @@ Public Sub UpdateTitle(strCaption As String)
 
 End Sub
 
-Public Sub RaiseMediaFilter(list As ListView)
+Public Sub RaiseMediaFilter(list As vbalListViewCtl)
     
     Dim objFilter As IFilterInfo
     
-    Dim objItem   As ListItem
+    Dim objItem   As cListItem
     
     If (GlobalFilGraph Is Nothing) Then Exit Sub
     If (GlobalFilGraph.FilterCollection Is Nothing) Then Exit Sub

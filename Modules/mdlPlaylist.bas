@@ -93,7 +93,7 @@ Public Function AddFileToPlaylist(ByVal strPath As String, _
     
     Dim Item    As New PlayListItem
     
-    Dim addItem As ListItem
+    Dim addItem As cListItem
     
     Item.FullPath = strPath
     Item.Name = NameGet(strPath)
@@ -118,10 +118,10 @@ notExist:
         colPlayItems.Add Item, Item.FullPath
         playlistCount = playlistCount + 1
         Set addItem = frmMain.lstPlaylist.ListItems.Add(, Item.FullPath, Item.Name)
-        addItem.SubItems(1) = Length
+        addItem.SubItems.Item(1).Caption = Length
         
         If (strPath = mdlGlobalPlayer.File) Then
-            addItem.Bold = True
+            addItem.BackColor = vbGrayText
             Set frmMain.nowPlaying = addItem
             addItem.SubItems(1) = mdlGlobalPlayer.FormatedDuration
             GetItemByPath(File).Length = addItem.SubItems(1)

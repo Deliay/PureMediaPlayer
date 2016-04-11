@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
+Object = "{E910F8E1-8996-4EE9-90F1-3E7C64FA9829}#1.1#0"; "vbaListView6.ocx"
 Begin VB.Form frmMain 
    Appearance      =   0  'Flat
    BackColor       =   &H00000000&
@@ -177,7 +177,7 @@ Begin VB.Form frmMain
          Width           =   1050
       End
    End
-   Begin MSComctlLib.ListView lstPlaylist 
+   Begin vbalListViewLib6.vbalListViewCtl lstPlaylist 
       Height          =   6255
       Left            =   10440
       TabIndex        =   3
@@ -185,19 +185,6 @@ Begin VB.Form frmMain
       Width           =   3735
       _ExtentX        =   6588
       _ExtentY        =   11033
-      View            =   3
-      Arrange         =   1
-      LabelEdit       =   1
-      MultiSelect     =   -1  'True
-      LabelWrap       =   -1  'True
-      HideSelection   =   0   'False
-      HideColumnHeaders=   -1  'True
-      FullRowSelect   =   -1  'True
-      _Version        =   393217
-      ForeColor       =   16777215
-      BackColor       =   0
-      BorderStyle     =   1
-      Appearance      =   0
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Î¢ÈíÑÅºÚ"
          Size            =   9
@@ -207,16 +194,13 @@ Begin VB.Form frmMain
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      NumItems        =   2
-      BeginProperty ColumnHeader(1) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
-         Text            =   "Name"
-         Object.Width           =   4941
-      EndProperty
-      BeginProperty ColumnHeader(2) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
-         SubItemIndex    =   1
-         Text            =   "Time"
-         Object.Width           =   1235
-      EndProperty
+      ForeColor       =   16777215
+      BackColor       =   0
+      View            =   3
+      MultiSelect     =   -1  'True
+      FullRowSelect   =   -1  'True
+      Appearance      =   0
+      HideSelection   =   0   'False
    End
    Begin VB.PictureBox bbMenuBar 
       Appearance      =   0  'Flat
@@ -288,11 +272,11 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Public nowPlaying    As ListItem
+Public nowPlaying    As cListItem
 
 Public isHide        As Boolean
 
-Private ItemSelected As ListItem
+Private ItemSelected As cListItem
 
 Public srcH As Long, srcW As Long
 
@@ -419,6 +403,8 @@ Public Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
 End Sub
 
 Private Sub Form_Load()
+    lstPlaylist.Columns.Add , , "File", , 2880
+    lstPlaylist.Columns.Add , , "Duration"
     Me.Show
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
@@ -528,6 +514,11 @@ Private Sub frmPlayer_MouseMove(Button As Integer, _
 
 End Sub
 
+Private Sub lstPlaylist_ItemClick(Item As vbalListViewLib6.cListItem)
+    Set ItemSelected = Item
+    
+End Sub
+
 Private Sub pbTimeBar_MouseDown(Button As Integer, _
                                 Shift As Integer, _
                                 X As Single, _
@@ -608,19 +599,16 @@ Private Sub lstPlaylist_DblClick()
         mdlGlobalPlayer.File = mdlPlaylist.GetItemByPath(ItemSelected.key).FullPath
         mdlGlobalPlayer.RenderMediaFile
         
-        If Not nowPlaying Is Nothing Then nowPlaying.Bold = False
+        If Not nowPlaying Is Nothing Then nowPlaying.ForeColor = vbWhite
         Set nowPlaying = ItemSelected
         
-        If Not nowPlaying Is Nothing Then nowPlaying.Bold = True
+        If Not nowPlaying Is Nothing Then nowPlaying.ForeColor = vbGrayText
         
     End If
     
 End Sub
 
-Private Sub lstPlaylist_ItemClick(ByVal Item As MSComctlLib.ListItem)
-    Set ItemSelected = Item
-    
-End Sub
+
 
 Private Sub lstPlaylist_KeyDown(KeyCode As Integer, Shift As Integer)
     

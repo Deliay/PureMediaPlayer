@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
+Object = "{E910F8E1-8996-4EE9-90F1-3E7C64FA9829}#1.1#0"; "vbaListView6.ocx"
 Begin VB.Form frmSystemInfo 
    AutoRedraw      =   -1  'True
    BorderStyle     =   1  'Fixed Single
@@ -25,7 +25,7 @@ Begin VB.Form frmSystemInfo
    ScaleWidth      =   5055
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'ÆÁÄ»ÖÐÐÄ
-   Begin MSComctlLib.ListView lstInfo 
+   Begin vbalListViewLib6.vbalListViewCtl lstInfo 
       Height          =   5175
       Left            =   0
       TabIndex        =   0
@@ -46,10 +46,6 @@ Begin VB.Form frmSystemInfo
       BackColor       =   -2147483643
       Appearance      =   0
       NumItems        =   1
-      BeginProperty ColumnHeader(1) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
-         Text            =   "Filter Name"
-         Object.Width           =   5503
-      EndProperty
    End
 End
 Attribute VB_Name = "frmSystemInfo"

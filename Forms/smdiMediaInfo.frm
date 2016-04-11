@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
+Object = "{E910F8E1-8996-4EE9-90F1-3E7C64FA9829}#1.1#0"; "vbaListView6.ocx"
 Begin VB.Form frmMediaInfo 
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
@@ -28,7 +28,7 @@ Begin VB.Form frmMediaInfo
    ScaleWidth      =   342
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'ÆÁÄ»ÖÐÐÄ
-   Begin MSComctlLib.ListView lstInfo 
+   Begin vbalListViewLib6.vbalListViewCtl lstInfo 
       Height          =   5175
       Left            =   0
       TabIndex        =   0
@@ -49,15 +49,6 @@ Begin VB.Form frmMediaInfo
       BackColor       =   -2147483643
       Appearance      =   0
       NumItems        =   2
-      BeginProperty ColumnHeader(1) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
-         Text            =   "Filter Name"
-         Object.Width           =   5503
-      EndProperty
-      BeginProperty ColumnHeader(2) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
-         SubItemIndex    =   1
-         Text            =   "Vendor Info"
-         Object.Width           =   2540
-      EndProperty
    End
 End
 Attribute VB_Name = "frmMediaInfo"
