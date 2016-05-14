@@ -52,10 +52,7 @@ Public Function PlaylistPlayNext(Optional Prev As Boolean = False) As Boolean
     flag = 1
 
     If (Prev = True) Then flag = -1
-    
-    mdlGlobalPlayer.File = colPlayItems(GetItemIDByName(frmMain.nowPlaying.Text) + flag).FullPath
-    mdlGlobalPlayer.RenderMediaFile
-    PlaylistPlayNext = True
+    PlaylistPlayNext = PlayByName(colPlayItems(GetItemIDByName(frmMain.nowPlaying.Text) + flag).FullPath)
 ResumePlay:
     mdlGlobalPlayer.CurrentTime = 0
     mdlGlobalPlayer.Play
@@ -82,7 +79,7 @@ Public Function SetItemLength(strFullPath As String, Length As String)
 
     If (GetItemByPath(strFullPath) Is Nothing) Then Exit Function
     GetItemByPath(strFullPath).Length = Length
-    frmMain.lstPlaylist.ListItems(strFullPath).SubItems(1) = Length
+    frmMain.lstPlaylist.ListItems(strFullPath).SubItems(1).Caption = Length
     
     If (strPlaylist <> "") Then SavePlaylist
     
@@ -123,8 +120,8 @@ notExist:
         If (strPath = mdlGlobalPlayer.File) Then
             addItem.BackColor = vbGrayText
             Set frmMain.nowPlaying = addItem
-            addItem.SubItems(1) = mdlGlobalPlayer.FormatedDuration
-            GetItemByPath(File).Length = addItem.SubItems(1)
+            addItem.SubItems(1).Caption = mdlGlobalPlayer.FormatedDuration
+            GetItemByPath(File).Length = addItem.SubItems(1).Caption
             
         End If
         
@@ -162,6 +159,7 @@ End Sub
 
 Public Function PlayByName(ByVal strName As String) As Boolean
     mdlGlobalPlayer.File = GetItemByPath(strName).FullPath
+    frmMain.lstPlaylist_ItemDblClick frmMain.lstPlaylist.ListItems(strName)
     mdlGlobalPlayer.RenderMediaFile
     
 End Function
