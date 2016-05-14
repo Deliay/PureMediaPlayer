@@ -20,6 +20,14 @@ Private Declare Function RegisterVSFilter _
 Private Declare Function RegisterMadVRFilter _
                 Lib "madVR.ax" _
                 Alias "DllRegisterServer" () As Long
+                
+Private Declare Function RegisterSSubTmr6 _
+                Lib "SSubTmr6.dll" _
+                Alias "DllRegisterServer" () As Long
+                
+Private Declare Function RegistervbaListView6 _
+                Lib "vbaListView6.ocx" _
+                Alias "DllRegisterServer" () As Long
 
 Private Declare Function DispCallFunc& _
                 Lib "oleaut32" (ByVal ppv&, _
@@ -69,7 +77,17 @@ Private VSFilterIndex    As Long, EVRIndex As Long, MadVRIndex As Long
 Private VMR9Index        As Long, VMR7Index As Long, VRIndex As Long
 
 Public EVRFilterStorage  As IBaseFilter
-Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+
+Public Sub RegisterCOM()
+    ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\SSubTmr6.dll", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\vbaListView6.ocx", App.Path & "\", 0
+    RegisterSSubTmr6
+    RegistervbaListView6
+    ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\SSubTmr6.dll", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\vbaListView6.ocx", App.Path & "\", 0
+    
+End Sub
 
 Public Sub RegisterAllDecoder()
     ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\" & "LAVAudio.ax", App.Path & "\", 0
@@ -140,6 +158,9 @@ Public Sub Main()
 
     'Create A Clean FilgraphManager
     Set mdlGlobalPlayer.GlobalFilGraph = New FilgraphManager
+    
+    'do gui com register
+    RegisterCOM
     mdlToolBarAlphaer.LoadUI
     
 End Sub
@@ -382,7 +403,7 @@ End Function
 
 Public Function ShowVideoDecoderConfig()
     If (HasVideo) Then
-        ShowPropertyPage objVideoFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hwnd
+        ShowPropertyPage objVideoFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
     Else
         MsgBox "Current dose not have any Video Decoder"
     End If
@@ -390,7 +411,7 @@ End Function
 
 Public Function ShowAudioDecoderConfig()
     If (HasAudio) Then
-        ShowPropertyPage objAudioFilter.Filter, "PureMediaPlayer - " & objAudioFilter.Name, frmMain.hwnd
+        ShowPropertyPage objAudioFilter.Filter, "PureMediaPlayer - " & objAudioFilter.Name, frmMain.hWnd
     Else
         MsgBox "Current dose not have any Audio Decoder"
     End If
@@ -398,7 +419,7 @@ End Function
 
 Public Function ShowSpliterConfig()
     If (mdlGlobalPlayer.Loaded) Then
-        ShowPropertyPage objSrcSplitterFilter.Filter, "PureMediaPlayer - " & objSrcSplitterFilter.Name, frmMain.hwnd
+        ShowPropertyPage objSrcSplitterFilter.Filter, "PureMediaPlayer - " & objSrcSplitterFilter.Name, frmMain.hWnd
     Else
         MsgBox "Current dose not have any Spliterer"
     End If
@@ -406,7 +427,7 @@ End Function
 
 Public Function ShowSubtitleConfig()
     If (HasSubtitle) Then
-        ShowPropertyPage objSubtitleFilter.Filter, "PureMediaPlayer - " & objSubtitleFilter.Name, frmMain.hwnd
+        ShowPropertyPage objSubtitleFilter.Filter, "PureMediaPlayer - " & objSubtitleFilter.Name, frmMain.hWnd
     Else
         MsgBox "Current dose not have any Subtitle"
     End If
@@ -414,7 +435,7 @@ End Function
 
 Public Function ShowRendererConfig()
     If (HasVideo) Then
-        ShowPropertyPage objRenderFilter.Filter, "PureMediaPlayer - " & objRenderFilter.Name, frmMain.hwnd
+        ShowPropertyPage objRenderFilter.Filter, "PureMediaPlayer - " & objRenderFilter.Name, frmMain.hWnd
     Else
         MsgBox "Current dose not have any Video Renderer"
     End If
