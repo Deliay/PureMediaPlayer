@@ -1,12 +1,13 @@
 Type=Exe
 Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\Windows\SysWOW64\stdole2.tlb#OLE Automation
-Reference=*\G{56A868B0-0AD4-11CE-B03A-0020AF0BA770}#1.0#0#C:\Windows\sysWOW64\quartz.dll#ActiveMovie control type library
+Reference=*\G{56A868B0-0AD4-11CE-B03A-0020AF0BA770}#1.0#0#C:\Windows\System32\quartz.dll#ActiveMovie control type library
 Reference=*\G{3F4DACA7-160D-11D2-A8E9-00104B365C9F}#5.5#0#C:\Windows\SysWOW64\vbscript.dll\3#Microsoft VBScript Regular Expressions 5.5
 Reference=*\G{3181A65A-CC39-4CDE-A4DF-2E889E6F1AF1}#1.51#0#Library\olelib.tlb#Edanmo's OLE interfaces & functions v1.81
 Reference=*\G{B0EDF154-910A-11D2-B632-00C04F79498E}#1.0#0#C:\Windows\System32\msvidctl.dll#MS Video Control 1.0 Type Library
 Reference=*\G{3C4B4A34-9EF8-42A6-87A2-D2383DDC1EDB}#1.0#0#Library\GDIplus.tlb#GDI+ Type Library 1.05 (dseaman@uol.com.br)
 Reference=*\G{8B5287A0-EB99-4C93-B625-375F65015AEA}#1.0#0#Library\EVRImport.tlb#EVR Lib Import
 Reference=*\G{8B5287A0-EB99-4C93-B625-375F65015AEB}#1.0#0#Library\EVRImport2.tlb#EVR Lib Import2
+Reference=*\G{71A2702D-C7D8-11D2-BEF8-525400DFB47A}#1.0#0#Library\SSubTmr6.dll#vbAccelerator VB6 Subclassing and Timer Assistant (with configurable message response, multi-control support + timer bug fix)
 Object={E910F8E1-8996-4EE9-90F1-3E7C64FA9829}#1.1#0; vbaListView6.ocx
 Form=Forms\pmdiMain.frm
 Module=mdlGlobalPlayer; Modules\mdlGlobalPlayer.bas
