@@ -41,6 +41,7 @@ Begin VB.Form frmMain
       Width           =   10455
       Begin VB.PictureBox bbPlaystatus 
          Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
          BackColor       =   &H00000000&
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
@@ -58,6 +59,7 @@ Begin VB.Form frmMain
       End
       Begin VB.PictureBox bbPlaystatus 
          Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
          BackColor       =   &H00000000&
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
@@ -74,6 +76,7 @@ Begin VB.Form frmMain
       End
       Begin VB.PictureBox bbPlaystatus 
          Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
          BackColor       =   &H00000000&
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
@@ -90,6 +93,7 @@ Begin VB.Form frmMain
       End
       Begin VB.PictureBox bbPlaystatus 
          Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
          BackColor       =   &H00000000&
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
@@ -106,6 +110,7 @@ Begin VB.Form frmMain
       End
       Begin VB.PictureBox bbPlaystatus 
          Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
          BackColor       =   &H00000000&
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
@@ -158,23 +163,22 @@ Begin VB.Form frmMain
          Caption         =   "Stop"
          ForeColor       =   &H00FFFFFF&
          Height          =   300
-         Left            =   4200
+         Left            =   3000
          TabIndex        =   13
          Top             =   360
          Width           =   660
       End
       Begin VB.Label Label1 
-         Alignment       =   1  'Right Justify
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
          Caption         =   "0:00/0:00"
          ForeColor       =   &H00FFFFFF&
          Height          =   300
-         Left            =   3000
+         Left            =   3960
          TabIndex        =   12
          Top             =   360
-         Width           =   1050
+         Width           =   2970
       End
    End
    Begin vbalListViewLib6.vbalListViewCtl lstPlaylist 
@@ -204,6 +208,7 @@ Begin VB.Form frmMain
    End
    Begin VB.PictureBox bbMenuBar 
       Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
       BackColor       =   &H00000000&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
@@ -239,9 +244,9 @@ Begin VB.Form frmMain
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H80000008&
-      Height          =   6255
+      Height          =   5775
       Left            =   0
-      ScaleHeight     =   417
+      ScaleHeight     =   385
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   697
       TabIndex        =   1
@@ -250,6 +255,7 @@ Begin VB.Form frmMain
       Width           =   10455
       Begin VB.PictureBox bbPlaylist 
          Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
          BackColor       =   &H00000000&
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
@@ -296,6 +302,8 @@ Private Sub bbMenuBar_MouseMove(Button As Integer, _
 
     If (bbMenuBar.BackColor <> RGB(48, 48, 48)) Then
         bbMenuBar.BackColor = RGB(48, 48, 48)
+        mdlToolBarAlphaer.apMenuButton.hDC = bbMenuBar.hDC
+        mdlToolBarAlphaer.apMenuButton.RefreshHW 32, 32
         SwitchUI True
 
     End If
@@ -318,17 +326,16 @@ Private Sub bbPlaylist_MouseMove(Button As Integer, _
                                  Shift As Integer, _
                                  X As Single, _
                                  Y As Single)
-
+    
     If (bbPlaylist.BackColor <> RGB(48, 48, 48)) Then
         bbPlaylist.BackColor = RGB(48, 48, 48)
-        
-        If (Not mdlToolBarAlphaer.boolPlaylistStatus) Then
-            SwitchUI True
-
-        End If
+        mdlToolBarAlphaer.apPlaylistHint.hDC = bbPlaylist.hDC
+        mdlToolBarAlphaer.apPlaylistHint.RefreshHW 24, 48
+    End If
+    If (Not mdlToolBarAlphaer.boolPlaylistStatus) Then
+        SwitchUI True
 
     End If
-
 End Sub
 
 Private Sub bbPlaystatus_Click(Index As Integer)
@@ -362,7 +369,10 @@ End Sub
 
 Private Sub Form_Activate()
     mdlGlobalPlayer.SwitchFullScreen True, False
-    RenderUI
+End Sub
+
+Private Sub frmPlayer_Click()
+    SwitchUI
 End Sub
 
 Public Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
@@ -410,7 +420,13 @@ Private Sub Form_Load()
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
     SwitchUI True
-    RenderUI
+    
+    'Call SetHook((Me.hWnd))
+    
+    'Call DragAcceptFiles((Me.hWnd), True)
+    
+    InitialCommandLine
+
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
@@ -454,7 +470,7 @@ Public Sub ReCalcPlayWindow()
     lstPlaylist.Height = mdlGlobalPlayer.Height
     
     pbTimeBar.Width = (Me.Width / Screen.TwipsPerPixelX)
-    RenderUI
+
     ResizePlayWindow
 
 End Sub
@@ -462,11 +478,6 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ExitProgram
     
-End Sub
-
-Private Sub frmPlayer_Click()
-    SwitchUI
-
 End Sub
 
 Private Sub frmPlayer_DblClick()
@@ -481,7 +492,6 @@ Private Sub frmPlayer_MouseDown(Button As Integer, _
                                 Y As Single)
     
     If (Button = vbRightButton) Then Me.PopupMenu frmMenu.mmStatus
-
 End Sub
 
 Private Sub CalcPercent(X As Single)
@@ -497,12 +507,14 @@ Private Sub frmPlayer_MouseMove(Button As Integer, _
 
     If (bbMenuBar.BackColor <> 0) Then
         bbMenuBar.BackColor = 0
+        mdlToolBarAlphaer.apMenuButton.hDC = bbMenuBar.hDC
         mdlToolBarAlphaer.apMenuButton.RefreshHW 32, 32
 
     End If
 
     If (bbPlaylist.BackColor <> 0) Then
         bbPlaylist.BackColor = 0
+        mdlToolBarAlphaer.apPlaylistHint.hDC = bbPlaylist.hDC
         mdlToolBarAlphaer.apPlaylistHint.RefreshHW 24, 48
 
     End If
@@ -514,8 +526,35 @@ Private Sub frmPlayer_MouseMove(Button As Integer, _
 
 End Sub
 
-Private Sub lstPlaylist_ItemClick(Item As vbalListViewLib6.cListItem)
-    Set ItemSelected = Item
+Private Sub frmPlayer_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+     
+    
+    Dim lngCount As Long
+    Dim rtn As Long, first As String
+    For lngCount = 1 To Data.Files.Count
+        Dim Target As String
+        rtn = GetShortPathName(StrPtr(Data.Files(lngCount)), StrPtr(Target), 255)
+        If (Not (InStr(1, Target, Chr(0)) = 0)) Then
+            Target = Mid(Target, 1, InStr(1, Target, Chr(0)) - 1)
+        End If
+        mdlPlaylist.AddFileToPlaylist Target
+        If (lngCount = 1) Then first = Target
+    Next
+    If (mdlGlobalPlayer.GlobalPlayStatus = Stoped) Then mdlPlaylist.PlayByName first
+    
+End Sub
+
+Public Sub lstPlaylist_ItemDblClick(Item As vbalListViewLib6.cListItem)
+    If (Not (NameGet(mdlGlobalPlayer.File) = Item.Text)) Then
+        mdlGlobalPlayer.CloseFile
+        mdlGlobalPlayer.File = mdlPlaylist.GetItemByPath(Item.key).FullPath
+        mdlGlobalPlayer.RenderMediaFile
+        
+        If Not nowPlaying Is Nothing Then nowPlaying.ForeColor = vbWhite
+        Set nowPlaying = Item
+        nowPlaying.ForeColor = vbGrayText
+        
+    End If
     
 End Sub
 
@@ -575,12 +614,9 @@ Private Sub tmrUpdateTime_Timer()
                 srcH = Me.Height
                 srcW = Me.Width
             End If
-            'AlphaHwnd bbMenuBar.hDC, frmPlayer.hDC, 150&, bbMenuBar.Width, bbMenuBar.Height
         End If
     
     End If
-
-    'Set Me.Picture = mdlGlobalPlayer.NowFrame
 End Sub
 
 Public Sub AutoPatern()
@@ -590,25 +626,6 @@ Public Sub AutoPatern()
     frmPaternAdd.cmdAddToList_Click
     
 End Sub
-
-Private Sub lstPlaylist_DblClick()
-    
-    If (ItemSelected Is Nothing) Then Exit Sub
-    If (Not (NameGet(File) = ItemSelected.Text)) Then
-        mdlGlobalPlayer.CloseFile
-        mdlGlobalPlayer.File = mdlPlaylist.GetItemByPath(ItemSelected.key).FullPath
-        mdlGlobalPlayer.RenderMediaFile
-        
-        If Not nowPlaying Is Nothing Then nowPlaying.ForeColor = vbWhite
-        Set nowPlaying = ItemSelected
-        
-        If Not nowPlaying Is Nothing Then nowPlaying.ForeColor = vbGrayText
-        
-    End If
-    
-End Sub
-
-
 
 Private Sub lstPlaylist_KeyDown(KeyCode As Integer, Shift As Integer)
     

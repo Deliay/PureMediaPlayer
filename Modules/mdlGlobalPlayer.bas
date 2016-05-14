@@ -446,6 +446,7 @@ End Sub
 Public Sub ExitProgram()
     StopPlay
     CloseFile
+    Clearhook
     End
     
 End Sub

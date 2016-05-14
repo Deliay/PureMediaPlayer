@@ -159,10 +159,13 @@ Public Sub Main()
     'Create A Clean FilgraphManager
     Set mdlGlobalPlayer.GlobalFilGraph = New FilgraphManager
     
+    On Error GoTo RegisterCOMErr
+    mdlToolBarAlphaer.LoadUI
+    On Error GoTo 0
+    Exit Sub
+RegisterCOMErr:
     'do gui com register
     RegisterCOM
-    mdlToolBarAlphaer.LoadUI
-    
 End Sub
 
 Public Sub BuildGrph(ByVal srcFile As String, _
