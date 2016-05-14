@@ -46,13 +46,13 @@ Public FileName      As String
 
 Public FileNameWiden As String
 
-Private Declare Function GetShortPathName _
+Public Declare Function GetShortPathName _
                 Lib "kernel32" _
                 Alias "GetShortPathNameW" (ByVal lpszLongPath As Long, _
                                            ByVal lpszShortPath As Long, _
                                            ByVal cchBuffer As Long) As Long
 
-Public Function ShowOpen(Optional Filters As String = "任意文件 (*.*)" & vbNullChar & "*.*")
+Public Function ShowOpen(Optional Filters As String = "任意文件 (*.*)" & vbNullChar & "*.*" & vbNullChar)
     ofn.lStructSize = Len(ofn)
     ofn.hwndOwner = frmMain.hWnd
     ofn.hInstance = App.hInstance
@@ -79,7 +79,7 @@ Public Function ShowOpen(Optional Filters As String = "任意文件 (*.*)" & vbNullC
     
 End Function
 
-Public Function ShowSave(Optional Filters As String = "任意文件 (*.*)" & vbNullChar & "*.*")
+Public Function ShowSave(Optional Filters As String = "任意文件 (*.*)" & vbNullChar & "*.*" & vbNullChar)
     ofn.lStructSize = Len(ofn)
     ofn.hwndOwner = frmMain.hWnd
     ofn.hInstance = App.hInstance
