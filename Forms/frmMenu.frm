@@ -4,7 +4,7 @@ Begin VB.Form frmMenu
    Caption         =   "Form1"
    ClientHeight    =   3165
    ClientLeft      =   150
-   ClientTop       =   780
+   ClientTop       =   795
    ClientWidth     =   4710
    BeginProperty Font 
       Name            =   "Î¢ÈíÑÅºÚ"
@@ -123,6 +123,13 @@ Begin VB.Form frmMenu
             Caption         =   "Software"
          End
       End
+      Begin VB.Menu Language 
+         Caption         =   "Language"
+         Begin VB.Menu Language_Select 
+            Caption         =   ""
+            Index           =   0
+         End
+      End
       Begin VB.Menu Propertys 
          Caption         =   "Property"
          Begin VB.Menu Propertys_Video 
@@ -167,7 +174,22 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
-Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+
+Private Sub Language_Select_Click(Index As Integer)
+    If (mdlLanguageApplyer.GetLanguageName = Language_Select(Index).Caption) Then
+        'same item reclicked
+        Exit Sub
+    Else
+        'else item click
+
+        Language_Select(LanguageIndex).Checked = False
+        Language_Select(Index).Checked = True
+        mdlLanguageApplyer.SetLanguage CLng(Index)
+        mdlLanguageApplyer.ReApplyLanguage
+    End If
+    
+End Sub
 
 Private Sub mmHelp_About_Click()
     MsgBox "Remilia(Net) Workstation(admin@remiliascarlet.com)"

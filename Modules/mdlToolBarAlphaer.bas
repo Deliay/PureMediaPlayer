@@ -85,7 +85,6 @@ End Property
 Public Sub LoadUI()
     Load frmMain
     Load frmPaternAdd
-
     If (Dir(App.Path & "\language.ini") = "") Then
         CreateLanguagePart frmMenu
         CreateLanguagePart frmPaternAdd
@@ -217,7 +216,10 @@ Public Sub PlaylistHide()
 End Sub
 
 Public Sub PlayPauseSwitch()
+    frmMain.bbPlaystatus(PlayControl.CTRL_PLAYPAUSE).Cls
+    apPlayControl(PlayControl.CTRL_PLAYPAUSE).hDC = frmMain.bbPlaystatus(PlayControl.CTRL_PLAYPAUSE).hDC
     If (mdlGlobalPlayer.GlobalPlayStatus = playing) Then
+        
         apPlayControl(PlayControl.CTRL_PLAYPAUSE).LoadImageWH App.Path & "\Image\playcontrol_" & PlayControl.CTRL_PLAYPAUSE & "_.png", 32, 32
     Else
         apPlayControl(PlayControl.CTRL_PLAYPAUSE).LoadImageWH App.Path & "\Image\playcontrol_" & PlayControl.CTRL_PLAYPAUSE & ".png", 32, 32

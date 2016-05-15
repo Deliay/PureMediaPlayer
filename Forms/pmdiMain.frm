@@ -416,16 +416,20 @@ Private Sub Form_Load()
     lstPlaylist.Columns.Add , , "File", , 2880
     lstPlaylist.Columns.Add , , "Duration"
     Me.Show
+    EnumLanguageFile
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
     SwitchUI True
     
-    'Call SetHook((Me.hWnd))
+    Call SetHook((Me.hWnd))
     
-    'Call DragAcceptFiles((Me.hWnd), True)
+    Call DragAcceptFiles((Me.hWnd), True)
     
     InitialCommandLine
+    
+    SwitchUI
+    SwitchUI
 
 End Sub
 

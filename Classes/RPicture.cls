@@ -296,7 +296,6 @@ Public Function LoadImage(Path)
     If phDC = 0 Then Exit Function
     If gImage = 0 Then GdiPlusExports.GdipCreateFromHDC phDC, gImage
     If lImage <> 0 Then GdiPlusExports.GdipDisposeImage lImage
-    
     If GdiPlusExports.GdipLoadImageFromFile(CStr(Path), lImage) <> Ok Then
 
         'MsgBox "ERROR!"
