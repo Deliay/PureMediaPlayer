@@ -39,6 +39,9 @@ Private Declare Sub CopyMemory _
                 Alias "RtlMoveMemory" (Destination As Any, _
                                        Source As Any, _
                                        ByVal Length As Long)
+                                       
+Private colLanguages As New Collection
+Public LanguageIndex As Long
 
 Public Function DefaultStaticString(ctype As STATIC_STRING_ENUM) As String
 
@@ -79,7 +82,11 @@ Public Sub ApplyLanguageToForm(frm As Form)
     Dim boolHaveCaption As Boolean
 
     For Each objCtrl In frm.Controls
-
+        
+        If (InStr(1, objCtrl.Name, "Language") <> 0) Then
+            GoTo NextElement
+        End If
+        
         On Error GoTo Continue
 
         Dim strVal As String
@@ -93,7 +100,7 @@ Public Sub ApplyLanguageToForm(frm As Form)
                 strVal = GetLanguage(frm.Name, objCtrl.Name & objCtrl.Index)
 
                 If (strVal = "") Then
-                    InI.INI_WriteString App.Path & "\language.ini", frm.Name, objCtrl.Name & objCtrl.Index, objCtrl.Caption
+                    InI.INI_WriteString GetLanguageFile, frm.Name, objCtrl.Name & objCtrl.Index, objCtrl.Caption
                 Else
                     objCtrl.Caption = strVal
 
@@ -111,13 +118,13 @@ Continue:
         strVal = GetLanguage(frm.Name, objCtrl.Name)
 
         Resume Next
-
+NextElement:
     Next
 
 End Sub
 
 Public Function GetLanguage(strPart As String, strKey As String) As String
-    GetLanguage = InI.INI_GetString(App.Path & "\language.ini", strPart, strKey)
+    GetLanguage = InI.INI_GetString(GetLanguageFile, strPart, strKey)
 
 End Function
 
@@ -134,7 +141,7 @@ Public Sub CreateLanguagePart(frm As Form)
         strVal = objCtrl.Caption
 
         If (Len(strVal) <> 0) Then
-            If (strVal <> "-") Then InI.INI_WriteString App.Path & "\language.ini", frm.Name, objCtrl.Name & objCtrl.Index, strVal
+            If (strVal <> "-") Then InI.INI_WriteString GetLanguageFile, frm.Name, objCtrl.Name & objCtrl.Index, strVal
 
         End If
 
@@ -143,12 +150,70 @@ Public Sub CreateLanguagePart(frm As Form)
 End Sub
 
 Public Function StaticString(ctype As STATIC_STRING_ENUM)
-    StaticString = InI.INI_GetString(App.Path & "\language.ini", "StaticString", "String" & ctype)
+    StaticString = InI.INI_GetString(GetLanguageFile, "StaticString", "String" & ctype)
 
     If (Len(StaticString) = 0) Then
-        InI.INI_WriteString App.Path & "\language.ini", "StaticString", "String" & ctype, DefaultStaticString(ctype)
+        InI.INI_WriteString GetLanguageFile, "StaticString", "String" & ctype, DefaultStaticString(ctype)
         StaticString = DefaultStaticString(ctype)
     
     End If
+End Function
 
+Public Function GetLanguageName() As String
+     GetLanguageName = InI.INI_GetString(GetLanguageFile, "Lang", "ShowName")
+End Function
+
+Public Function GetLanguageFile() As String
+
+    GetLanguageFile = App.Path & "\Language\" & GetLanguageFileName
+End Function
+
+Public Function GetLanguageFileName() As String
+    GetLanguageFileName = getConfig("Language")
+    If (GetLanguageFileName = "") Then
+        GetLanguageFileName = "english.ini"
+    End If
+End Function
+
+Public Property Get GetFileNameByIndex(Index As Long) As String
+    GetFileNameByIndex = colLanguages.Item("i" & Index)
+End Property
+
+Public Function EnumLanguageFile()
+    Dim menuIndex As Long
+    Dim tmpStr As String
+    tmpStr = Dir(App.Path & "\Language\*.ini")
+    Do While tmpStr <> ""
+        Dim strShowName As String
+        strShowName = InI.INI_GetString(App.Path & "\Language\" & tmpStr, "Lang", "ShowName")
+        colLanguages.Add tmpStr, "i" & menuIndex
+        If (menuIndex > frmMenu.Language_Select.Count - 1) Then
+            Load frmMenu.Language_Select(menuIndex)
+        End If
+        frmMenu.Language_Select.Item(menuIndex).Checked = False
+        If (tmpStr = GetLanguageFileName) Then
+            frmMenu.Language_Select.Item(menuIndex).Checked = True
+            LanguageIndex = menuIndex
+        End If
+        frmMenu.Language_Select.Item(menuIndex).Caption = strShowName
+        menuIndex = menuIndex + 1
+        tmpStr = Dir()
+    Loop
+    If (menuIndex = 0) Then
+        CreateLanguagePart frmMain
+        CreateLanguagePart frmMenu
+        CreateLanguagePart frmPaternAdd
+        CreateLanguagePart frmSystemInfo
+    End If
+End Function
+
+Public Sub SetLanguage(Index As Long)
+    saveConfig "Language", GetFileNameByIndex(Index)
+    LanguageIndex = Index
+    
+End Sub
+
+Public Function ReApplyLanguage()
+    ApplyLanguageToForm frmMain
+    ApplyLanguageToForm frmMenu
 End Function
