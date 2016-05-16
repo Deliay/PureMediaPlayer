@@ -505,8 +505,8 @@ Public Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
 End Sub
 
 Private Sub Form_Load()
-    lstPlaylist.Columns.Add , , "File", , 2800
-    lstPlaylist.Columns.Add , , "Duration", , 600
+    lstPlaylist.Columns.Add , , "File", , 2400
+    lstPlaylist.Columns.Add , , "Duration", , 800
     Me.Show
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
