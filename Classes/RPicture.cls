@@ -11,7 +11,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
- Option Explicit
+Option Explicit
 
 Private lImage As Long
 
@@ -23,7 +23,7 @@ Private gStart As GdiplusStartupInput
 
 Private phDC   As Long
 
-Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
 
 Private Declare Function GetPixel _
                 Lib "gdi32" (ByVal hDC As Long, _

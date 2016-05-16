@@ -18,3 +18,6 @@ Public Name     As String
 Public FullPath As String
 
 Public Length   As String
+
+Public LastTime As String
+

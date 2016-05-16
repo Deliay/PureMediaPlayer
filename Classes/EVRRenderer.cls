@@ -21,7 +21,9 @@ Const IID_IMFGetServices = "{FA993888-4383-415A-A930-DD472A8CF6F7}"
 Const IID_MR_VIDEO_RENDER_SERVICE = "{1092a86c-ab1a-459a-a336-831fbc4d11ff}"
 
 Private ifPlayback As IMFVideoDisplayControl
-Private srcW As Long, srcH As Long, srcL As Long, srcT As Long
+
+Private srcW       As Long, srcH As Long, srcL As Long, srcT As Long
+
 Private ifServices As IMFGetService
 
 Public Sub CreateInterface(baseFilter As olelib.IUnknown)
@@ -42,6 +44,7 @@ Public Sub CreateInterface(baseFilter As olelib.IUnknown)
     Set ifPlayback = ifServices.GetService(uuidMVR, uuidVideoDisplayCtrl)
     ifPlayback.SetAspectRatioMode 0
     ifPlayback.SetBorderColor 0
+
 End Sub
 
 Public Function GetInterface() As IMFVideoDisplayControl
@@ -49,24 +52,29 @@ Public Function GetInterface() As IMFVideoDisplayControl
 
 End Function
 
-Public Function SetPlayBackWindow(hWnd As Long)
-    ifPlayback.SetVideoWindow hWnd
+Public Function SetPlayBackWindow(hwnd As Long)
+    ifPlayback.SetVideoWindow hwnd
 
 End Function
 
 Public Function SetVideoSize(Left As Long, Top As Long, Width As Long, Height As Long)
 
-    Dim rect As EVRImport2.tagRECT
+    Dim rect       As EVRImport2.tagRECT
+
     Dim videoSizeH As Long, videoSizeW As Long
+
     rect.Left = Left
     rect.Top = Top
     
     rect.Right = Width + Left
     rect.Bottom = Top + Height
     GetVideoSize videoSizeW, videoSizeH
+
     If (Round((Width / Height), 1) = Round(videoSizeW / videoSizeH, 1)) Then
         ifPlayback.SetVideoPosition 0&, VarPtr(rect)
+
     End If
+
     If (srcW <> Width Or srcH <> Height Or srcT <> Top Or srcL <> Left) Then
         ifPlayback.RepaintVideo
         
@@ -74,7 +82,9 @@ Public Function SetVideoSize(Left As Long, Top As Long, Width As Long, Height As
         srcH = Height
         srcT = Top
         srcL = Left
+
     End If
+
 End Function
 
 Public Sub GetVideoSize(ByRef Width As Long, ByRef Heigth As Long)

@@ -33,19 +33,19 @@ Begin VB.Form frmSystemInfo
       Width           =   5055
       _ExtentX        =   8916
       _ExtentY        =   9128
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "ËÎÌו"
+         Size            =   8.25
+         Charset         =   134
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       View            =   3
-      LabelEdit       =   1
-      Sorted          =   -1  'True
-      LabelWrap       =   -1  'True
-      HideSelection   =   0   'False
-      HideColumnHeaders=   -1  'True
       FullRowSelect   =   -1  'True
-      TextBackground  =   -1  'True
-      _Version        =   393217
-      ForeColor       =   -2147483640
-      BackColor       =   -2147483643
       Appearance      =   0
-      NumItems        =   1
+      HideSelection   =   0   'False
    End
 End
 Attribute VB_Name = "frmSystemInfo"

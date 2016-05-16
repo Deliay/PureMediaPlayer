@@ -72,7 +72,7 @@ Public GlobalPlayStatus As PlayStatus
 
 Private Const WS_BORDER = &H800000
 
-Private Const WS_CAPTION = &HC00000                                             '  WS_BORDER Or WS_DLGFRAME
+Private Const WS_CAPTION = &HC00000
 
 Private Const WS_THICKFRAME = &H40000
 
@@ -96,6 +96,7 @@ Public Property Get Volume() As Long
 
     If (ifVolume Is Nothing And Not mdlGlobalPlayer.HasAudio) Then Exit Property
     Volume = 100 + ifVolume.Volume / 100
+    UpdateStatus StaticString(PLAYER_VIOCE_RATE) & ":" & Volume, PlayBack
 
 End Property
 
@@ -111,7 +112,7 @@ Public Property Get Rate() As Long
     'rate 100 mean 1
     
     Rate = ifPostion.Rate * 100
-
+    
 End Property
 
 Public Property Let Rate(V As Long)
@@ -171,6 +172,9 @@ Public Sub RenderMediaFile()
     Set GlobalFilGraph = New FilgraphManager
 
     UpdateStatus StaticString(PLAYER_STATUS_LOADING), Action
+    
+    SaveCurrentPos
+    
     strFilePath = File
     UpdateStatus Dir(strFilePath), FileName
  
@@ -193,8 +197,8 @@ Public Sub RenderMediaFile()
             Set ifVideo = GlobalFilGraph
             Set ifPlayback = GlobalFilGraph
             'ifPlayback.Caption = "PureMediaPlayer - LayerWindow"
-            ifPlayback.Owner = frmMain.frmPlayer.hWnd
-            ifPlayback.MessageDrain = frmMain.frmPlayer.hWnd
+            ifPlayback.Owner = frmMain.frmPlayer.hwnd
+            ifPlayback.MessageDrain = frmMain.frmPlayer.hwnd
             
             Dim lngSrcStyle As Long
             
@@ -206,8 +210,9 @@ Public Sub RenderMediaFile()
             mdlGlobalPlayer.ResizePlayWindow
             ifPlayback.HideCursor False
         Else
-            EVRHoster.SetPlayBackWindow frmMain.frmPlayer.hWnd
+            EVRHoster.SetPlayBackWindow frmMain.frmPlayer.hwnd
             mdlGlobalPlayer.ResizePlayWindow
+
         End If
         
     End If
@@ -240,6 +245,7 @@ hErr:
 
     Resume Next
 
+    SeekLastPos strFilePath
     mdlGlobalPlayer.Play
     PlayPauseSwitch
     DoEvents
@@ -248,6 +254,7 @@ hErr:
     Exit Sub
 DcodeErr:
     MsgBox "Not Support this codes type yet!"
+    mdlPlaylist.SetItemLength File, mdlLanguageApplyer.StaticString(FILE_NOT_SUPPORT)
     Exit Sub
 
     MsgBox "Unknow Err"
@@ -316,6 +323,8 @@ hErr:
     
     If (Duration = 0) Then frmMain.tmrUpdateTime.Enabled = False
     
+    SaveCurrentPos
+
 End Sub
 
 Public Sub Pause()
@@ -325,6 +334,8 @@ Public Sub Pause()
     GlobalFilGraph.Pause
     UpdateStatus StaticString(PLAY_STATUS_PAUSED), PlayBack
     
+    SaveCurrentPos
+
 End Sub
 
 Public Sub StopPlay()
@@ -332,7 +343,11 @@ Public Sub StopPlay()
     GlobalPlayStatus = Stoped
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     
-    If Not GlobalFilGraph Is Nothing Then GlobalFilGraph.Pause
+    If Not GlobalFilGraph Is Nothing Then
+        GlobalFilGraph.Pause
+        SaveCurrentPos
+
+    End If
     
 End Sub
 
@@ -353,6 +368,7 @@ Public Sub SwitchPlayStauts()
 End Sub
 
 Public Sub CloseFile()
+    SaveCurrentPos
     UpdateStatus StaticString(PLAYER_STATUS_CLOSEING), Action
     strLastestFile = ""
     UpdateTitle StaticString(PLAYER_STATUS_IDLE)
@@ -367,8 +383,11 @@ Public Sub ResizePlayWindow()
     If (ifVideo Is Nothing) Then
         If (GlobalRenderType <> EnhancedVideoRenderer) Then
             Exit Sub
+
         End If
+
     End If
+
     'On Error GoTo hErr
     
     Dim commonW As Long, commonH As Long
@@ -443,14 +462,6 @@ Public Sub RaiseMediaFilter(list As vbalListViewCtl)
     
 End Sub
 
-Public Sub ExitProgram()
-    StopPlay
-    CloseFile
-    Clearhook
-    End
-    
-End Sub
-
 Public Sub SwitchFullScreen(Optional force As Boolean = False, _
                             Optional forceValue As Boolean = False)
 
@@ -458,8 +469,11 @@ Public Sub SwitchFullScreen(Optional force As Boolean = False, _
     If (ifVideo Is Nothing) Then
         If (GlobalRenderType <> EnhancedVideoRenderer) Then
             Exit Sub
+
         End If
+
     End If
+
     If force = True Then
         boolIsFullScreen = forceValue
         ResizeFullScreen
@@ -498,4 +512,18 @@ Public Sub ResizeFullScreen()
 
     End If
     
+End Sub
+
+Public Sub SeekLastPos(ByVal strFullPath As String)
+    mdlGlobalPlayer.CurrentTime = val(InI.INI_GetString(App.Path & "\LastPlayed.ini", "LastPos", strFullPath))
+
+End Sub
+
+Public Sub SaveCurrentPos()
+
+    If (mdlGlobalPlayer.Loaded) Then
+        InI.INI_WriteString App.Path & "\LastPlayed.ini", "LastPos", File, mdlGlobalPlayer.CurrentTime
+
+    End If
+
 End Sub

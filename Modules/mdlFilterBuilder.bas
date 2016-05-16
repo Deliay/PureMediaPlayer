@@ -68,16 +68,24 @@ Private objRenderReg      As IRegFilterInfo, objRenderFilter As IFilterInfo ', o
 
 Private objSpliterPin     As IPinInfo
 
-Private LAVVideoIndex    As Long, LAVAudioIndex As Long
+Private LAVVideoIndex     As Long, LAVAudioIndex As Long
 
-Private LAVSplitterIndex As Long, LAVSplitterSourceIndex As Long
+Private LAVSplitterIndex  As Long, LAVSplitterSourceIndex As Long
 
-Private VSFilterIndex    As Long, EVRIndex As Long, MadVRIndex As Long
+Private VSFilterIndex     As Long, EVRIndex As Long, MadVRIndex As Long
 
-Private VMR9Index        As Long, VMR7Index As Long, VRIndex As Long
+Private VMR9Index         As Long, VMR7Index As Long, VRIndex As Long
 
-Public EVRFilterStorage  As IBaseFilter
-Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+Public EVRFilterStorage   As IBaseFilter
+
+Private Declare Function ShellExecute _
+                Lib "shell32.dll" _
+                Alias "ShellExecuteA" (ByVal hwnd As Long, _
+                                       ByVal lpOperation As String, _
+                                       ByVal lpFile As String, _
+                                       ByVal lpParameters As String, _
+                                       ByVal lpDirectory As String, _
+                                       ByVal nShowCmd As Long) As Long
 
 Public Sub RegisterCOM()
     ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\SSubTmr6.dll", App.Path & "\", 0
@@ -103,6 +111,7 @@ Public Sub RegisterAllDecoder()
     ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\" & "LAVSplitter.ax", App.Path & "\", 0
     ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\" & "LAVVideo.ax", App.Path & "\", 0
     ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\" & "madVR.ax", App.Path & "\", 0
+
 End Sub
 
 Public Sub Main()
@@ -162,13 +171,18 @@ Public Sub Main()
     RegisterCOM
     
     On Error GoTo RegisterCOMErr
+
     mdlToolBarAlphaer.LoadUI
+    
+    StartHook frmMain.hwnd
+
     On Error GoTo 0
     
     Exit Sub
 RegisterCOMErr:
     'do gui com register
     RegisterCOM
+
 End Sub
 
 Public Sub BuildGrph(ByVal srcFile As String, _
@@ -178,8 +192,6 @@ Public Sub BuildGrph(ByVal srcFile As String, _
                      ByRef boolHasSubtitle As Boolean, _
                      Optional ByVal eRenderer As RenderType = VideoMixedRenderer9)
 
-
-
     'Try put source file directly
     '
     'On Error GoTo OnlyInput
@@ -188,7 +200,9 @@ Public Sub BuildGrph(ByVal srcFile As String, _
     'If (Not objSrcSplitterFilter Is Nothing And objSrcSplitterFilter.Pins.Count > 0) Then GoTo ParserPins
 
     objGraphManager.RegFilterCollection.Item LAVSplitterSourceIndex, objSrcSplitterReg
+
     On Error GoTo regControl
+
     objSrcSplitterReg.Filter objSrcSplitterFilter
 
     On Error GoTo notExist
@@ -293,9 +307,10 @@ ParserPins:
     Exit Sub
 notExist:
     Set GlobalFilGraph = Nothing
-Exit Sub
+    Exit Sub
 regControl:
     mdlFilterBuilder.RegisterAllDecoder
+
 End Sub
 
 Private Sub FillDecoder(m_GraphManager As FilgraphManager)
@@ -375,7 +390,7 @@ Private Function CheckForFileSinkAndSetFileName(ByVal Flt As olelib.IUnknown, _
 End Function
 
 Private Function CastToUnkByIID(ByVal ObjToCastFrom As olelib.IUnknown, _
-                               IID As String) As stdole.IUnknown
+                                IID As String) As stdole.IUnknown
 
     Dim UUID As olelib.UUID
 
@@ -385,8 +400,8 @@ Private Function CastToUnkByIID(ByVal ObjToCastFrom As olelib.IUnknown, _
 End Function
 
 Private Function vtblCall(ByVal pUnk As Long, _
-                         ByVal vtblIdx As Long, _
-                         ParamArray P() As Variant)
+                          ByVal vtblIdx As Long, _
+                          ParamArray P() As Variant)
 
     Static VType(0 To 31) As Integer, VPtr(0 To 31) As Long
 
@@ -408,48 +423,68 @@ Private Function vtblCall(ByVal pUnk As Long, _
 End Function
 
 Public Function ShowVideoDecoderConfig()
+
     If (HasVideo) Then
-        ShowPropertyPage objVideoFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
+        ShowPropertyPage objVideoFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hwnd
     Else
         MsgBox "Current dose not have any Video Decoder"
+
     End If
+
 End Function
 
 Public Function ShowAudioDecoderConfig()
+
     If (HasAudio) Then
-        ShowPropertyPage objAudioFilter.Filter, "PureMediaPlayer - " & objAudioFilter.Name, frmMain.hWnd
+        ShowPropertyPage objAudioFilter.Filter, "PureMediaPlayer - " & objAudioFilter.Name, frmMain.hwnd
     Else
         MsgBox "Current dose not have any Audio Decoder"
+
     End If
+
 End Function
 
 Public Function ShowSpliterConfig()
+
     If (mdlGlobalPlayer.Loaded) Then
-        ShowPropertyPage objSrcSplitterFilter.Filter, "PureMediaPlayer - " & objSrcSplitterFilter.Name, frmMain.hWnd
+        ShowPropertyPage objSrcSplitterFilter.Filter, "PureMediaPlayer - " & objSrcSplitterFilter.Name, frmMain.hwnd
     Else
         MsgBox "Current dose not have any Spliterer"
+
     End If
+
 End Function
 
 Public Function ShowSubtitleConfig()
+
     If (HasSubtitle) Then
-        ShowPropertyPage objSubtitleFilter.Filter, "PureMediaPlayer - " & objSubtitleFilter.Name, frmMain.hWnd
+        ShowPropertyPage objSubtitleFilter.Filter, "PureMediaPlayer - " & objSubtitleFilter.Name, frmMain.hwnd
     Else
         MsgBox "Current dose not have any Subtitle"
+
     End If
+
 End Function
 
 Public Function ShowRendererConfig()
+
     If (HasVideo) Then
-        ShowPropertyPage objRenderFilter.Filter, "PureMediaPlayer - " & objRenderFilter.Name, frmMain.hWnd
+        ShowPropertyPage objRenderFilter.Filter, "PureMediaPlayer - " & objRenderFilter.Name, frmMain.hwnd
     Else
         MsgBox "Current dose not have any Video Renderer"
+
     End If
+
 End Function
 
-Public Function ShowPropertyPage(ByVal FilterOrPin As olelib.IUnknown, Optional Caption As String, Optional ByVal hwndOwner As Long) As Boolean
+Public Function ShowPropertyPage(ByVal FilterOrPin As olelib.IUnknown, _
+                                 Optional Caption As String, _
+                                 Optional ByVal hwndOwner As Long) As Boolean
+
     Const IID_ISpecifyPropertyPages = "{B196B28B-BAB4-101A-B69C-00AA00341D07}", VTbl_GetPages = 3
+
     Dim oUnkSpPP As stdole.IUnknown, CAUUID(0 To 1) As Long
+
     Set oUnkSpPP = CastToUnkByIID(FilterOrPin, IID_ISpecifyPropertyPages)
 
     If vtblCall(ObjPtr(oUnkSpPP), VTbl_GetPages, VarPtr(CAUUID(0))) Then Exit Function
@@ -459,4 +494,5 @@ Public Function ShowPropertyPage(ByVal FilterOrPin As olelib.IUnknown, Optional 
 
     CoTaskMemFree CAUUID(1)
     ShowPropertyPage = True
+
 End Function

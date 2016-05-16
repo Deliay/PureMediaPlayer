@@ -163,7 +163,7 @@ Begin VB.Form frmMain
          Caption         =   "Stop"
          ForeColor       =   &H00FFFFFF&
          Height          =   300
-         Left            =   3000
+         Left            =   3120
          TabIndex        =   13
          Top             =   360
          Width           =   660
@@ -199,12 +199,20 @@ Begin VB.Form frmMain
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   16777215
-      BackColor       =   0
-      View            =   3
+      BackColor       =   1842204
+      View            =   1
       MultiSelect     =   -1  'True
+      LabelEdit       =   0   'False
       FullRowSelect   =   -1  'True
       Appearance      =   0
+      BorderStyle     =   0
+      FlatScrollBar   =   -1  'True
+      HeaderButtons   =   0   'False
+      HeaderTrackSelect=   0   'False
       HideSelection   =   0   'False
+      DoubleBuffer    =   -1  'True
+      NoColumnHeaders =   -1  'True
+      TileBackgroundPicture=   0   'False
    End
    Begin VB.PictureBox bbMenuBar 
       Appearance      =   0  'Flat
@@ -278,13 +286,21 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Public nowPlaying    As cListItem
+Public nowPlaying      As cListItem
 
-Public isHide        As Boolean
+Public isHide          As Boolean
 
-Private ItemSelected As cListItem
+Public mouseDownStatus As Boolean
 
-Public srcH As Long, srcW As Long
+Public dragY           As Single
+
+Private ItemSelected   As cListItem
+
+Public srcH            As Long, srcW As Long
+
+Private Sub asd_Click()
+
+End Sub
 
 Private Sub bbMenuBar_MouseDown(Button As Integer, _
                                 Shift As Integer, _
@@ -305,6 +321,14 @@ Private Sub bbMenuBar_MouseMove(Button As Integer, _
         mdlToolBarAlphaer.apMenuButton.hDC = bbMenuBar.hDC
         mdlToolBarAlphaer.apMenuButton.RefreshHW 32, 32
         SwitchUI True
+
+        If (boolPlaylistStatus = True) Then
+            PlaylistShow
+        Else
+            PlaylistHide
+
+            'RefreshUI
+        End If
 
     End If
 
@@ -331,11 +355,14 @@ Private Sub bbPlaylist_MouseMove(Button As Integer, _
         bbPlaylist.BackColor = RGB(48, 48, 48)
         mdlToolBarAlphaer.apPlaylistHint.hDC = bbPlaylist.hDC
         mdlToolBarAlphaer.apPlaylistHint.RefreshHW 24, 48
+
     End If
+
     If (Not mdlToolBarAlphaer.boolPlaylistStatus) Then
         SwitchUI True
 
     End If
+
 End Sub
 
 Private Sub bbPlaystatus_Click(Index As Integer)
@@ -367,12 +394,76 @@ Private Sub bbPlaystatus_Click(Index As Integer)
 
 End Sub
 
+Private Sub bbPlaystatus_MouseDown(Index As Integer, _
+                                   Button As Integer, _
+                                   Shift As Integer, _
+                                   X As Single, _
+                                   Y As Single)
+    mouseDownStatus = True
+    dragY = Y
+
+End Sub
+
+Private Sub bbPlaystatus_MouseMove(Index As Integer, _
+                                   Button As Integer, _
+                                   Shift As Integer, _
+                                   X As Single, _
+                                   Y As Single)
+
+    Dim lngFlag As Long
+
+    If (mouseDownStatus And Index = PlayControl.CTRL_VOICE And mdlGlobalPlayer.GlobalPlayStatus = playing And mdlGlobalPlayer.Loaded) Then
+        If (dragY > Y) Then
+
+            'drag up
+            'voice up
+            If (dragY - Y > 2) Then
+                lngFlag = 1
+
+            End If
+
+        ElseIf (dragY < Y) Then
+
+            If (Y - dragY > 2) Then
+                lngFlag = -1
+
+            End If
+
+        End If
+
+        dragY = Y
+
+        If (lngFlag <> 0) Then
+            mdlGlobalPlayer.Volume = mdlGlobalPlayer.Volume + lngFlag
+            
+            lngFlag = 0
+
+        End If
+
+    End If
+
+End Sub
+
+Private Sub bbPlaystatus_MouseUp(Index As Integer, _
+                                 Button As Integer, _
+                                 Shift As Integer, _
+                                 X As Single, _
+                                 Y As Single)
+    mouseDownStatus = False
+    dragY = 0
+    
+End Sub
+
 Private Sub Form_Activate()
     mdlGlobalPlayer.SwitchFullScreen True, False
+
 End Sub
 
 Private Sub frmPlayer_Click()
     SwitchUI
+
+    If (mdlToolBarAlphaer.UIStatus = False) Then PlaylistHide
+
 End Sub
 
 Public Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
@@ -410,31 +501,22 @@ Public Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
         End If
 
     End If
+
 End Sub
 
 Private Sub Form_Load()
-    lstPlaylist.Columns.Add , , "File", , 2880
-    lstPlaylist.Columns.Add , , "Duration"
+    lstPlaylist.Columns.Add , , "File", , 2800
+    lstPlaylist.Columns.Add , , "Duration", , 600
     Me.Show
-    EnumLanguageFile
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
-    SwitchUI True
-    
-    Call SetHook((Me.hWnd))
-    
-    Call DragAcceptFiles((Me.hWnd), True)
-    
     InitialCommandLine
-    
-    SwitchUI
-    SwitchUI
 
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    SizeWindow Me.hWnd
+    SizeWindow Me.hwnd
 
 End Sub
 
@@ -444,16 +526,20 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+    Cancel = 1
     ExitProgram
     
 End Sub
 
 Public Sub Form_Resize()
     ReCalcPlayWindow
+
     If (mdlToolBarAlphaer.UIStatus = True) Then RefreshUI
+
 End Sub
 
 Public Sub ReCalcPlayWindow()
+
     If (Me.Width = 0) Then Exit Sub
     If (Me.Height = 0) Then Exit Sub
     
@@ -480,6 +566,7 @@ Public Sub ReCalcPlayWindow()
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
+    Cancel = 1
     ExitProgram
     
 End Sub
@@ -489,13 +576,14 @@ Private Sub frmPlayer_DblClick()
     SwitchUI True
 
 End Sub
- 
+
 Private Sub frmPlayer_MouseDown(Button As Integer, _
                                 Shift As Integer, _
                                 X As Single, _
                                 Y As Single)
     
     If (Button = vbRightButton) Then Me.PopupMenu frmMenu.mmStatus
+
 End Sub
 
 Private Sub CalcPercent(X As Single)
@@ -530,25 +618,8 @@ Private Sub frmPlayer_MouseMove(Button As Integer, _
 
 End Sub
 
-Private Sub frmPlayer_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
-     
-    
-    Dim lngCount As Long
-    Dim rtn As Long, first As String
-    For lngCount = 1 To Data.Files.Count
-        Dim Target As String
-        rtn = GetShortPathName(StrPtr(Data.Files(lngCount)), StrPtr(Target), 255)
-        If (Not (InStr(1, Target, Chr(0)) = 0)) Then
-            Target = Mid(Target, 1, InStr(1, Target, Chr(0)) - 1)
-        End If
-        mdlPlaylist.AddFileToPlaylist Target
-        If (lngCount = 1) Then first = Target
-    Next
-    If (mdlGlobalPlayer.GlobalPlayStatus = Stoped) Then mdlPlaylist.PlayByName first
-    
-End Sub
-
 Public Sub lstPlaylist_ItemDblClick(Item As vbalListViewLib6.cListItem)
+
     If (Not (NameGet(mdlGlobalPlayer.File) = Item.Text)) Then
         mdlGlobalPlayer.CloseFile
         mdlGlobalPlayer.File = mdlPlaylist.GetItemByPath(Item.key).FullPath
@@ -617,10 +688,13 @@ Private Sub tmrUpdateTime_Timer()
                 Form_Resize
                 srcH = Me.Height
                 srcW = Me.Width
+
             End If
+
         End If
     
     End If
+
 End Sub
 
 Public Sub AutoPatern()

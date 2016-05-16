@@ -1,11 +1,12 @@
 VERSION 5.00
 Begin VB.Form frmMenu 
-   BorderStyle     =   3  'Fixed Dialog
-   Caption         =   "Form1"
-   ClientHeight    =   3165
-   ClientLeft      =   150
-   ClientTop       =   795
-   ClientWidth     =   4710
+   AutoRedraw      =   -1  'True
+   BorderStyle     =   0  'None
+   Caption         =   "PureMediaPlayerMenuHost"
+   ClientHeight    =   930
+   ClientLeft      =   45
+   ClientTop       =   690
+   ClientWidth     =   2520
    BeginProperty Font 
       Name            =   "Î¢ÈíÑÅºÚ"
       Size            =   8.25
@@ -15,13 +16,14 @@ Begin VB.Form frmMenu
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   3165
-   ScaleWidth      =   4710
-   ShowInTaskbar   =   0   'False
-   StartUpPosition =   3  '´°¿ÚÈ±Ê¡
+   ScaleHeight     =   62
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   168
+   Visible         =   0   'False
    Begin VB.Menu MenuMain 
       Caption         =   "Menu"
       Begin VB.Menu mmFile 
@@ -174,9 +176,18 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
-Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+
+Private Declare Function ShellExecute _
+                Lib "shell32.dll" _
+                Alias "ShellExecuteA" (ByVal hwnd As Long, _
+                                       ByVal lpOperation As String, _
+                                       ByVal lpFile As String, _
+                                       ByVal lpParameters As String, _
+                                       ByVal lpDirectory As String, _
+                                       ByVal nShowCmd As Long) As Long
 
 Private Sub Language_Select_Click(Index As Integer)
+
     If (mdlLanguageApplyer.GetLanguageName = Language_Select(Index).Caption) Then
         'same item reclicked
         Exit Sub
@@ -187,16 +198,19 @@ Private Sub Language_Select_Click(Index As Integer)
         Language_Select(Index).Checked = True
         mdlLanguageApplyer.SetLanguage CLng(Index)
         mdlLanguageApplyer.ReApplyLanguage
+
     End If
     
 End Sub
 
 Private Sub mmHelp_About_Click()
     MsgBox "Remilia(Net) Workstation(admin@remiliascarlet.com)"
+
 End Sub
 
 Private Sub mmHelp_Help_Click()
     MsgBox "Free to use"
+
 End Sub
 
 Private Sub mmHelp_Web_Click()
@@ -219,12 +233,13 @@ Private Sub mmStatus_Play_Click()
 End Sub
 
 Private Sub mmStatus_ShowPlaylist_Click()
-    frmMain.isHide = Not frmMain.isHide
-    
-    If (frmMain.isHide) Then
 
+    If (boolPlaylistStatus = True) Then
+        PlaylistHide
     Else
-        
+        PlaylistShow
+
+        'RefreshUI
     End If
     
 End Sub
@@ -293,22 +308,27 @@ End Sub
 
 Private Sub Propertys_Audio_Click()
     mdlFilterBuilder.ShowAudioDecoderConfig
+
 End Sub
 
 Private Sub Propertys_Renderer_Click()
     mdlFilterBuilder.ShowRendererConfig
+
 End Sub
 
 Private Sub Propertys_Splitter_Click()
     mdlFilterBuilder.ShowSpliterConfig
+
 End Sub
 
 Private Sub Propertys_Subtitle_Click()
     mdlFilterBuilder.ShowSubtitleConfig
+
 End Sub
 
 Private Sub Propertys_Video_Click()
     mdlFilterBuilder.ShowVideoDecoderConfig
+
 End Sub
 
 Public Sub Renderers_Click(Index As Integer)

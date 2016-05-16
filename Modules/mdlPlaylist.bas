@@ -158,9 +158,7 @@ Public Sub PlaylistClear()
 End Sub
 
 Public Function PlayByName(ByVal strName As String) As Boolean
-    mdlGlobalPlayer.File = GetItemByPath(strName).FullPath
     frmMain.lstPlaylist_ItemDblClick frmMain.lstPlaylist.ListItems(strName)
-    mdlGlobalPlayer.RenderMediaFile
     
 End Function
 

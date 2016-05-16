@@ -5,7 +5,7 @@ Private Declare Function ReleaseCapture Lib "user32" () As Long
 
 Private Declare Function SendMessage _
                 Lib "user32" _
-                Alias "SendMessageA" (ByVal hWnd As Long, _
+                Alias "SendMessageA" (ByVal hwnd As Long, _
                                       ByVal wMsg As Long, _
                                       ByVal wParam As Long, _
                                       lParam As Any) As Long
@@ -22,7 +22,7 @@ Public Const RGN_OR = 2
 
 Private Declare Function SetWindowLong _
                 Lib "user32" _
-                Alias "SetWindowLongA" (ByVal hWnd As Long, _
+                Alias "SetWindowLongA" (ByVal hwnd As Long, _
                                         ByVal nIndex As Long, _
                                         ByVal dwNewLong As Long) As Long
                                         
@@ -32,7 +32,7 @@ Private Declare Function GetPixel _
                              ByVal Y As Long) As Long
 
 Private Declare Function SetWindowRgn _
-                Lib "user32" (ByVal hWnd As Long, _
+                Lib "user32" (ByVal hwnd As Long, _
                               ByVal hRgn As Long, _
                               ByVal bRedraw As Boolean) As Long
 
@@ -80,20 +80,13 @@ Public boolPlaylistStatus As Boolean
 
 Public Property Get UIStatus() As Boolean
     UIStatus = boolUIStatus
+
 End Property
 
 Public Sub LoadUI()
     Load frmMain
     Load frmPaternAdd
-    If (Dir(App.Path & "\language.ini") = "") Then
-        CreateLanguagePart frmMenu
-        CreateLanguagePart frmPaternAdd
-    Else
-        ApplyLanguageToForm frmMenu
-        ApplyLanguageToForm frmPaternAdd
 
-    End If
-    
     frmPaternAdd.Hide
     
     apMenuButton.hDC = frmMain.bbMenuBar.hDC
@@ -108,6 +101,10 @@ Public Sub LoadUI()
         apPlayControl(i).LoadImageWH App.Path & "\Image\playcontrol_" & i & ".png", 32, 32
     Next
     frmMain.Show
+    
+    mdlLanguageApplyer.EnumLanguageFile
+    mdlLanguageApplyer.ReApplyLanguage
+
 End Sub
 
 Public Sub RefreshUI()
@@ -127,6 +124,7 @@ Public Sub RefreshUI()
         UIHeightButtom = UIHeightButtom + .sbStatusBar.Height
         
         UIHeightTop = .bbMenuBar.Height
+
         Dim i As Long
     
         For i = 0 To 4
@@ -178,8 +176,10 @@ refreshDirect:
         HideUI
         
     End If
+
     frmMain.Form_Resize
     frmMain.srcH = 0
+
 End Sub
 
 Public Sub DragWindow(ByVal lngHwnd As Long)
@@ -218,6 +218,7 @@ End Sub
 Public Sub PlayPauseSwitch()
     frmMain.bbPlaystatus(PlayControl.CTRL_PLAYPAUSE).Cls
     apPlayControl(PlayControl.CTRL_PLAYPAUSE).hDC = frmMain.bbPlaystatus(PlayControl.CTRL_PLAYPAUSE).hDC
+
     If (mdlGlobalPlayer.GlobalPlayStatus = playing) Then
         
         apPlayControl(PlayControl.CTRL_PLAYPAUSE).LoadImageWH App.Path & "\Image\playcontrol_" & PlayControl.CTRL_PLAYPAUSE & "_.png", 32, 32
