@@ -340,6 +340,7 @@ End Sub
 
 Public Sub StopPlay()
     Precent = 0
+    SaveCurrentPos
     GlobalPlayStatus = Stoped
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     
@@ -516,7 +517,12 @@ End Sub
 
 Public Sub SeekLastPos(ByVal strFullPath As String)
     mdlGlobalPlayer.CurrentTime = val(InI.INI_GetString(App.Path & "\LastPlayed.ini", "LastPos", strFullPath))
-
+    
+    If (mdlGlobalPlayer.CurrentTime = mdlGlobalPlayer.Duration) Then
+        mdlGlobalPlayer.CurrentTime = 0
+        
+    End If
+    
 End Sub
 
 Public Sub SaveCurrentPos()
