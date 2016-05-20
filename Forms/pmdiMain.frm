@@ -148,11 +148,11 @@ Begin VB.Form frmMain
             Left            =   0
             ScaleHeight     =   9
             ScaleMode       =   3  'Pixel
-            ScaleWidth      =   25
+            ScaleWidth      =   1
             TabIndex        =   6
             TabStop         =   0   'False
             Top             =   0
-            Width           =   375
+            Width           =   15
          End
       End
       Begin VB.Label Label2 
@@ -512,7 +512,7 @@ Private Sub Form_Load()
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
     InitialCommandLine
-
+    saveConfig "LastWindowHWND", Me.hwnd
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)

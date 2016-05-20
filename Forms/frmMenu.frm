@@ -32,6 +32,9 @@ Begin VB.Form frmMenu
             Caption         =   "Open"
             Shortcut        =   ^D
          End
+         Begin VB.Menu mmFile_OpenURL 
+            Caption         =   "Open URL"
+         End
          Begin VB.Menu mmFile_Close 
             Caption         =   "Close"
             Shortcut        =   ^C
