@@ -447,7 +447,7 @@ Public Sub UpdateTitle(strCaption As String)
 End Sub
 
 Public Sub RaiseMediaFilter(list As vbalListViewCtl)
-    
+    list.ListItems.Add , , mdlGlobalPlayer.File
     Dim objFilter As IFilterInfo
     
     Dim objItem   As cListItem
