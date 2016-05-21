@@ -115,6 +115,41 @@ Public Sub RegisterAllDecoder()
 End Sub
 
 Public Sub Main()
+    If (App.PrevInstance) Then
+        If (Len(Command) <> 0) Then
+            Dim cbs As COPYDATASTRUCT
+'            Dim buf(0 To 255) As Byte
+'
+'            Dim argc As Long, argv As IntPtr, i As Long
+'
+'            argv = CommandLineToArgvW(GetCommandLine(), argc)
+'
+'            For i = 1 To argc - 1
+'                 Dim strTemp As String
+'                 strTemp = cdlg.ConvertFileName(AllocStr(ByVal PtrPtr(argv + vbPtrSize * i)))
+'                 CopyMemory buf(0), ByVal strTemp$, lstrlen(StrPtr(strTemp$))
+'                 cbs.dwData = 1
+'                 cbs.cbData = lstrlen(StrPtr(strTemp$))
+'                 cbs.lpData = VarPtr(buf(0))
+'                 SendMessage val(getConfig("LastWindowHWND")), WM_COPYDATA, GetCurrentProcessId(), cbs
+'            Next
+'
+'            LocalFree argv
+'
+'            SendMessage val(getConfig("LastWindowHWND")), PM_PLAY_LAST, 0&, 0&
+'
+            Dim ptrCmd As IntPtr
+            ptrCmd = GetCommandLine()
+            cbs.dwData = 1
+            cbs.cbData = lstrlen(ptrCmd) + 1
+            cbs.lpData = ptrCmd
+            SendMessageW val(getConfig("LastWindowHWND")), WM_COPYDATA, GetCurrentProcessId(), cbs
+        End If
+        
+        SendMessage val(getConfig("LastWindowHWND")), PM_ACTIVE, 0&, 0&
+        End
+        Exit Sub
+    End If
     LAVVideoIndex = -1
     LAVAudioIndex = -1
     LAVSplitterIndex = -1
@@ -167,9 +202,7 @@ Public Sub Main()
 
     'Create A Clean FilgraphManager
     Set mdlGlobalPlayer.GlobalFilGraph = New FilgraphManager
-    
-    RegisterCOM
-    
+
     On Error GoTo RegisterCOMErr
 
     mdlToolBarAlphaer.LoadUI
@@ -191,6 +224,8 @@ Public Sub BuildGrph(ByVal srcFile As String, _
                      ByRef boolHasAudio As Boolean, _
                      ByRef boolHasSubtitle As Boolean, _
                      Optional ByVal eRenderer As RenderType = VideoMixedRenderer9)
+    boolHasSubtitle = False
+    'First put subtitle flag to FALSE
 
     'Try put source file directly
     '
@@ -279,29 +314,49 @@ ParserPins:
     
     '1. LAVSplit (Subtitle) -> (Input) VSFilter
     '2. LAVSplit (Video) -> (Input) LAVVideo (Output) -> (Video) VSFilter (Output)-> (VMR Input)(VMR9)
-    '3. LAVSplit (Audio) -> (Input) LAVAudio (Output) -> Connect Downstream
+    '3. LAVSplit (Audio) -> (Input) LAVAudio (Output) -> (Video) VSFilter (Output)-> Connect Downstream
     
     '  Audio first
     If (boolHasAudio = True) Then objAudioPin.Render 'audio auto connect
-
+    
+    'If Splitter not give a subtitle pin, Create a vs-fliter and connect
+    If ((boolHasVideo = True) And (boolHasSubtitle = False)) Then
+        objGraphManager.RegFilterCollection.Item VSFilterIndex, objSubtitleReg
+        objSubtitleReg.Filter objSubtitleFilter
+    End If
+    
     '  Video second
     If (boolHasVideo = True) Then
-        '  If subtitle exist
-        objVideoPin.Render
-
         ' LAVSplit (Subtitle) -> (Input) VSFilter
         If (boolHasSubtitle = True) Then
 
             Dim objPinVSInput As IPinInfo
 
             For Each objPinVSInput In objSubtitleFilter.Pins
-
                 If (LCase(objPinVSInput.Name) = "input") Then Exit For
             Next
             objSubtitlePin.Connect objPinVSInput
-
+            objVideoPin.Render
+        Else
+            'Force Connect Here
+            Dim objPinForceVSInput As IPinInfo
+            For Each objPinForceVSInput In objSubtitleFilter.Pins
+                If (LCase$(objPinForceVSInput.Name) = "video") Then Exit For
+            Next
+            objVideoPin.Connect objPinForceVSInput
+            Dim objRendererInput As IPinInfo
+            For Each objRendererInput In objRenderFilter.Pins
+                If (LCase$(objRendererInput.Name) = "input") Then Exit For
+            Next
+            Dim objVSFilterOutput As IPinInfo
+            For Each objVSFilterOutput In objSubtitleFilter.Pins
+                If (LCase$(objVSFilterOutput.Name) = "output") Then Exit For
+            Next
+            objVSFilterOutput.Connect objRendererInput
         End If
-
+        ' Connect it to Splitter Subtitle
+        ' In the end ,render
+        
     End If
 
     Exit Sub
