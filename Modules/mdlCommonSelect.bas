@@ -121,7 +121,17 @@ Public Function NameGet(ByVal strFilePath As String) As String
     
 End Function
 
-Private Function ConvertFileName(sToConvert As String) As String
-   
+Public Function ConvertFileNamePtr(LongFileName As IntPtr) As String
+    ConvertFileNamePtr = Space$(254)
+    rtn = GetShortPathName(LongFileName, StrPtr(ConvertFileNamePtr), 254)
+
+    If (Left$(ConvertFileNamePtr, 1) = Space$(1)) Then ConvertFileNamePtr = PtrStr(LongFileName)
+    If (Not (InStr(1, ConvertFileNamePtr, Chr(0)) = 0)) Then
+        ConvertFileNamePtr = Mid(ConvertFileNamePtr, 1, InStr(1, ConvertFileNamePtr, Chr(0)) - 1)
+    End If
 End Function
 
+Public Function ConvertFileName(LongFileName As String) As String
+    ConvertFileName = ConvertFileNamePtr(StrPtr(LongFileName))
+    
+End Function

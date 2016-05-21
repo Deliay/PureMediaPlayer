@@ -15,17 +15,32 @@ Private Declare Function SetWindowLong _
                                         ByVal nIndex As Long, _
                                         ByVal dwNewLong As Long) As Long
 
+Type COPYDATASTRUCT
+    dwData As Long
+    cbData As Long
+    lpData As Long
+End Type
+
+Public Const GWL_WNDPROC = (-4)
+
+Public Const WM_COPYDATA = &H4A
+
 Private lPrevWndProc As Long
 
 Private hHookWindow  As Long
-
-Private Const GWL_WNDPROC = -4
 
 Private Const WM_DROPFILES = &H233
 
 Private Const WM_HOTKEY = &H312
 
 Private Const WM_CLOSE = &H10
+
+'wParam
+Public Const PM_ADDMEDIAFILE = &HFFF
+
+Public Const PM_ACTIVE = &HFFE
+
+Public Const PM_PLAY_LAST = &HFFD
 
 Private Declare Sub DragAcceptFiles _
                 Lib "shell32.dll" (ByVal hwnd As Long, _
@@ -40,19 +55,19 @@ Private Declare Function DragQueryFile _
                                         ByVal lpStr As Long, _
                                         ByVal ch As Long) As Long
 
-Private Declare Function GetCommandLine _
+Public Declare Function GetCommandLine _
                 Lib "kernel32" _
                 Alias "GetCommandLineW" () As IntPtr
 
-Private Declare Function CommandLineToArgvW _
+Public Declare Function CommandLineToArgvW _
                 Lib "shell32" (ByVal lpCmdLine As IntPtr, _
                                pNumArgs As Long) As IntPtr
 
-Private Declare Function LocalFree Lib "kernel32" (ByVal hMem As IntPtr) As Long
+Public Declare Function LocalFree Lib "kernel32" (ByVal hMem As IntPtr) As Long
 
 Private Declare Function PostMessage _
                 Lib "user32" _
-                Alias "PostMessageA" (ByVal hwnd As Long, _
+                Alias "PostMessageW" (ByVal hwnd As Long, _
                                       ByVal wMsg As Long, _
                                       ByVal wParam As Long, _
                                       ByVal lParam As Long) As Long
@@ -61,14 +76,21 @@ Private Declare Function TerminateProcess _
                 Lib "kernel32" (ByVal hProcess As Long, _
                                 ByVal uExitCode As Long) As Long
 
-Private Declare Function GetCurrentProcessId Lib "kernel32" () As Long
+Public Declare Function GetCurrentProcessId Lib "kernel32" () As Long
 
+Private Declare Function SetForegroundWindow Lib "user32" (ByVal hwnd As Long) As Long
+
+Public Declare Function lstrlen Lib "kernel32" Alias "lstrlenW" (ByVal lpString As Long) As Long
+
+Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
+         (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
+         
 Public Sub InitialCommandLine()
 
     Dim argc As Long, argv As IntPtr, i As Long
 
     argv = CommandLineToArgvW(GetCommandLine, argc)
-
+    
     For i = 1 To argc - 1
         mdlPlaylist.AddFileToPlaylist AllocStr(ByVal PtrPtr(argv + vbPtrSize * i))
     Next
@@ -171,7 +193,33 @@ Public Sub MessageProc(lMsg As Long, wParam As Long, lParam As Long)
 
         Case WM_CLOSE
             ExitProgram
-
+            
+        Case PM_ADDMEDIAFILE
+            'ABORT FOR USE
+        Case WM_COPYDATA
+            Dim cbs As COPYDATASTRUCT
+'            Dim buf(255) As Byte
+            CopyMemory cbs, ByVal lParam, Len(cbs)
+'            CopyMemory buf(0), ByVal cbs.lpData, cbs.cbData
+'            mdlPlaylist.AddFileToPlaylist PtrStr(VarPtr(buf(0)))
+            Dim argc As Long, argv As IntPtr, i As Long
+            
+            argv = CommandLineToArgvW(cbs.lpData, argc)
+            frmMain.Caption = cbs.dwData & ":(" & cbs.cbData & ")" & cbs.lpData & ", CmdLineToArgW Result: Arg** Addr:" & argv & " Count:" & argc
+            For i = 0 To argc - 1
+                mdlPlaylist.AddFileToPlaylist AllocStr(ByVal PtrPtr(argv + vbPtrSize * i))
+            Next
+        
+            If argc > 1 Then mdlPlaylist.PlayByName AllocStr(ByVal PtrPtr(argv + vbPtrSize * 1))
+            LocalFree argv
+            
+        Case PM_PLAY_LAST
+            mdlPlaylist.PlayByName mdlPlaylist.colPlayItems(mdlPlaylist.colPlayItems.Count).FullPath
+            
+        Case PM_ACTIVE
+            frmMain.Show
+            frmMain.ZOrder 0
+            SetForegroundWindow frmMain.hwnd
     End Select
 
 End Sub
