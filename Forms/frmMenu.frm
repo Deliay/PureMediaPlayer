@@ -336,7 +336,7 @@ End Sub
 
 Public Sub Renderers_Click(Index As Integer)
 
-    frmMenu.Renderers(val(getConfig("Renderer"))).Checked = False
+    frmMenu.Renderers(val(getConfig(CFG_SETTING_RENDERER))).Checked = False
     
     saveConfig "Renderer", CStr(Index)
     frmMenu.Renderers(Index).Checked = True
