@@ -16,9 +16,11 @@ Private Declare Function SetWindowLong _
                                         ByVal dwNewLong As Long) As Long
 
 Type COPYDATASTRUCT
+
     dwData As Long
     cbData As Long
     lpData As Long
+
 End Type
 
 Public Const GWL_WNDPROC = (-4)
@@ -55,13 +57,11 @@ Private Declare Function DragQueryFile _
                                         ByVal lpStr As Long, _
                                         ByVal ch As Long) As Long
 
-Public Declare Function GetCommandLine _
-                Lib "kernel32" _
-                Alias "GetCommandLineW" () As IntPtr
+Public Declare Function GetCommandLine Lib "kernel32" Alias "GetCommandLineW" () As IntPtr
 
 Public Declare Function CommandLineToArgvW _
-                Lib "shell32" (ByVal lpCmdLine As IntPtr, _
-                               pNumArgs As Long) As IntPtr
+               Lib "shell32" (ByVal lpCmdLine As IntPtr, _
+                              pNumArgs As Long) As IntPtr
 
 Public Declare Function LocalFree Lib "kernel32" (ByVal hMem As IntPtr) As Long
 
@@ -80,10 +80,28 @@ Public Declare Function GetCurrentProcessId Lib "kernel32" () As Long
 
 Private Declare Function SetForegroundWindow Lib "user32" (ByVal hwnd As Long) As Long
 
-Public Declare Function lstrlen Lib "kernel32" Alias "lstrlenW" (ByVal lpString As Long) As Long
+Private Declare Function GetForegroundWindow Lib "user32" () As Long
 
-Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
-         (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
+Private Declare Function GetWindowThreadProcessId _
+                Lib "user32" (ByVal hwnd As Long, _
+                              lpdwProcessId As Long) As Long
+
+Private Declare Function AttachThreadInput _
+                Lib "user32" (ByVal idAttach As Long, _
+                              ByVal idAttachTo As Long, _
+                              ByVal fAttach As Long) As Long
+
+Private Declare Function BringWindowToTop Lib "user32" (ByVal hwnd As Long) As Long
+
+Public Declare Function lstrlen _
+               Lib "kernel32" _
+               Alias "lstrlenW" (ByVal lpString As Long) As Long
+
+Public Declare Sub CopyMemory _
+               Lib "kernel32" _
+               Alias "RtlMoveMemory" (hpvDest As Any, _
+                                      hpvSource As Any, _
+                                      ByVal cbCopy As Long)
          
 Public Sub InitialCommandLine()
 
@@ -195,18 +213,23 @@ Public Sub MessageProc(lMsg As Long, wParam As Long, lParam As Long)
             ExitProgram
             
         Case PM_ADDMEDIAFILE
+
             'ABORT FOR USE
         Case WM_COPYDATA
+
             Dim cbs As COPYDATASTRUCT
-'            Dim buf(255) As Byte
+
             CopyMemory cbs, ByVal lParam, Len(cbs)
-'            CopyMemory buf(0), ByVal cbs.lpData, cbs.cbData
-'            mdlPlaylist.AddFileToPlaylist PtrStr(VarPtr(buf(0)))
-            Dim argc As Long, argv As IntPtr, i As Long
-            
+
+            Dim argc      As Long, argv As IntPtr, i As Long
+
+            Dim strResult As String
+
+            strResult = Space$(cbs.cbData)
+            CopyMemory ByVal StrPtr(strResult), ByVal cbs.lpData, cbs.cbData
             argv = CommandLineToArgvW(cbs.lpData, argc)
-            frmMain.Caption = cbs.dwData & ":(" & cbs.cbData & ")" & cbs.lpData & ", CmdLineToArgW Result: Arg** Addr:" & argv & " Count:" & argc
-            For i = 0 To argc - 1
+
+            For i = 1 To argc - 1
                 mdlPlaylist.AddFileToPlaylist AllocStr(ByVal PtrPtr(argv + vbPtrSize * i))
             Next
         
@@ -217,9 +240,17 @@ Public Sub MessageProc(lMsg As Long, wParam As Long, lParam As Long)
             mdlPlaylist.PlayByName mdlPlaylist.colPlayItems(mdlPlaylist.colPlayItems.Count).FullPath
             
         Case PM_ACTIVE
-            frmMain.Show
-            frmMain.ZOrder 0
+
+            Dim bPid As Long, nPid As Long
+
+            bPid = GetWindowThreadProcessId(GetForegroundWindow(), ByVal 0&)
+            nPid = GetCurrentProcessId()
+            AttachThreadInput bPid, nPid, True
             SetForegroundWindow frmMain.hwnd
+            BringWindowToTop frmMain.hwnd
+            AttachThreadInput bPid, nPid, False
+            frmMain.SetFocus
+
     End Select
 
 End Sub

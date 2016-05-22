@@ -115,41 +115,29 @@ Public Sub RegisterAllDecoder()
 End Sub
 
 Public Sub Main()
+    Debug.Assert False
+
     If (App.PrevInstance) Then
         If (Len(Command) <> 0) Then
-            Dim cbs As COPYDATASTRUCT
-'            Dim buf(0 To 255) As Byte
-'
-'            Dim argc As Long, argv As IntPtr, i As Long
-'
-'            argv = CommandLineToArgvW(GetCommandLine(), argc)
-'
-'            For i = 1 To argc - 1
-'                 Dim strTemp As String
-'                 strTemp = cdlg.ConvertFileName(AllocStr(ByVal PtrPtr(argv + vbPtrSize * i)))
-'                 CopyMemory buf(0), ByVal strTemp$, lstrlen(StrPtr(strTemp$))
-'                 cbs.dwData = 1
-'                 cbs.cbData = lstrlen(StrPtr(strTemp$))
-'                 cbs.lpData = VarPtr(buf(0))
-'                 SendMessage val(getConfig("LastWindowHWND")), WM_COPYDATA, GetCurrentProcessId(), cbs
-'            Next
-'
-'            LocalFree argv
-'
-'            SendMessage val(getConfig("LastWindowHWND")), PM_PLAY_LAST, 0&, 0&
-'
+
+            Dim cbs    As COPYDATASTRUCT
+
             Dim ptrCmd As IntPtr
+
             ptrCmd = GetCommandLine()
-            cbs.dwData = 1
-            cbs.cbData = lstrlen(ptrCmd) + 1
+            cbs.dwData = 3
+            cbs.cbData = (lstrlen(ptrCmd) + 1) * 2
             cbs.lpData = ptrCmd
-            SendMessageW val(getConfig("LastWindowHWND")), WM_COPYDATA, GetCurrentProcessId(), cbs
+            SendMessageW val(getConfig(CFG_SETTING_LAST_HWND)), WM_COPYDATA, ByVal 0&, cbs
+
         End If
         
-        SendMessage val(getConfig("LastWindowHWND")), PM_ACTIVE, 0&, 0&
+        SendMessage val(getConfig(CFG_SETTING_LAST_HWND)), PM_ACTIVE, 0&, 0&
         End
         Exit Sub
+
     End If
+
     LAVVideoIndex = -1
     LAVAudioIndex = -1
     LAVSplitterIndex = -1
@@ -193,10 +181,10 @@ Public Sub Main()
 
     End If
 
-    If (getConfig("Renderer") = "") Then
+    If (getConfig(CFG_SETTING_RENDERER) = "") Then
         frmMenu.Renderers_Click RenderType.MadVRednerer
     Else
-        frmMenu.Renderers_Click val(getConfig("Renderer"))
+        frmMenu.Renderers_Click val(getConfig(CFG_SETTING_RENDERER))
 
     End If
 
@@ -208,6 +196,8 @@ Public Sub Main()
     mdlToolBarAlphaer.LoadUI
     
     StartHook frmMain.hwnd
+
+    InitialCommandLine
 
     On Error GoTo 0
     
@@ -323,37 +313,51 @@ ParserPins:
     If ((boolHasVideo = True) And (boolHasSubtitle = False)) Then
         objGraphManager.RegFilterCollection.Item VSFilterIndex, objSubtitleReg
         objSubtitleReg.Filter objSubtitleFilter
+
     End If
     
     '  Video second
     If (boolHasVideo = True) Then
+
         ' LAVSplit (Subtitle) -> (Input) VSFilter
         If (boolHasSubtitle = True) Then
 
             Dim objPinVSInput As IPinInfo
 
             For Each objPinVSInput In objSubtitleFilter.Pins
+
                 If (LCase(objPinVSInput.Name) = "input") Then Exit For
             Next
             objSubtitlePin.Connect objPinVSInput
             objVideoPin.Render
         Else
+
             'Force Connect Here
             Dim objPinForceVSInput As IPinInfo
+
             For Each objPinForceVSInput In objSubtitleFilter.Pins
+
                 If (LCase$(objPinForceVSInput.Name) = "video") Then Exit For
             Next
             objVideoPin.Connect objPinForceVSInput
+
             Dim objRendererInput As IPinInfo
+
             For Each objRendererInput In objRenderFilter.Pins
+
                 If (LCase$(objRendererInput.Name) = "input") Then Exit For
             Next
+
             Dim objVSFilterOutput As IPinInfo
+
             For Each objVSFilterOutput In objSubtitleFilter.Pins
+
                 If (LCase$(objVSFilterOutput.Name) = "output") Then Exit For
             Next
             objVSFilterOutput.Connect objRendererInput
+
         End If
+
         ' Connect it to Splitter Subtitle
         ' In the end ,render
         
