@@ -141,7 +141,7 @@ Public Property Get File() As String
 End Property
 
 Public Property Let File(V As String)
-
+    SaveCurrentPos
     strLastestFile = V
 
 End Property
@@ -172,14 +172,12 @@ Public Sub RenderMediaFile()
     Set GlobalFilGraph = New FilgraphManager
 
     UpdateStatus StaticString(PLAYER_STATUS_LOADING), Action
-    
-    SaveCurrentPos
-    
+
     strFilePath = File
     UpdateStatus Dir(strFilePath), FileName
- 
+    
     hasVideo_ = False: hasAudio_ = False: hasSubtitle_ = False
-    GlobalRenderType = val(getConfig("Renderer"))
+    GlobalRenderType = val(getConfig(CFG_SETTING_RENDERER))
     mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
     
     If (HasVideo = False And hasAudio_ = False) Then GoTo DcodeErr
@@ -244,8 +242,8 @@ notLoadPlaylist:
 hErr:
 
     Resume Next
-
-    SeekLastPos strFilePath
+    mdlGlobalPlayer.CurrentTime = 0
+    SeekCurrentPos
     mdlGlobalPlayer.Play
     PlayPauseSwitch
     DoEvents
@@ -448,6 +446,7 @@ End Sub
 
 Public Sub RaiseMediaFilter(list As vbalListViewCtl)
     list.ListItems.Add , , mdlGlobalPlayer.File
+
     Dim objFilter As IFilterInfo
     
     Dim objItem   As cListItem
@@ -516,7 +515,7 @@ Public Sub ResizeFullScreen()
 End Sub
 
 Public Sub SeekLastPos(ByVal strFullPath As String)
-    mdlGlobalPlayer.CurrentTime = val(InI.INI_GetString(App.Path & "\LastPlayed.ini", "LastPos", strFullPath))
+    mdlGlobalPlayer.CurrentTime = val(InI.INI_GetString(App.Path & "\LastPlayed.ini", "LastPos", MD5String(strFullPath)))
     
     If (mdlGlobalPlayer.CurrentTime = mdlGlobalPlayer.Duration) Then
         mdlGlobalPlayer.CurrentTime = 0
@@ -525,10 +524,15 @@ Public Sub SeekLastPos(ByVal strFullPath As String)
     
 End Sub
 
+Public Sub SeekCurrentPos()
+    SeekLastPos mdlGlobalPlayer.File
+
+End Sub
+
 Public Sub SaveCurrentPos()
 
     If (mdlGlobalPlayer.Loaded) Then
-        InI.INI_WriteString App.Path & "\LastPlayed.ini", "LastPos", File, mdlGlobalPlayer.CurrentTime
+        InI.INI_WriteString App.Path & "\LastPlayed.ini", "LastPos", MD5String(File), mdlGlobalPlayer.CurrentTime
 
     End If
 
