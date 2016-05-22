@@ -20,6 +20,7 @@ Public Enum STATIC_STRING_ENUM
     PLAYER_VIOCE_RATE
 
     TIPS_ALREADY_RUN
+
 End Enum
 
 Const DEFAULT_PLAY_STATUS_PLAYING    As String = "Playing"
@@ -179,7 +180,7 @@ Public Function GetLanguageFile() As String
 End Function
 
 Public Function GetLanguageFileName() As String
-    GetLanguageFileName = getConfig("Language")
+    GetLanguageFileName = getConfig(CFG_SETTING_LANGUAGE)
 
     If (GetLanguageFileName = "") Then
         GetLanguageFileName = "english.ini"

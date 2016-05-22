@@ -178,15 +178,15 @@ Public Function GetItemByPath(ByVal strPath As String) As PlayListItem
     
 End Function
 
-Public Function getConfig(key As String, _
+Public Function getConfig(Key As String, _
                           Optional ConfigType As ConfigPart = Settings) As String
-    getConfig = GetSetting(App.ProductName, ConfigType, key)
+    getConfig = GetSetting(App.ProductName, ConfigType, Key)
     
 End Function
 
-Public Sub saveConfig(key As String, _
+Public Sub saveConfig(Key As String, _
                       value As String, _
                       Optional ConfigType As ConfigPart = Settings)
-    SaveSetting App.ProductName, ConfigType, key, value
+    SaveSetting App.ProductName, ConfigType, Key, value
     
 End Sub
