@@ -1,10 +1,6 @@
 Attribute VB_Name = "cdlg"
 Option Explicit
 
-Public Const CFG_HISTORY_LAST_SAVE_PATH As String = "LastSavePath"
-
-Public Const CFG_HISTORY_LAST_OPEN_PATH As String = "LastOpenPath"
-
 Private Declare Function GetSaveFileName _
                 Lib "comdlg32.dll" _
                 Alias "GetSaveFileNameW" (ByVal pOpenfilename As Long) As Long
@@ -128,7 +124,9 @@ Public Function ConvertFileNamePtr(LongFileName As IntPtr) As String
     If (Left$(ConvertFileNamePtr, 1) = Space$(1)) Then ConvertFileNamePtr = PtrStr(LongFileName)
     If (Not (InStr(1, ConvertFileNamePtr, Chr(0)) = 0)) Then
         ConvertFileNamePtr = Mid(ConvertFileNamePtr, 1, InStr(1, ConvertFileNamePtr, Chr(0)) - 1)
+
     End If
+
 End Function
 
 Public Function ConvertFileName(LongFileName As String) As String
