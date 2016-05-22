@@ -2,6 +2,7 @@ VERSION 5.00
 Object = "{E910F8E1-8996-4EE9-90F1-3E7C64FA9829}#1.1#0"; "vbaListView6.ocx"
 Begin VB.Form frmMain 
    Appearance      =   0  'Flat
+   AutoRedraw      =   -1  'True
    BackColor       =   &H00000000&
    Caption         =   "Pure Media Player"
    ClientHeight    =   6705
@@ -27,6 +28,7 @@ Begin VB.Form frmMain
    Begin VB.PictureBox sbStatusBar 
       Align           =   2  'Align Bottom
       Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
       BackColor       =   &H00000000&
       BorderStyle     =   0  'None
       ForeColor       =   &H00000000&
@@ -127,6 +129,7 @@ Begin VB.Form frmMain
       End
       Begin VB.PictureBox pbTimeBar 
          Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
          BackColor       =   &H80000005&
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
@@ -141,6 +144,7 @@ Begin VB.Form frmMain
          Width           =   10455
          Begin VB.PictureBox pbTimeBlock 
             Appearance      =   0  'Flat
+            AutoRedraw      =   -1  'True
             BackColor       =   &H00C0C0FF&
             BorderStyle     =   0  'None
             ForeColor       =   &H80000008&
@@ -505,14 +509,15 @@ Public Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
 End Sub
 
 Private Sub Form_Load()
+    Me.Show
     lstPlaylist.Columns.Add , , "File", , 2400
     lstPlaylist.Columns.Add , , "Duration", , 800
-    Me.Show
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
-    InitialCommandLine
     saveConfig "LastWindowHWND", Me.hwnd
+    Me.Show
+
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
@@ -622,7 +627,7 @@ Public Sub lstPlaylist_ItemDblClick(Item As vbalListViewLib6.cListItem)
 
     If (Not (NameGet(mdlGlobalPlayer.File) = Item.Text)) Then
         mdlGlobalPlayer.CloseFile
-        mdlGlobalPlayer.File = mdlPlaylist.GetItemByPath(Item.key).FullPath
+        mdlGlobalPlayer.File = mdlPlaylist.GetItemByPath(Item.Key).FullPath
         mdlGlobalPlayer.RenderMediaFile
         
         If Not nowPlaying Is Nothing Then nowPlaying.ForeColor = vbWhite
