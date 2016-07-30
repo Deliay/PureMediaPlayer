@@ -182,7 +182,7 @@ Option Explicit
 
 Private Declare Function ShellExecute _
                 Lib "shell32.dll" _
-                Alias "ShellExecuteA" (ByVal hwnd As Long, _
+                Alias "ShellExecuteA" (ByVal hWnd As Long, _
                                        ByVal lpOperation As String, _
                                        ByVal lpFile As String, _
                                        ByVal lpParameters As String, _
@@ -204,6 +204,19 @@ Private Sub Language_Select_Click(Index As Integer)
 
     End If
     
+End Sub
+
+Private Sub mmFile_OpenURL_Click()
+
+    Dim strURL As String
+
+    strURL = InputBox("Paste URL hrer:")
+
+    If (Len(strURL) <> 0) Then
+        mdlPlaylist.AddFileToPlaylist strURL
+        
+    End If
+
 End Sub
 
 Private Sub mmHelp_About_Click()
