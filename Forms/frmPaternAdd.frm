@@ -207,8 +207,10 @@ ErrExp:
 End Sub
 
 Public Sub Form_Load()
-    txtNowName.Text = Dir(mdlGlobalPlayer.File)
-    txtRegExp.Text = "*" & Mid$(Dir(mdlGlobalPlayer.File), InStrRev(Dir(mdlGlobalPlayer.File), "."))
+
+    If (mdlGlobalPlayer.File = "") Then Exit Sub
+    txtNowName.Text = NameGet(mdlGlobalPlayer.File)
+    txtRegExp.Text = "*" & Mid$(NameGet(mdlGlobalPlayer.File), InStrRev(NameGet(mdlGlobalPlayer.File), "."))
     cmdTestParten_Click
 
 End Sub
