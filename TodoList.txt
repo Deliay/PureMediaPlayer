@@ -25,12 +25,24 @@ XX.FT	EVR渲染器
 XX.FT	madVR渲染器
 XX.FT	VMR9渲染器
 
+0.2.122
+XX.FT	支持文件拖拽
+XX.FT	命令行支持
+XX.FT	历史播放记录(文件，进度)
+
+
+0.2.127
+XX.FTWD播放网络文件
+XX.FT	解码器预设置（create+instance）
+
+0.2.145
+XX.BUG	DPI放大后屏幕大小计算BUG
+XX.BUG  管理员权限的处理和提权
+XX.BUG  屏幕高宽计算错误导致画面有黑边的BUG
+XX.FT	增加是否在IDE的开关
+
 Pending list:
-10.FTWD	播放网络文件
-11.FT	支持文件拖拽
-12.FT	命令行支持
-13.FT	注册表关联
 16.WD	外挂字幕搜索
-17.FT	播放列表项顺序调整
-19.FT	历史播放记录(文件，进度)
-20.BUG	DPI放大后屏幕大小计算BUG
+21.FT	VRM9离屏渲染(dx9+ scratch pool surface+buffer+lock)
+22.FT	注册表文件关联
+23.FT	获取到URL播放缓冲状态
