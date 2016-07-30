@@ -62,13 +62,12 @@ End Enum
 
 Public Enum PlayStatus
 
-    playing
+    Stopped
     Paused
-    Stoped
+    Running
+    Caching
 
 End Enum
-
-Public GlobalPlayStatus As PlayStatus
 
 Private Const WS_BORDER = &H800000
 
@@ -82,6 +81,11 @@ Private Declare Sub SetLastError Lib "kernel32" (ByVal dwErrCode As Long)
 
 Public Property Get IsWindowed() As Boolean
     IsWindowed = Not boolIsFullScreen
+
+End Property
+
+Public Property Get GlobalPlayStatus() As PlayStatus
+    GlobalFilGraph.GetState 500, GlobalPlayStatus
 
 End Property
 
@@ -174,14 +178,14 @@ Public Sub RenderMediaFile()
     UpdateStatus StaticString(PLAYER_STATUS_LOADING), Action
 
     strFilePath = File
-    UpdateStatus Dir(strFilePath), FileName
+    UpdateStatus NameGet(strFilePath), FileName
     
     hasVideo_ = False: hasAudio_ = False: hasSubtitle_ = False
     GlobalRenderType = val(getConfig(CFG_SETTING_RENDERER))
     mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
     
     If (HasVideo = False And hasAudio_ = False) Then GoTo DcodeErr
-    UpdateTitle Dir(File)
+    UpdateTitle NameGet(File)
     Set ifPostion = GlobalFilGraph
 
     If (GlobalRenderType = EnhancedVideoRenderer) Then
@@ -195,8 +199,8 @@ Public Sub RenderMediaFile()
             Set ifVideo = GlobalFilGraph
             Set ifPlayback = GlobalFilGraph
             'ifPlayback.Caption = "PureMediaPlayer - LayerWindow"
-            ifPlayback.Owner = frmMain.frmPlayer.hwnd
-            ifPlayback.MessageDrain = frmMain.frmPlayer.hwnd
+            ifPlayback.Owner = frmMain.frmPlayer.hWnd
+            ifPlayback.MessageDrain = frmMain.frmPlayer.hWnd
             
             Dim lngSrcStyle As Long
             
@@ -208,7 +212,7 @@ Public Sub RenderMediaFile()
             mdlGlobalPlayer.ResizePlayWindow
             ifPlayback.HideCursor False
         Else
-            EVRHoster.SetPlayBackWindow frmMain.frmPlayer.hwnd
+            EVRHoster.SetPlayBackWindow frmMain.frmPlayer.hWnd
             mdlGlobalPlayer.ResizePlayWindow
 
         End If
@@ -242,6 +246,7 @@ notLoadPlaylist:
 hErr:
 
     Resume Next
+
     mdlGlobalPlayer.CurrentTime = 0
     SeekCurrentPos
     mdlGlobalPlayer.Play
@@ -315,7 +320,6 @@ Public Sub Play()
     
 hErr:
     GlobalFilGraph.Run
-    GlobalPlayStatus = playing
     
     frmMain.tmrUpdateTime.Enabled = True
     
@@ -328,7 +332,6 @@ End Sub
 Public Sub Pause()
     
     If (mdlGlobalPlayer.Loaded = False) Then Exit Sub
-    GlobalPlayStatus = Paused
     GlobalFilGraph.Pause
     UpdateStatus StaticString(PLAY_STATUS_PAUSED), PlayBack
     
@@ -339,10 +342,9 @@ End Sub
 Public Sub StopPlay()
     Precent = 0
     SaveCurrentPos
-    GlobalPlayStatus = Stoped
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     
-    If Not GlobalFilGraph Is Nothing Then
+    If Not GlobalFilGraph Is Nothing And Len(File) <> 0 Then
         GlobalFilGraph.Pause
         SaveCurrentPos
 
@@ -353,7 +355,7 @@ End Sub
 Public Sub SwitchPlayStauts()
     
     If (mdlGlobalPlayer.Loaded) Then
-        If (GlobalPlayStatus = playing) Then
+        If (GlobalPlayStatus = Running) Then
             mdlGlobalPlayer.Pause
         ElseIf (GlobalPlayStatus = Paused) Then
             mdlGlobalPlayer.Play
@@ -494,12 +496,12 @@ Public Sub ResizeFullScreen()
         lngStorageT = frmMain.Top
         lngStorageL = frmMain.Left
         frmMain.BorderStyle = 0
-        UpdateTitle Dir(File)
+        UpdateTitle NameGet(File)
         frmMain.WindowState = 2
     Else
     
         frmMain.BorderStyle = 2
-        UpdateTitle Dir(File)
+        UpdateTitle NameGet(File)
         frmMain.WindowState = 0
 
         If (lngStorageW <> 0) Then
