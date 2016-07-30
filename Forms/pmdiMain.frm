@@ -133,10 +133,10 @@ Begin VB.Form frmMain
          BackColor       =   &H80000005&
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
-         Height          =   135
+         Height          =   150
          Left            =   0
          ScaleHeight     =   10
-         ScaleMode       =   0  'User
+         ScaleMode       =   3  'Pixel
          ScaleWidth      =   697
          TabIndex        =   5
          TabStop         =   0   'False
@@ -416,7 +416,7 @@ Private Sub bbPlaystatus_MouseMove(Index As Integer, _
 
     Dim lngFlag As Long
 
-    If (mouseDownStatus And Index = PlayControl.CTRL_VOICE And mdlGlobalPlayer.GlobalPlayStatus = playing And mdlGlobalPlayer.Loaded) Then
+    If (mouseDownStatus And Index = PlayControl.CTRL_VOICE And mdlGlobalPlayer.GlobalPlayStatus = Running And mdlGlobalPlayer.Loaded) Then
         If (dragY > Y) Then
 
             'drag up
@@ -460,6 +460,19 @@ End Sub
 
 Private Sub Form_Activate()
     mdlGlobalPlayer.SwitchFullScreen True, False
+
+End Sub
+
+Private Sub Form_KeyPress(KeyAscii As Integer)
+
+    If (22 = KeyAscii) Then
+        If (OpenClipboard(Me.hWnd)) Then
+            mdlCommandLine.ReadDrapQueryFile GetClipboardData(CF_HDROP)
+            CloseClipboard
+            
+        End If
+        
+    End If
 
 End Sub
 
@@ -515,13 +528,13 @@ Private Sub Form_Load()
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
-    saveConfig "LastWindowHWND", Me.hwnd
+    saveConfig "LastWindowHWND", Me.hWnd
     Me.Show
 
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    SizeWindow Me.hwnd
+    SizeWindow Me.hWnd
 
 End Sub
 
@@ -548,23 +561,24 @@ Public Sub ReCalcPlayWindow()
     If (Me.Width = 0) Then Exit Sub
     If (Me.Height = 0) Then Exit Sub
     
-    frmPlayer.Width = (Me.Width / Screen.TwipsPerPixelX)
-    frmPlayer.Height = (Me.Height / Screen.TwipsPerPixelY)
+    frmPlayer.Width = Me.ScaleWidth
+    frmPlayer.Height = Me.ScaleHeight
 
     If (frmPlayer.Width <= 160) Then Exit Sub
     If (frmPlayer.Height <= 100) Then Exit Sub
 
-    bbPlaylist.Left = frmPlayer.Width - 32 - mdlToolBarAlphaer.UIWidthRight
+    bbPlaylist.Left = frmPlayer.Width - 24 - mdlToolBarAlphaer.UIWidthRight
     bbPlaylist.Top = frmPlayer.Height / 2 - bbPlaylist.Height
     lstPlaylist.Left = frmPlayer.Width - mdlToolBarAlphaer.UIWidthRight
     
-    frmPlayer.Width = (Me.Width / Screen.TwipsPerPixelX) - mdlToolBarAlphaer.UIWidthRight
+    frmPlayer.Width = Me.ScaleWidth - mdlToolBarAlphaer.UIWidthRight
+    'frmPlayer.Width = pbTimeBar.Top
     mdlGlobalPlayer.Width = frmPlayer.Width
-    mdlGlobalPlayer.Height = frmPlayer.Height - mdlToolBarAlphaer.UIHeightButtom - 23
+    mdlGlobalPlayer.Height = frmPlayer.Height - mdlToolBarAlphaer.UIHeightButtom
     
     lstPlaylist.Height = mdlGlobalPlayer.Height
     
-    pbTimeBar.Width = (Me.Width / Screen.TwipsPerPixelX)
+    pbTimeBar.Width = Me.ScaleWidth
 
     ResizePlayWindow
 
