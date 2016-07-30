@@ -1,6 +1,8 @@
 Attribute VB_Name = "mdlFilterBuilder"
 Option Explicit
 
+Global IsIDE As Boolean
+
 Private Declare Function RegisterLAVAudio _
                 Lib "LAVAudio.ax" _
                 Alias "DllRegisterServer" () As Long
@@ -78,14 +80,66 @@ Private VMR9Index         As Long, VMR7Index As Long, VRIndex As Long
 
 Public EVRFilterStorage   As IBaseFilter
 
+Private pAdminGroup       As IntPtr
+
+Type SID_IDENTIFIER_AUTHORITY
+
+    value(6) As Byte
+
+End Type
+
+Private Const SECURITY_BUILTIN_DOMAIN_RID As Long = &H20
+
+Private Const DOMAIN_ALIAS_RID_ADMINS     As Long = &H220
+
+Private Const NULL_                       As Long = 0
+
+Private Const SECURITY_NT_AUTHORITY       As Long = &H5
+
+Private Declare Function AllocateAndInitializeSid _
+                Lib "Advapi32.dll" (SID As SID_IDENTIFIER_AUTHORITY, _
+                                    ByVal Count As Byte, _
+                                    ByVal dwSubAuth0 As Long, _
+                                    ByVal dwSubAuth1 As Long, _
+                                    ByVal dwSubAuth2 As Long, _
+                                    ByVal dwSubAuth3 As Long, _
+                                    ByVal dwSubAuth4 As Long, _
+                                    ByVal dwSubAuth5 As Long, _
+                                    ByVal dwSubAuth6 As Long, _
+                                    ByVal dwSubAuth7 As Long, _
+                                    vpPSID As IntPtr) As BOOL
+                                    
+Private Declare Function CheckTokenMembership _
+                Lib "Advapi32.dll" (ByVal hToken As IntPtr, _
+                                    ByVal vpPSID As IntPtr, _
+                                    ByRef isMember As BOOL) As BOOL
+
+Private Declare Function FreeSid Lib "Advapi32.dll" (vpPSID As Long) As Long
+                
+Private Declare Function ShellExecuteEx _
+                Lib "shell32" _
+                Alias "ShellExecuteExW" (SEI As SHELLEXECUTEINFO2) As Long
+
+Private Declare Function WaitForSingleObject _
+                Lib "kernel32" (ByVal hHandle As Long, _
+                                ByVal dwMilliseconds As Long) As Long
+
+Private Const INFINITE = &HFFFF      '  Infinite timeout
+
+Private Declare Function SetProcessDPIAware Lib "user32" () As BOOL
+
 Private Declare Function ShellExecute _
                 Lib "shell32.dll" _
-                Alias "ShellExecuteA" (ByVal hwnd As Long, _
+                Alias "ShellExecuteA" (ByVal hWnd As Long, _
                                        ByVal lpOperation As String, _
                                        ByVal lpFile As String, _
                                        ByVal lpParameters As String, _
                                        ByVal lpDirectory As String, _
                                        ByVal nShowCmd As Long) As Long
+
+Private Declare Function GetLastError Lib "kernel32" () As Long
+
+Public isAdminPerm As Boolean
 
 Public Sub RegisterCOM()
     ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\SSubTmr6.dll", App.Path & "\", 0
@@ -115,7 +169,20 @@ Public Sub RegisterAllDecoder()
 End Sub
 
 Public Sub Main()
-    Debug.Assert False
+    IsIDE = GetIDEmode
+    InitPerm
+    
+    
+    'SetProcessDpiAwareness_soft
+    If (IsSupportDIPSet) Then
+        SetProcessDPIAware
+        SetProcessDpiAwareness_hard
+    End If
+    If (Len(Command) = 6 And Left$(Command, 6) = "--perm") Then
+        RegisterServers
+        End
+
+    End If
 
     If (App.PrevInstance) Then
         If (Len(Command) <> 0) Then
@@ -132,7 +199,7 @@ Public Sub Main()
 
         End If
         
-        SendMessage val(getConfig(CFG_SETTING_LAST_HWND)), PM_ACTIVE, 0&, 0&
+        SendMessageW val(getConfig(CFG_SETTING_LAST_HWND)), PM_ACTIVE, 0&, 0&
         End
         Exit Sub
 
@@ -190,23 +257,88 @@ Public Sub Main()
 
     'Create A Clean FilgraphManager
     Set mdlGlobalPlayer.GlobalFilGraph = New FilgraphManager
-
+    
+    If (Not IsIDE) Then RegisterCOM
+    
     On Error GoTo RegisterCOMErr
 
     mdlToolBarAlphaer.LoadUI
     
-    StartHook frmMain.hwnd
+    If (Not IsIDE) Then StartHook frmMain.hWnd
+    
+    If (isAdminPerm) Then
+        frmMain.Caption = "管理员: " & frmMain.Caption
 
-    InitialCommandLine
+    End If
 
     On Error GoTo 0
+    
+    InitialCommandLine
     
     Exit Sub
 RegisterCOMErr:
     'do gui com register
-    RegisterCOM
+    RegisterServers
+    Resume
 
 End Sub
+
+Public Sub InitPerm()
+
+    Dim isAdminPermission As BOOL
+    
+    Dim NtAuthority       As SID_IDENTIFIER_AUTHORITY
+    
+    NtAuthority.value(5) = SECURITY_NT_AUTHORITY
+    isAdminPermission = AllocateAndInitializeSid(NtAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, pAdminGroup)
+    
+    If (isAdminPermission) Then
+        If (Not CheckTokenMembership(NULL_, pAdminGroup, isAdminPermission) = 1) Then
+            CheckTokenMembership NULL_, pAdminGroup, isAdminPermission
+            Debug.Print GetLastError
+            isAdminPermission = False
+
+        End If
+
+        FreeSid pAdminGroup
+
+    End If
+
+    isAdminPerm = Not (isAdminPermission = 0)
+
+End Sub
+
+Public Function RegisterServers()
+    
+    If (isAdminPerm = False) Then
+
+        Dim sLInfo As SHELLEXECUTEINFO2
+
+        With sLInfo
+            .cbSize = Len(sLInfo)
+            .lpVerb = StrPtr("runas")
+            .lpFile = StrPtr(App.Path & "\" & App.EXEName & ".exe")
+            .hWnd = 0
+            .nShow = 1
+            .lpParameters = StrPtr("--perm")
+            
+        End With
+        
+        If (ShellExecuteEx(sLInfo) = 0) Then
+            MsgBox "您取消了管理员权限的授权，请允许使用管理员权限以注册解码器"
+            End
+
+        End If
+        
+        WaitForSingleObject sLInfo.hProcess, INFINITE
+        Sleep 1000
+    Else
+        RegisterAllDecoder
+        RegisterCOM
+
+    End If
+    
+End Function
 
 Public Sub BuildGrph(ByVal srcFile As String, _
                      ByRef objGraphManager As FilgraphManager, _
@@ -345,7 +477,7 @@ ParserPins:
 
             For Each objRendererInput In objRenderFilter.Pins
 
-                If (LCase$(objRendererInput.Name) = "input") Then Exit For
+                If (InStr(1, LCase$(objRendererInput.Name), "input") <> 0) Then Exit For
             Next
 
             Dim objVSFilterOutput As IPinInfo
@@ -483,56 +615,82 @@ End Function
 
 Public Function ShowVideoDecoderConfig()
 
-    If (HasVideo) Then
-        ShowPropertyPage objVideoFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hwnd
-    Else
-        MsgBox "Current dose not have any Video Decoder"
+    If (IsEmpty(objVideoFilter) Or objVideoFilter Is Nothing) Then
+        mdlGlobalPlayer.GlobalFilGraph.RegFilterCollection.Item LAVVideoIndex, objVideoReg
+        objVideoReg.Filter objVideoFilter
 
     End If
+
+    ShowPropertyPage objVideoFilter.Filter, "PureMediaPlayer - " & objVideoFilter.Name, frmMain.hWnd
 
 End Function
 
 Public Function ShowAudioDecoderConfig()
 
-    If (HasAudio) Then
-        ShowPropertyPage objAudioFilter.Filter, "PureMediaPlayer - " & objAudioFilter.Name, frmMain.hwnd
-    Else
-        MsgBox "Current dose not have any Audio Decoder"
+    If (IsEmpty(objAudioFilter) Or objAudioFilter Is Nothing) Then
+        mdlGlobalPlayer.GlobalFilGraph.RegFilterCollection.Item LAVAudioIndex, objAudioReg
+        objAudioReg.Filter objAudioFilter
 
     End If
+
+    ShowPropertyPage objAudioFilter.Filter, "PureMediaPlayer - " & objAudioFilter.Name, frmMain.hWnd
 
 End Function
 
 Public Function ShowSpliterConfig()
 
-    If (mdlGlobalPlayer.Loaded) Then
-        ShowPropertyPage objSrcSplitterFilter.Filter, "PureMediaPlayer - " & objSrcSplitterFilter.Name, frmMain.hwnd
-    Else
-        MsgBox "Current dose not have any Spliterer"
+    If (IsEmpty(objSrcSplitterFilter) Or objSrcSplitterFilter Is Nothing) Then
+        mdlGlobalPlayer.GlobalFilGraph.RegFilterCollection.Item LAVSplitterIndex, objSrcSplitterReg
+        objSrcSplitterReg.Filter objSrcSplitterFilter
 
     End If
+
+    ShowPropertyPage objSrcSplitterFilter.Filter, "PureMediaPlayer - " & objSrcSplitterFilter.Name, frmMain.hWnd
 
 End Function
 
 Public Function ShowSubtitleConfig()
 
-    If (HasSubtitle) Then
-        ShowPropertyPage objSubtitleFilter.Filter, "PureMediaPlayer - " & objSubtitleFilter.Name, frmMain.hwnd
-    Else
-        MsgBox "Current dose not have any Subtitle"
+    If (IsEmpty(objSubtitleFilter) Or objSubtitleFilter Is Nothing) Then
+
+        mdlGlobalPlayer.GlobalFilGraph.RegFilterCollection.Item VSFilterIndex, objSubtitleReg
+        objSubtitleReg.Filter objSubtitleFilter
 
     End If
+
+    ShowPropertyPage objSubtitleFilter.Filter, "PureMediaPlayer - " & objSubtitleFilter.Name, frmMain.hWnd
 
 End Function
 
 Public Function ShowRendererConfig()
 
-    If (HasVideo) Then
-        ShowPropertyPage objRenderFilter.Filter, "PureMediaPlayer - " & objRenderFilter.Name, frmMain.hwnd
-    Else
-        MsgBox "Current dose not have any Video Renderer"
+    If (IsEmpty(objRenderFilter) Or objRenderFilter Is Nothing) Then
+    
+        Dim VMRVerSpec As Long
+    
+        If (mdlGlobalPlayer.GlobalRenderType = VideoMixedRenderer9) Then
+            VMRVerSpec = VMR9Index
+            
+        ElseIf (mdlGlobalPlayer.GlobalRenderType = VideoMixedRenderer) Then
+            VMRVerSpec = VMR7Index
+            
+        ElseIf (mdlGlobalPlayer.GlobalRenderType = EnhancedVideoRenderer) Then
+            VMRVerSpec = EVRIndex
+            
+        ElseIf (mdlGlobalPlayer.GlobalRenderType = MadVRednerer) Then
+            VMRVerSpec = MadVRIndex
+            
+        Else
+            VMRVerSpec = VRIndex
+    
+        End If
+        
+        mdlGlobalPlayer.GlobalFilGraph.RegFilterCollection.Item VMRVerSpec, objRenderReg
+        objRenderReg.Filter objRenderFilter
 
     End If
+    
+    ShowPropertyPage objRenderFilter.Filter, "PureMediaPlayer - " & objRenderFilter.Name, frmMain.hWnd
 
 End Function
 
