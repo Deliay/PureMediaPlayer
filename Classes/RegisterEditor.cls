@@ -13,39 +13,39 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Declare Function RegCloseKey Lib "advapi32.dll" (ByVal hKey As Long) As Long
+Private Declare Function RegCloseKey Lib "Advapi32.dll" (ByVal hKey As Long) As Long
 
 Private Declare Function RegConnectRegistry _
-                Lib "advapi32.dll" _
+                Lib "Advapi32.dll" _
                 Alias "RegConnectRegistryA" (ByVal lpMachineName As String, _
                                              ByVal hKey As Long, _
                                              phkResult As Long) As Long
 
 Private Declare Function RegCreateKey _
-                Lib "advapi32.dll" _
+                Lib "Advapi32.dll" _
                 Alias "RegCreateKeyA" (ByVal hKey As Long, _
                                        ByVal lpSubKey As String, _
                                        phkResult As Long) As Long
 
 Private Declare Function RegDeleteKey _
-                Lib "advapi32.dll" _
+                Lib "Advapi32.dll" _
                 Alias "RegDeleteKeyA" (ByVal hKey As Long, _
                                        ByVal lpSubKey As String) As Long
 
 Private Declare Function RegDeleteValue _
-                Lib "advapi32.dll" _
+                Lib "Advapi32.dll" _
                 Alias "RegDeleteValueA" (ByVal hKey As Long, _
                                          ByVal lpValueName As String) As Long
 
 Private Declare Function RegEnumKey _
-                Lib "advapi32.dll" _
+                Lib "Advapi32.dll" _
                 Alias "RegEnumKeyA" (ByVal hKey As Long, _
                                      ByVal dwIndex As Long, _
                                      ByVal lpName As String, _
                                      ByVal cbName As Long) As Long
 
 Private Declare Function RegEnumValue _
-                Lib "advapi32.dll" _
+                Lib "Advapi32.dll" _
                 Alias "RegEnumValueA" (ByVal hKey As Long, _
                                        ByVal dwIndex As Long, _
                                        ByVal lpValueName As String, _
@@ -55,16 +55,16 @@ Private Declare Function RegEnumValue _
                                        lpData As Byte, _
                                        lpcbData As Long) As Long
 
-Private Declare Function RegFlushKey Lib "advapi32.dll" (ByVal hKey As Long) As Long
+Private Declare Function RegFlushKey Lib "Advapi32.dll" (ByVal hKey As Long) As Long
 
 Private Declare Function RegOpenKey _
-                Lib "advapi32.dll" _
+                Lib "Advapi32.dll" _
                 Alias "RegOpenKeyA" (ByVal hKey As Long, _
                                      ByVal lpSubKey As String, _
                                      phkResult As Long) As Long
 
 Private Declare Function RegOpenKeyEx _
-                Lib "advapi32.dll" _
+                Lib "Advapi32.dll" _
                 Alias "RegOpenKeyExA" (ByVal hKey As Long, _
                                        ByVal lpSubKey As String, _
                                        ByVal ulOptions As Long, _
@@ -72,7 +72,7 @@ Private Declare Function RegOpenKeyEx _
                                        phkResult As Long) As Long
 
 Private Declare Function RegQueryValueEx _
-                Lib "advapi32.dll" _
+                Lib "Advapi32.dll" _
                 Alias "RegQueryValueExA" (ByVal hKey As Long, _
                                           ByVal lpValueName As String, _
                                           ByVal lpReserved As Long, _
@@ -81,27 +81,27 @@ Private Declare Function RegQueryValueEx _
                                           lpcbData As Long) As Long ' Note that if you declare the lpData parameter as String, you must pass it By Value.
 
 Private Declare Function RegQueryValue _
-                Lib "advapi32.dll" _
+                Lib "Advapi32.dll" _
                 Alias "RegQueryValueA" (ByVal hKey As Long, _
                                         ByVal lpSubKey As String, _
                                         ByVal lpValue As String, _
                                         lpcbValue As Long) As Long
 
 Private Declare Function RegReplaceKey _
-                Lib "advapi32.dll" _
+                Lib "Advapi32.dll" _
                 Alias "RegReplaceKeyA" (ByVal hKey As Long, _
                                         ByVal lpSubKey As String, _
                                         ByVal lpNewFile As String, _
                                         ByVal lpOldFile As String) As Long
 
 Private Declare Function RegRestoreKey _
-                Lib "advapi32.dll" _
+                Lib "Advapi32.dll" _
                 Alias "RegRestoreKeyA" (ByVal hKey As Long, _
                                         ByVal lpFile As String, _
                                         ByVal dwFlags As Long) As Long
 
 Private Declare Function RegSetValue _
-                Lib "advapi32.dll" _
+                Lib "Advapi32.dll" _
                 Alias "RegSetValueA" (ByVal hKey As Long, _
                                       ByVal lpSubKey As String, _
                                       ByVal dwType As Long, _
@@ -109,7 +109,7 @@ Private Declare Function RegSetValue _
                                       ByVal cbData As Long) As Long
 
 Private Declare Function RegSetValueEx _
-                Lib "advapi32.dll" _
+                Lib "Advapi32.dll" _
                 Alias "RegSetValueExA" (ByVal hKey As Long, _
                                         ByVal lpValueName As String, _
                                         ByVal Reserved As Long, _
@@ -118,7 +118,7 @@ Private Declare Function RegSetValueEx _
                                         ByVal cbData As Long) As Long ' Note that if you declare the lpData parameter as String, you must pass it By Value.
 
 Private Declare Function RegUnLoadKey _
-                Lib "advapi32.dll" _
+                Lib "Advapi32.dll" _
                 Alias "RegUnLoadKeyA" (ByVal hKey As Long, _
                                        ByVal lpSubKey As String) As Long
 

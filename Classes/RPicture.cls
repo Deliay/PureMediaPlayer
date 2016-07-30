@@ -23,7 +23,7 @@ Private gStart As GdiplusStartupInput
 
 Private phDC   As Long
 
-Private Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 
 Private Declare Function GetPixel _
                 Lib "gdi32" (ByVal hDC As Long, _

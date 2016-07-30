@@ -52,8 +52,8 @@ Public Function GetInterface() As IMFVideoDisplayControl
 
 End Function
 
-Public Function SetPlayBackWindow(hwnd As Long)
-    ifPlayback.SetVideoWindow hwnd
+Public Function SetPlayBackWindow(hWnd As Long)
+    ifPlayback.SetVideoWindow hWnd
 
 End Function
 

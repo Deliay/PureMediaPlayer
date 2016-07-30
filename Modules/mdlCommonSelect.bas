@@ -50,14 +50,14 @@ Public Declare Function GetShortPathName _
 
 Public Function ShowOpen(Optional Filters As String = "任意文件 (*.*)" & vbNullChar & "*.*" & vbNullChar)
     ofn.lStructSize = Len(ofn)
-    ofn.hwndOwner = frmMain.hwnd
+    ofn.hwndOwner = frmMain.hWnd
     ofn.hInstance = App.hInstance
     ofn.lpstrFilter = StrPtr(Filters)
     ofn.lpstrFile = Space(254)
     ofn.nMaxFile = 255
     ofn.lpstrFileTitle = StrPtr(Space(254))
     ofn.nMaxFileTitle = 255
-    ofn.lpstrInitialDir = StrPtr(getConfig(CFG_HISTORY_LAST_OPEN_PATH, History))
+    ofn.lpstrInitialDir = StrPtr("Z:\")
     ofn.lpstrTitle = StrPtr("Please Select File")
     ofn.flags = 6148
     rtn = GetOpenFileName(VarPtr(ofn))
@@ -70,21 +70,19 @@ Public Function ShowOpen(Optional Filters As String = "任意文件 (*.*)" & vbNullC
         FileName = Mid(FileName, 1, InStr(1, FileName, Chr(0)) - 1)
 
     End If
- 
-    saveConfig "LastOpenDir", DirGet(FileName), History
     
 End Function
 
 Public Function ShowSave(Optional Filters As String = "任意文件 (*.*)" & vbNullChar & "*.*" & vbNullChar)
     ofn.lStructSize = Len(ofn)
-    ofn.hwndOwner = frmMain.hwnd
+    ofn.hwndOwner = frmMain.hWnd
     ofn.hInstance = App.hInstance
     ofn.lpstrFilter = StrPtr(Filters)
     ofn.lpstrFile = Space(254)
     ofn.nMaxFile = 255
     ofn.lpstrFileTitle = StrPtr(Space(254))
     ofn.nMaxFileTitle = 255
-    ofn.lpstrInitialDir = StrPtr(getConfig(CFG_HISTORY_LAST_SAVE_PATH, History))
+    ofn.lpstrInitialDir = StrPtr("Z:\")
     ofn.lpstrTitle = StrPtr("Please Select File")
     ofn.flags = 6148
     rtn = GetSaveFileName(VarPtr(ofn))
@@ -98,22 +96,24 @@ Public Function ShowSave(Optional Filters As String = "任意文件 (*.*)" & vbNullC
         FileName = Mid(FileName, 1, InStr(1, FileName, Chr(0)) - 1)
 
     End If
- 
-    saveConfig "LastSaveDir", DirGet(FileName), History
-    
+
 End Function
 
 Public Function DirGet(ByVal strFilePath As String) As String
     
     If (strFilePath = "") Then Exit Function
     DirGet = Mid$(strFilePath, 1, InStrRev(strFilePath, "\") - 1)
-    
+
+    If (InStrRev(strFilePath, "\") = 0) Then DirGet = Mid$(strFilePath, 1, InStrRev(strFilePath, "/") - 1)
+
 End Function
 
 Public Function NameGet(ByVal strFilePath As String) As String
     
     If (strFilePath = "") Then Exit Function
     NameGet = Mid$(strFilePath, InStrRev(strFilePath, "\") + 1)
+
+    If (InStrRev(strFilePath, "\") = 0) Then NameGet = Mid$(strFilePath, InStrRev(strFilePath, "/") + 1)
     
 End Function
 

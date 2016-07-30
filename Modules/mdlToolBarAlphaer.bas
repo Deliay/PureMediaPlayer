@@ -5,7 +5,7 @@ Private Declare Function ReleaseCapture Lib "user32" () As Long
 
 Private Declare Function SendMessage _
                 Lib "user32" _
-                Alias "SendMessageA" (ByVal hwnd As Long, _
+                Alias "SendMessageA" (ByVal hWnd As Long, _
                                       ByVal wMsg As Long, _
                                       ByVal wParam As Long, _
                                       lParam As Any) As Long
@@ -32,7 +32,7 @@ Public Const RGN_OR = 2
 
 Private Declare Function SetWindowLong _
                 Lib "user32" _
-                Alias "SetWindowLongA" (ByVal hwnd As Long, _
+                Alias "SetWindowLongA" (ByVal hWnd As Long, _
                                         ByVal nIndex As Long, _
                                         ByVal dwNewLong As Long) As Long
                                         
@@ -42,7 +42,7 @@ Private Declare Function GetPixel _
                              ByVal Y As Long) As Long
 
 Private Declare Function SetWindowRgn _
-                Lib "user32" (ByVal hwnd As Long, _
+                Lib "user32" (ByVal hWnd As Long, _
                               ByVal hRgn As Long, _
                               ByVal bRedraw As Boolean) As Long
 
@@ -106,7 +106,21 @@ Private Declare Sub MD5Update _
                 Lib "advapi32" (lpContext As MD5_CTX, _
                                 ByRef lpBuffer As Any, _
                                 ByVal BufSize As Long)
- 
+                                
+Private Declare Function GetDC Lib "user32.dll" (ByVal hWnd As Long) As Long
+
+Private Declare Function GetDesktopWindow Lib "user32.dll" () As Long
+
+Private Declare Function GetDeviceCaps _
+                Lib "gdi32.dll" (ByVal hDC As Long, _
+                                 ByVal nIndex As Long) As Long
+
+Private Declare Function ReleaseDC _
+                Lib "user32.dll" (ByVal hWnd As Long, _
+                                  ByVal hDC As Long) As Long
+
+Const LOGPIXELSX   As Long = 8
+
 Private stcContext As MD5_CTX
 
 Public Function MD5String(strText As String) As String
@@ -127,18 +141,19 @@ Public Function MD5String(strText As String) As String
     MD5String = stcContext.cDig
     
     Dim i&
+
     If (stcContext.dwNUMa = 0) Then
-       MD5String = vbNullString
+        MD5String = vbNullString
     Else
-       MD5String = Space$(32)
-       For i = 0 To 15
-          Mid$(MD5String, i + i + 1) = Right$("0" & Hex$(stcContext.cDig(i)), 2)
-       Next
+        MD5String = Space$(32)
+
+        For i = 0 To 15
+            Mid$(MD5String, i + i + 1) = Right$("0" & Hex$(stcContext.cDig(i)), 2)
+        Next
+
     End If
    
 End Function
-
-
 
 Public Property Get UIStatus() As Boolean
     UIStatus = boolUIStatus
@@ -182,10 +197,10 @@ Public Sub RefreshUI()
         .bbMenuBar.ZOrder 0
         .bbPlaylist.Visible = True
         .bbPlaylist.ZOrder 0
-        UIHeightButtom = UIHeightButtom + .pbTimeBar.Height
+        'UIHeightButtom = UIHeightButtom + .pbTimeBar.Height * 2
         UIHeightButtom = UIHeightButtom + .sbStatusBar.Height
         
-        UIHeightTop = .bbMenuBar.Height
+        UIHeightTop = 0
 
         Dim i As Long
     
@@ -281,7 +296,7 @@ Public Sub PlayPauseSwitch()
     frmMain.bbPlaystatus(PlayControl.CTRL_PLAYPAUSE).Cls
     apPlayControl(PlayControl.CTRL_PLAYPAUSE).hDC = frmMain.bbPlaystatus(PlayControl.CTRL_PLAYPAUSE).hDC
 
-    If (mdlGlobalPlayer.GlobalPlayStatus = playing) Then
+    If (mdlGlobalPlayer.GlobalPlayStatus = Running) Then
         
         apPlayControl(PlayControl.CTRL_PLAYPAUSE).LoadImageWH App.Path & "\Image\playcontrol_" & PlayControl.CTRL_PLAYPAUSE & "_.png", 32, 32
     Else
