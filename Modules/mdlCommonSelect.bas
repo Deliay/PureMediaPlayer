@@ -48,7 +48,7 @@ Public Declare Function GetShortPathName _
                                           ByVal lpszShortPath As Long, _
                                           ByVal cchBuffer As Long) As Long
 
-Public Function ShowOpen(Optional Filters As String = "任意文件 (*.*)" & vbNullChar & "*.*" & vbNullChar)
+Public Function ShowOpen(Optional Filters As String = "All Files (*.*)" & vbNullChar & "*.*" & vbNullChar)
     ofn.lStructSize = Len(ofn)
     ofn.hwndOwner = frmMain.hWnd
     ofn.hInstance = App.hInstance
@@ -57,7 +57,7 @@ Public Function ShowOpen(Optional Filters As String = "任意文件 (*.*)" & vbNullC
     ofn.nMaxFile = 255
     ofn.lpstrFileTitle = StrPtr(Space(254))
     ofn.nMaxFileTitle = 255
-    ofn.lpstrInitialDir = StrPtr("Z:\")
+    ofn.lpstrInitialDir = StrPtr(GlobalConfig.LastOpenDir)
     ofn.lpstrTitle = StrPtr("Please Select File")
     ofn.flags = 6148
     rtn = GetOpenFileName(VarPtr(ofn))
@@ -70,10 +70,10 @@ Public Function ShowOpen(Optional Filters As String = "任意文件 (*.*)" & vbNullC
         FileName = Mid(FileName, 1, InStr(1, FileName, Chr(0)) - 1)
 
     End If
-    
+    GlobalConfig.LastOpenDir = DirGet(FileName)
 End Function
 
-Public Function ShowSave(Optional Filters As String = "任意文件 (*.*)" & vbNullChar & "*.*" & vbNullChar)
+Public Function ShowSave(Optional Filters As String = "All Files (*.*)" & vbNullChar & "*.*" & vbNullChar)
     ofn.lStructSize = Len(ofn)
     ofn.hwndOwner = frmMain.hWnd
     ofn.hInstance = App.hInstance
@@ -82,7 +82,7 @@ Public Function ShowSave(Optional Filters As String = "任意文件 (*.*)" & vbNullC
     ofn.nMaxFile = 255
     ofn.lpstrFileTitle = StrPtr(Space(254))
     ofn.nMaxFileTitle = 255
-    ofn.lpstrInitialDir = StrPtr("Z:\")
+    ofn.lpstrInitialDir = StrPtr(GlobalConfig.LastSaveDir)
     ofn.lpstrTitle = StrPtr("Please Select File")
     ofn.flags = 6148
     rtn = GetSaveFileName(VarPtr(ofn))
@@ -90,13 +90,13 @@ Public Function ShowSave(Optional Filters As String = "任意文件 (*.*)" & vbNullC
     If rtn < 1 Then Exit Function
     FileName = Space$(254)
     rtn = GetShortPathName(StrPtr(ofn.lpstrFile), StrPtr(FileName), 254)
-
+    
     If (Left$(FileName, 1) = Space$(1)) Then FileName = ofn.lpstrFile
     If (Not (InStr(1, FileName, Chr(0)) = 0)) Then
         FileName = Mid(FileName, 1, InStr(1, FileName, Chr(0)) - 1)
 
     End If
-
+    GlobalConfig.LastSaveDir = DirGet(FileName)
 End Function
 
 Public Function DirGet(ByVal strFilePath As String) As String
