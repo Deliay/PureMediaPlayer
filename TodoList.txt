@@ -41,6 +41,14 @@ XX.BUG  管理员权限的处理和提权
 XX.BUG  屏幕高宽计算错误导致画面有黑边的BUG
 XX.FT	增加是否在IDE的开关
 
+0.2.153
+XX.BUG  注册组件条件判定错误导致未注册
+XX.BUG  快捷键修复，现在可以使用了
+XX.CH   统一本地文件存放设置
+XX.FT	支持保存当前临时播放列表（可清空）
+XX.BUG	修复选择/保存对话框初始路径错误
+XX.FT	播放列表支持保存已知项目长度
+
 Pending list:
 16.WD	外挂字幕搜索
 21.FT	VRM9离屏渲染(dx9+ scratch pool surface+buffer+lock)
