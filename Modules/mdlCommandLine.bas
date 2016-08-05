@@ -133,10 +133,12 @@ Private Declare Function CallAsmCode _
                                          ByVal wParam As Long, _
                                          lParam As Long) As Long
 
-Private Declare Function SetProcessDpiAwareness Lib "Shcore.dll" (ByVal value As Long) As Long
+Private Declare Function SetProcessDpiAwareness _
+                Lib "Shcore.dll" (ByVal Value As Long) As Long
 
 Public Function SetProcessDpiAwareness_hard()
     SetProcessDpiAwareness 2&
+
 End Function
 
 Public Function IsSupportDIPSet() As Boolean
@@ -145,12 +147,14 @@ Public Function IsSupportDIPSet() As Boolean
     
     lLib = LoadLibrary("Shcore.dll")
     IsSupportDIPSet = False
+
     If (lLib <> 0) Then
         hAddress = GetProcAddress(lLib, "SetProcessDpiAwareness")
 
         If (hAddress <> 0) Then
             IsSupportDIPSet = True
             Exit Function
+
         End If
 
     End If
@@ -355,13 +359,17 @@ End Sub
 Public Sub ExitProgram()
 
     If (mdlGlobalPlayer.Loaded) Then
-        InI.INI_WriteString App.Path & "\LastPlayed.ini", "LastPos", mdlGlobalPlayer.File, mdlGlobalPlayer.CurrentTime
+        GlobalConfig.LastPlayPos.Value(MD5String(mdlGlobalPlayer.File)) = CStr(mdlGlobalPlayer.CurrentTime)
 
     End If
-
+    
+    mdlConfig.SaveConfig
+    
     StopPlay
     CloseFile
     Clearhook
+
+    
 
     If (Not IsIDE) Then TerminateProcess GetCurrentProcessId, 5
     If (Not IsIDE) Then Shell "taskkill /F /PID " & GetCurrentProcessId
@@ -415,6 +423,7 @@ Private Function CallAnyFunc(ByVal pFn As Long, _
     If CallAnyFunc <> lRet Then
         CallAnyFunc = 0 '??????????,???????????????
         Debug.Assert False '??????????,?????????????
+
     End If
 
 End Function

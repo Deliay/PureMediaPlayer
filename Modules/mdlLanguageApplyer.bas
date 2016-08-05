@@ -180,7 +180,7 @@ Public Function GetLanguageFile() As String
 End Function
 
 Public Function GetLanguageFileName() As String
-    GetLanguageFileName = getConfig(CFG_SETTING_LANGUAGE)
+    GetLanguageFileName = GlobalConfig.Language
 
     If (GetLanguageFileName = "") Then
         GetLanguageFileName = "english.ini"
@@ -238,9 +238,9 @@ Public Function EnumLanguageFile()
 End Function
 
 Public Sub SetLanguage(Index As Long)
-    saveConfig "Language", GetFileNameByIndex(Index)
+    GlobalConfig.Language = GetFileNameByIndex(Index)
     LanguageIndex = Index
-    
+    mdlConfig.SaveConfig
 End Sub
 
 Public Function ReApplyLanguage()

@@ -89,10 +89,10 @@ Public Property Get GlobalPlayStatus() As PlayStatus
 
 End Property
 
-Public Property Let Volume(V As Long)
+Public Property Let Volume(v As Long)
 
-    If (V > 100) Or (V < 0) Then Exit Property
-    ifVolume.Volume = -((100 - V) * 100)
+    If (v > 100) Or (v < 0) Then Exit Property
+    ifVolume.Volume = -((100 - v) * 100)
 
 End Property
 
@@ -119,17 +119,17 @@ Public Property Get Rate() As Long
     
 End Property
 
-Public Property Let Rate(V As Long)
+Public Property Let Rate(v As Long)
 
     '0.5 per level
     'rate 100 mean 1
-    If (V > 400) Then Exit Property
-    ifPostion.Rate = V / 100
+    If (v > 400) Then Exit Property
+    ifPostion.Rate = v / 100
 
 End Property
 
-Public Property Let Precent(value As Single)
-    CurrentTime = Duration * (value / 100)
+Public Property Let Precent(Value As Single)
+    CurrentTime = Duration * (Value / 100)
     
 End Property
 
@@ -144,9 +144,9 @@ Public Property Get File() As String
 
 End Property
 
-Public Property Let File(V As String)
+Public Property Let File(v As String)
     SaveCurrentPos
-    strLastestFile = V
+    strLastestFile = v
 
 End Property
 
@@ -181,7 +181,7 @@ Public Sub RenderMediaFile()
     UpdateStatus NameGet(strFilePath), FileName
     
     hasVideo_ = False: hasAudio_ = False: hasSubtitle_ = False
-    GlobalRenderType = val(getConfig(CFG_SETTING_RENDERER))
+    GlobalRenderType = val(GlobalConfig.Renderer)
     mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
     
     If (HasVideo = False And hasAudio_ = False) Then GoTo DcodeErr
@@ -298,7 +298,7 @@ Public Property Get FormatedDuration() As String
 
 End Property
 
-Public Sub RaiseRegFileter(list As vbalListViewCtl)
+Public Sub RaiseRegFileter(List As vbalListViewCtl)
     
     Dim objRegFilter As IRegFilterInfo
     
@@ -308,7 +308,7 @@ Public Sub RaiseRegFileter(list As vbalListViewCtl)
     
     For Each objRegFilter In GlobalFilGraph.RegFilterCollection
         
-        list.ListItems.Add , , objRegFilter.Name
+        List.ListItems.Add , , objRegFilter.Name
     Next
     
 End Sub
@@ -340,14 +340,12 @@ Public Sub Pause()
 End Sub
 
 Public Sub StopPlay()
-    Precent = 0
     SaveCurrentPos
+    Precent = 0
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     
     If Not GlobalFilGraph Is Nothing And Len(File) <> 0 Then
-        GlobalFilGraph.Pause
-        SaveCurrentPos
-
+        GlobalFilGraph.Stop
     End If
     
 End Sub
@@ -446,8 +444,8 @@ Public Sub UpdateTitle(strCaption As String)
 
 End Sub
 
-Public Sub RaiseMediaFilter(list As vbalListViewCtl)
-    list.ListItems.Add , , mdlGlobalPlayer.File
+Public Sub RaiseMediaFilter(List As vbalListViewCtl)
+    List.ListItems.Add , , mdlGlobalPlayer.File
 
     Dim objFilter As IFilterInfo
     
@@ -458,7 +456,7 @@ Public Sub RaiseMediaFilter(list As vbalListViewCtl)
     
     For Each objFilter In GlobalFilGraph.FilterCollection
         
-        list.ListItems.Add , , objFilter.Name
+        List.ListItems.Add , , objFilter.Name
         
     Next
     
@@ -517,7 +515,7 @@ Public Sub ResizeFullScreen()
 End Sub
 
 Public Sub SeekLastPos(ByVal strFullPath As String)
-    mdlGlobalPlayer.CurrentTime = val(InI.INI_GetString(App.Path & "\LastPlayed.ini", "LastPos", MD5String(strFullPath)))
+    mdlGlobalPlayer.CurrentTime = val(GlobalConfig.LastPlayPos(MD5String(strFullPath)))
     
     If (mdlGlobalPlayer.CurrentTime = mdlGlobalPlayer.Duration) Then
         mdlGlobalPlayer.CurrentTime = 0
@@ -534,7 +532,7 @@ End Sub
 Public Sub SaveCurrentPos()
 
     If (mdlGlobalPlayer.Loaded) Then
-        InI.INI_WriteString App.Path & "\LastPlayed.ini", "LastPos", MD5String(File), mdlGlobalPlayer.CurrentTime
+        GlobalConfig.LastPlayPos.Value(MD5String(mdlGlobalPlayer.File)) = CStr(mdlGlobalPlayer.CurrentTime)
 
     End If
 

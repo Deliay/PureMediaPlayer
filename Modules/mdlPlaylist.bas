@@ -1,12 +1,12 @@
 Attribute VB_Name = "mdlPlaylist"
 Option Explicit
-
-Public Enum ConfigPart
-
-    Settings
-    History
-
-End Enum
+'
+'Public Enum ConfigPart
+'
+'    Settings
+'    History
+'
+'End Enum
 
 Public colPlayItems  As Collection
  
@@ -80,7 +80,7 @@ Public Function SetItemLength(strFullPath As String, Length As String)
     If (GetItemByPath(strFullPath) Is Nothing) Then Exit Function
     GetItemByPath(strFullPath).Length = Length
     frmMain.lstPlaylist.ListItems(strFullPath).SubItems(1).Caption = Length
-    
+    GlobalConfig.FileDuration.Value(MD5String(strFullPath)) = Length
     If (strPlaylist <> "") Then SavePlaylist
     
 End Function
@@ -90,7 +90,7 @@ Public Function AddFileToPlaylist(ByVal strPath As String, _
     
     Dim Item    As New PlayListItem
     
-    Dim addItem As cListItem
+    Dim AddItem As cListItem
     
     Item.FullPath = strPath
     Item.Name = NameGet(strPath)
@@ -111,18 +111,20 @@ notExist:
         'tmpFG.RenderFile strPath
         'Set ifPOS = tmpFG
         'item.Length = (ifPOS.Duration \ 60) & ":" & (ifPOS.Duration Mod 60)
+        
+        If (Not GlobalConfig.LastPlayList.Exist(Item.FullPath)) Then
+            GlobalConfig.LastPlayList.AddItem Item.FullPath
+        End If
         If (colPlayItems Is Nothing) Then Set colPlayItems = New Collection
         colPlayItems.Add Item, Item.FullPath
         playlistCount = playlistCount + 1
-        Set addItem = frmMain.lstPlaylist.ListItems.Add(, Item.FullPath, Item.Name)
-        addItem.SubItems.Item(1).Caption = Length
+        Set AddItem = frmMain.lstPlaylist.ListItems.Add(, Item.FullPath, Item.Name)
+        AddItem.SubItems.Item(1).Caption = IIf(Length = "", GlobalConfig.FileDuration(MD5String(Item.FullPath)), Length)
         
         If (strPath = mdlGlobalPlayer.File) Then
-            addItem.BackColor = vbGrayText
-            Set frmMain.nowPlaying = addItem
-            addItem.SubItems(1).Caption = mdlGlobalPlayer.FormatedDuration
-            GetItemByPath(File).Length = addItem.SubItems(1).Caption
-            
+            Set frmMain.nowPlaying = AddItem
+            AddItem.SubItems(1).Caption = mdlGlobalPlayer.FormatedDuration
+            GetItemByPath(File).Length = AddItem.SubItems(1).Caption
         End If
         
 Exist:
@@ -177,16 +179,3 @@ Public Function GetItemByPath(ByVal strPath As String) As PlayListItem
     Next
     
 End Function
-
-Public Function getConfig(Key As String, _
-                          Optional ConfigType As ConfigPart = Settings) As String
-    getConfig = GetSetting(App.ProductName, ConfigType, Key)
-    
-End Function
-
-Public Sub saveConfig(Key As String, _
-                      value As String, _
-                      Optional ConfigType As ConfigPart = Settings)
-    SaveSetting App.ProductName, ConfigType, Key, value
-    
-End Sub

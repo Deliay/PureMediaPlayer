@@ -1,7 +1,9 @@
 Attribute VB_Name = "mdlFilterBuilder"
 Option Explicit
 
-Global IsIDE As Boolean
+Global IsIDE     As Boolean
+
+Global IsRestart As Boolean
 
 Private Declare Function RegisterLAVAudio _
                 Lib "LAVAudio.ax" _
@@ -84,7 +86,7 @@ Private pAdminGroup       As IntPtr
 
 Type SID_IDENTIFIER_AUTHORITY
 
-    value(6) As Byte
+    Value(6) As Byte
 
 End Type
 
@@ -172,18 +174,27 @@ Public Sub Main()
     IsIDE = GetIDEmode
     InitPerm
     
-    
+    InitConfigFiles
+
     'SetProcessDpiAwareness_soft
     If (IsSupportDIPSet) Then
         SetProcessDPIAware
         SetProcessDpiAwareness_hard
+
     End If
+
     If (Len(Command) = 6 And Left$(Command, 6) = "--perm") Then
         RegisterServers
         End
 
     End If
 
+    If (Len(Command) = 9 And Left$(Command, 9) = "--restart") Then
+        IsRestart = True
+        GoTo FillDecoder
+
+    End If
+    
     If (App.PrevInstance) Then
         If (Len(Command) <> 0) Then
 
@@ -195,16 +206,17 @@ Public Sub Main()
             cbs.dwData = 3
             cbs.cbData = (lstrlen(ptrCmd) + 1) * 2
             cbs.lpData = ptrCmd
-            SendMessageW val(getConfig(CFG_SETTING_LAST_HWND)), WM_COPYDATA, ByVal 0&, cbs
+            SendMessageW val(GlobalConfig.LastHwnd), WM_COPYDATA, ByVal 0&, cbs
 
         End If
         
-        SendMessageW val(getConfig(CFG_SETTING_LAST_HWND)), PM_ACTIVE, 0&, 0&
+        SendMessageW val(GlobalConfig.LastHwnd), PM_ACTIVE, 0&, 0&
         End
         Exit Sub
 
     End If
 
+FillDecoder:
     LAVVideoIndex = -1
     LAVAudioIndex = -1
     LAVSplitterIndex = -1
@@ -213,13 +225,17 @@ Public Sub Main()
     VMR9Index = -1
     EVRIndex = -1
     MadVRIndex = -1
+
+    Dim lngRertyCount As Long
+
+ReFill:
     FillDecoder mdlGlobalPlayer.GlobalFilGraph
-    
+
     If (LAVAudioIndex = -1 Or LAVVideoIndex = -1 Or LAVSplitterIndex = -1 Or VSFilterIndex = -1 Or LAVSplitterSourceIndex = -1 Or MadVRIndex = -1) Then
-        
-        RegisterAllDecoder
-        Set mdlGlobalPlayer.GlobalFilGraph = New FilgraphManager
-        FillDecoder mdlGlobalPlayer.GlobalFilGraph
+        RegisterServers
+        Shell App.Path & "\" & App.EXEName & ".exe --restart", vbNormalFocus
+        End
+        GoTo ReFill
 
     End If
     
@@ -248,10 +264,10 @@ Public Sub Main()
 
     End If
 
-    If (getConfig(CFG_SETTING_RENDERER) = "") Then
+    If (GlobalConfig.Renderer = "") Then
         frmMenu.Renderers_Click RenderType.MadVRednerer
     Else
-        frmMenu.Renderers_Click val(getConfig(CFG_SETTING_RENDERER))
+        frmMenu.Renderers_Click val(GlobalConfig.Renderer)
 
     End If
 
@@ -272,8 +288,15 @@ Public Sub Main()
     End If
 
     On Error GoTo 0
-    
-    InitialCommandLine
+
+    Dim i As Variant
+    For Each i In GlobalConfig.LastPlayList
+        If (i = "@") Then GoTo Placement
+        mdlPlaylist.AddFileToPlaylist i
+Placement:
+    Next
+
+    If (Not IsRestart And Not IsIDE) Then InitialCommandLine
     
     Exit Sub
 RegisterCOMErr:
@@ -289,7 +312,7 @@ Public Sub InitPerm()
     
     Dim NtAuthority       As SID_IDENTIFIER_AUTHORITY
     
-    NtAuthority.value(5) = SECURITY_NT_AUTHORITY
+    NtAuthority.Value(5) = SECURITY_NT_AUTHORITY
     isAdminPermission = AllocateAndInitializeSid(NtAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, pAdminGroup)
     
     If (isAdminPermission) Then
@@ -596,15 +619,15 @@ Private Function vtblCall(ByVal pUnk As Long, _
 
     Static VType(0 To 31) As Integer, VPtr(0 To 31) As Long
 
-    Dim i As Long, V(), HResDisp As Long
+    Dim i As Long, v(), HResDisp As Long
 
     If pUnk = 0 Then vtblCall = 5: Exit Function
 
-    V = P 'make a copy of the params, to prevent problems with VT_ByRef-Members in the ParamArray
+    v = P 'make a copy of the params, to prevent problems with VT_ByRef-Members in the ParamArray
 
-    For i = 0 To UBound(V)
-        VType(i) = VarType(V(i))
-        VPtr(i) = VarPtr(V(i))
+    For i = 0 To UBound(v)
+        VType(i) = VarType(v(i))
+        VPtr(i) = VarPtr(v(i))
     Next i
     
     HResDisp = DispCallFunc(pUnk, vtblIdx * 4, 4, vbLong, i, VType(0), VPtr(0), vtblCall)

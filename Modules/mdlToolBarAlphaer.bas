@@ -10,15 +10,15 @@ Private Declare Function SendMessage _
                                       ByVal wParam As Long, _
                                       lParam As Any) As Long
 
-Public Const CFG_HISTORY_LAST_SAVE_PATH As String = "LastSavePath"
-
-Public Const CFG_HISTORY_LAST_OPEN_PATH As String = "LastOpenPath"
-
-Public Const CFG_SETTING_RENDERER       As String = "Renderer"
-
-Public Const CFG_SETTING_LANGUAGE       As String = "Language"
-
-Public Const CFG_SETTING_LAST_HWND      As String = "LastWindowHWND"
+'Public Const CFG_HISTORY_LAST_SAVE_PATH As String = "LastSavePath"
+'
+'Public Const CFG_HISTORY_LAST_OPEN_PATH As String = "LastOpenPath"
+'
+'Public Const CFG_SETTING_RENDERER       As String = "Renderer"
+'
+'Public Const CFG_SETTING_LANGUAGE       As String = "Language"
+'
+'Public Const CFG_SETTING_LAST_HWND      As String = "LastWindowHWND"
 
 Private Const WM_NCLBUTTONDOWN = &HA1
 
