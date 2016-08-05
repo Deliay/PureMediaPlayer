@@ -101,7 +101,7 @@ Private Declare Sub CopyMemory _
                                        ByVal Length As Long)
 
 Public Function AlphaArea(targetHDC As Long, _
-                          value As Byte, _
+                          Value As Byte, _
                           sourceH As Long, _
                           sourceW As Long, _
                           Top As Long, _
@@ -114,7 +114,7 @@ Public Function AlphaArea(targetHDC As Long, _
     With bf
         .BlendOp = AC_SRC_OVER
         .BlendFlags = 0
-        .SourceConstantAlpha = value
+        .SourceConstantAlpha = Value
         .AlphaFormat = 0
 
     End With
@@ -125,7 +125,7 @@ Public Function AlphaArea(targetHDC As Long, _
 End Function
 
 Public Function AlphaTab(targetHDC As Long, _
-                         value As Byte, _
+                         Value As Byte, _
                          h As Long, _
                          w As Long, _
                          Top As Long, _
@@ -136,7 +136,7 @@ Public Function AlphaTab(targetHDC As Long, _
     With bf
         .BlendOp = AC_SRC_OVER
         .BlendFlags = 0
-        .SourceConstantAlpha = value
+        .SourceConstantAlpha = Value
         .AlphaFormat = 0
 
     End With
@@ -147,14 +147,14 @@ Public Function AlphaTab(targetHDC As Long, _
 
 End Function
 
-Public Function Alpha(targetHDC As Long, value As Byte, Top As Long, Left As Long)
+Public Function Alpha(targetHDC As Long, Value As Byte, Top As Long, Left As Long)
 
     Dim bf As BLENDFUNCTION, lBF As Long
 
     With bf
         .BlendOp = AC_SRC_OVER
         .BlendFlags = 0
-        .SourceConstantAlpha = value
+        .SourceConstantAlpha = Value
         .AlphaFormat = 0
 
     End With
