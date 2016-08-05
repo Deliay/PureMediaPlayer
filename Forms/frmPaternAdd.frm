@@ -165,13 +165,13 @@ Private Sub cmdTestParten_Click()
     Set filesCol = New Collection
     lstTestView.Clear
     
-    If (chkEnableRegExp.value = 0) Then
+    If (chkEnableRegExp.Value = 0) Then
         'use default pattern
         strFile = Dir(DirGet(File) & "\" & txtRegExp.Text)
         
         While strFile <> ""
             
-            lstTestView.addItem strFile
+            lstTestView.AddItem strFile
             filesCol.Add DirGet(File) & "\" & strFile
             strFile = Dir
         Wend
@@ -191,7 +191,7 @@ Private Sub cmdTestParten_Click()
         While strFile <> ""
             
             If (rx.Test(strFile)) Then
-                lstTestView.addItem strFile
+                lstTestView.AddItem strFile
                 filesCol.Add DirGet(File) & "\" & strFile
                 
             End If

@@ -471,8 +471,23 @@ Private Sub Form_KeyPress(KeyAscii As Integer)
             CloseClipboard
             
         End If
+    
+    ElseIf (4 = KeyAscii) Then
+        frmMenu.mmFile_Open_Click
         
+    ElseIf (3 = KeyAscii) Then
+        frmMenu.mmFile_Close_Click
+        
+    ElseIf (24 = KeyAscii) Then
+        frmMenu.mmFile_Exit_Click
+        
+    ElseIf (6 = KeyAscii) Then
+        frmMenu.mmStatus_ShowPlaylist_Click
+    ElseIf (16 = KeyAscii) Then
+        frmPaternAdd.Show vbModal, Me
     End If
+    
+
 
 End Sub
 
@@ -484,7 +499,6 @@ Private Sub frmPlayer_Click()
 End Sub
 
 Public Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-
     If (KeyCode = vbKeySpace) Then SwitchPlayStauts
     If (KeyCode = vbKeyEscape) Then SwitchFullScreen True
     
@@ -528,7 +542,8 @@ Private Sub Form_Load()
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
-    saveConfig "LastWindowHWND", Me.hWnd
+    GlobalConfig.LastHwnd = CStr(Me.hWnd)
+    mdlConfig.SaveConfig
     Me.Show
 
 End Sub
