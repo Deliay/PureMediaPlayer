@@ -76,6 +76,9 @@ Begin VB.Form frmMenu
             Caption         =   "Playlist"
             Shortcut        =   ^F
          End
+         Begin VB.Menu mmStatus_ClearPlayList 
+            Caption         =   "Clear PlayList"
+         End
          Begin VB.Menu mmStatus_Loop 
             Caption         =   "Loop"
             Checked         =   -1  'True
@@ -234,6 +237,14 @@ Private Sub mmHelp_Web_Click()
     
 End Sub
 
+Private Sub mmStatus_ClearPlayList_Click()
+    frmMain.lstPlaylist.ListItems.Clear
+    frmMain.lstPlaylist.Columns.Clear
+    frmMain.lstPlaylist.Refresh
+    Set mdlPlaylist.colPlayItems = New Collection
+    GlobalConfig.LastPlayList.Clear
+End Sub
+
 Private Sub mmStatus_Pause_Click()
     Pause
     UpdateStatus StaticString(PLAY_STATUS_PAUSED), PlayBack
@@ -248,7 +259,7 @@ Private Sub mmStatus_Play_Click()
     
 End Sub
 
-Private Sub mmStatus_ShowPlaylist_Click()
+Public Sub mmStatus_ShowPlaylist_Click()
 
     If (boolPlaylistStatus = True) Then
         PlaylistHide
@@ -281,18 +292,18 @@ Private Sub mmStatus_Stop_Click()
     
 End Sub
 
-Private Sub mmFile_Close_Click()
+Public Sub mmFile_Close_Click()
     StopPlay
     CloseFile
     
 End Sub
 
-Private Sub mmFile_Exit_Click()
+Public Sub mmFile_Exit_Click()
     ExitProgram
     
 End Sub
 
-Private Sub mmFile_Open_Click()
+Public Sub mmFile_Open_Click()
     cdlg.FileName = ""
     cdlg.ShowOpen
     
@@ -349,9 +360,10 @@ End Sub
 
 Public Sub Renderers_Click(Index As Integer)
 
-    frmMenu.Renderers(val(getConfig(CFG_SETTING_RENDERER))).Checked = False
+    frmMenu.Renderers(val(GlobalConfig.Renderer)).Checked = False
     
-    saveConfig "Renderer", CStr(Index)
+    GlobalConfig.Renderer = CStr(Index)
+    mdlConfig.SaveConfig
     frmMenu.Renderers(Index).Checked = True
 
 End Sub
