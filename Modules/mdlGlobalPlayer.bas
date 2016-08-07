@@ -346,6 +346,7 @@ Public Sub StopPlay()
     
     If Not GlobalFilGraph Is Nothing And Len(File) <> 0 Then
         GlobalFilGraph.Stop
+
     End If
     
 End Sub

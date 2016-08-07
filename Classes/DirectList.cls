@@ -46,6 +46,7 @@ End Function
 Public Sub Clear()
     Set colList = New Collection
     colList.Add "@"
+
 End Sub
 
 Public Property Get NewEnum() As IUnknown
@@ -79,7 +80,9 @@ Public Function Exist(Item As String) As Boolean
         If (i = Item) Then
             Exist = True
             Exit Function
+
         End If
+
     Next
     
     Exist = False

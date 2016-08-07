@@ -70,7 +70,9 @@ Public Function ShowOpen(Optional Filters As String = "All Files (*.*)" & vbNull
         FileName = Mid(FileName, 1, InStr(1, FileName, Chr(0)) - 1)
 
     End If
+
     GlobalConfig.LastOpenDir = DirGet(FileName)
+
 End Function
 
 Public Function ShowSave(Optional Filters As String = "All Files (*.*)" & vbNullChar & "*.*" & vbNullChar)
@@ -96,7 +98,9 @@ Public Function ShowSave(Optional Filters As String = "All Files (*.*)" & vbNull
         FileName = Mid(FileName, 1, InStr(1, FileName, Chr(0)) - 1)
 
     End If
+
     GlobalConfig.LastSaveDir = DirGet(FileName)
+
 End Function
 
 Public Function DirGet(ByVal strFilePath As String) As String

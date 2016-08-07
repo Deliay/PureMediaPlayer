@@ -369,8 +369,6 @@ Public Sub ExitProgram()
     CloseFile
     Clearhook
 
-    
-
     If (Not IsIDE) Then TerminateProcess GetCurrentProcessId, 5
     If (Not IsIDE) Then Shell "taskkill /F /PID " & GetCurrentProcessId
     End

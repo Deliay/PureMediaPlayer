@@ -81,6 +81,7 @@ Public Function SetItemLength(strFullPath As String, Length As String)
     GetItemByPath(strFullPath).Length = Length
     frmMain.lstPlaylist.ListItems(strFullPath).SubItems(1).Caption = Length
     GlobalConfig.FileDuration.Value(MD5String(strFullPath)) = Length
+
     If (strPlaylist <> "") Then SavePlaylist
     
 End Function
@@ -114,7 +115,9 @@ notExist:
         
         If (Not GlobalConfig.LastPlayList.Exist(Item.FullPath)) Then
             GlobalConfig.LastPlayList.AddItem Item.FullPath
+
         End If
+
         If (colPlayItems Is Nothing) Then Set colPlayItems = New Collection
         colPlayItems.Add Item, Item.FullPath
         playlistCount = playlistCount + 1
@@ -125,6 +128,7 @@ notExist:
             Set frmMain.nowPlaying = AddItem
             AddItem.SubItems(1).Caption = mdlGlobalPlayer.FormatedDuration
             GetItemByPath(File).Length = AddItem.SubItems(1).Caption
+
         End If
         
 Exist:

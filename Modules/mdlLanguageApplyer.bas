@@ -241,6 +241,7 @@ Public Sub SetLanguage(Index As Long)
     GlobalConfig.Language = GetFileNameByIndex(Index)
     LanguageIndex = Index
     mdlConfig.SaveConfig
+
 End Sub
 
 Public Function ReApplyLanguage()

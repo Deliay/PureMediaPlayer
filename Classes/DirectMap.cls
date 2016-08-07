@@ -33,26 +33,36 @@ Friend Function AddPair(pPair As DirectPair)
 End Function
 
 Public Property Let Value(sKey As String, sVal As String)
+
     On Error GoTo NoExist
+
     colPairs.Item(sKey).Value = sVal
     Exit Property
 NoExist:
+
     Dim newPair As New DirectPair
+
     newPair.InitPair sKey, sVal
     colPairs.Add newPair, sKey
     Resume
+
 End Property
 
 Public Property Get Value(sKey As String) As String
 Attribute Value.VB_UserMemId = 0
+
     On Error GoTo NoExist
+
     Value = colPairs.Item(sKey).Value
     Exit Property
 NoExist:
+
     Dim newPair As New DirectPair
+
     newPair.InitPair sKey, ""
     colPairs.Add newPair, sKey
     Resume
+
 End Property
 
 Public Property Get GetPair(ByVal sKey As String) As DirectPair

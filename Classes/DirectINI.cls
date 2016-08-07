@@ -159,6 +159,7 @@ Public Function ReadFormString(ByVal strContent As String) As Boolean
 
     For lngLines = 0 To lngSizeLines
         strCurrentLine = Trim$(astrLines(lngLines))
+
         If (InStr(1, strCurrentLine, Chr(0)) > 0) Then strCurrentLine = Left$(strCurrentLine, InStr(1, strCurrentLine, Chr(0)) - 1)
         If (strCurrentLine = "") Then GoTo NextLine
         If (Left$(strCurrentLine, 1) = "[") Then
