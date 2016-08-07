@@ -42,6 +42,10 @@ Begin VB.Form frmMenu
          Begin VB.Menu mmFile_Spec1 
             Caption         =   "-"
          End
+         Begin VB.Menu mmFile_LoadSubtitle 
+            Caption         =   "Load Subtitle"
+            Shortcut        =   ^T
+         End
          Begin VB.Menu mmFile_Option 
             Caption         =   "Option"
             Enabled         =   0   'False
@@ -209,6 +213,16 @@ Private Sub Language_Select_Click(Index As Integer)
     
 End Sub
 
+Public Sub mmFile_LoadSubtitle_Click()
+
+    If (mdlGlobalPlayer.File <> "" And mdlGlobalPlayer.Loaded = True And mdlGlobalPlayer.GlobalPlayStatus <> Stopped) Then
+        cdlg.ShowOpen
+        SetVSFilterFileName cdlg.FileName
+
+    End If
+
+End Sub
+
 Private Sub mmFile_OpenURL_Click()
 
     Dim strURL As String
@@ -243,6 +257,7 @@ Private Sub mmStatus_ClearPlayList_Click()
     frmMain.lstPlaylist.Refresh
     Set mdlPlaylist.colPlayItems = New Collection
     GlobalConfig.LastPlayList.Clear
+
 End Sub
 
 Private Sub mmStatus_Pause_Click()

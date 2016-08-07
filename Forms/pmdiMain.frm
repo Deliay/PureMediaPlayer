@@ -485,9 +485,10 @@ Private Sub Form_KeyPress(KeyAscii As Integer)
         frmMenu.mmStatus_ShowPlaylist_Click
     ElseIf (16 = KeyAscii) Then
         frmPaternAdd.Show vbModal, Me
-    End If
-    
+    ElseIf (20 = KeyAscii) Then
+        frmMenu.mmFile_LoadSubtitle_Click
 
+    End If
 
 End Sub
 
@@ -499,6 +500,7 @@ Private Sub frmPlayer_Click()
 End Sub
 
 Public Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
+
     If (KeyCode = vbKeySpace) Then SwitchPlayStauts
     If (KeyCode = vbKeyEscape) Then SwitchFullScreen True
     

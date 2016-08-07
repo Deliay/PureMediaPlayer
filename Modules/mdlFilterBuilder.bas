@@ -60,6 +60,19 @@ Private Const CLSID_ActiveMovieCategories = "{DA4E3DA0-D07D-11d0-BD50-00A0C911CE
 
 Private Const CLSID_VideoInputDeviceCategory = "{860BB310-5D01-11d0-BD3B-00A0C911CE86}"
 
+Private Declare Function csri_renderer_default Lib "vsfilter.dll" () As IntPtr
+
+Private Declare Function csri_open_file _
+                Lib "vsfilter.dll" (Renderer As IntPtr, _
+                                    FileName As IntPtr, _
+                                    flags As csri_openflag) As IntPtr
+
+Private Type csri_openflag
+
+    Name As IntPtr
+    
+End Type
+
 Private objSrcSplitterReg As IRegFilterInfo, objSrcSplitterFilter As IFilterInfo
 
 Private objVideoReg       As IRegFilterInfo, objVideoFilter As IFilterInfo, objVideoPin As IPinInfo
@@ -287,10 +300,17 @@ ReFill:
 
     End If
 
+    If (IsIDE) Then
+        frmMain.Caption = "(IDE) " & frmMain.Caption
+
+    End If
+
     On Error GoTo 0
 
     Dim i As Variant
+
     For Each i In GlobalConfig.LastPlayList
+
         If (i = "@") Then GoTo Placement
         mdlPlaylist.AddFileToPlaylist i
 Placement:
@@ -591,6 +611,22 @@ Private Sub FillDecoder(m_GraphManager As FilgraphManager)
 
 End Sub
 
+Private Function CastToIUnknow(ByVal Flt As olelib.IUnknown) As olelib.IUnknown
+    Set CastToIUnknow = Flt
+
+End Function
+
+Public Function SetVSFilterFileName(FileName As String) As Boolean
+
+    Const IID_IDirectVobSub = "{EBE1FB08-3957-47ca-AF13-5827E5442E56}", VTbl_SetFileName = 4
+
+    Dim oDirectVobSub As stdole.IUnknown
+
+    Set oDirectVobSub = CastToUnkByIID(objSubtitleFilter.Filter, IID_IDirectVobSub)
+    SetVSFilterFileName = vtblCall(ObjPtr(oDirectVobSub), VTbl_SetFileName, vbEmpty, StrPtr(FileName)) = S_OK
+
+End Function
+
 Private Function CheckForFileSinkAndSetFileName(ByVal Flt As olelib.IUnknown, _
                                                 FileName As String) As Boolean
 
@@ -599,7 +635,7 @@ Private Function CheckForFileSinkAndSetFileName(ByVal Flt As olelib.IUnknown, _
     Dim oUnkFSink As stdole.IUnknown
 
     Set oUnkFSink = CastToUnkByIID(Flt, IID_IFileSinkFilter)
-    CheckForFileSinkAndSetFileName = vtblCall(ObjPtr(oUnkFSink), VTbl_SetFileName, StrPtr(FileName), 0&) = S_OK
+    CheckForFileSinkAndSetFileName = vtblCall(ObjPtr(oUnkFSink), VTbl_SetFileName, vbLong, StrPtr(FileName), 0&) = S_OK
 
 End Function
 
@@ -615,6 +651,7 @@ End Function
 
 Private Function vtblCall(ByVal pUnk As Long, _
                           ByVal vtblIdx As Long, _
+                          ByVal retType As VbVarType, _
                           ParamArray P() As Variant)
 
     Static VType(0 To 31) As Integer, VPtr(0 To 31) As Long
@@ -630,7 +667,7 @@ Private Function vtblCall(ByVal pUnk As Long, _
         VPtr(i) = VarPtr(v(i))
     Next i
     
-    HResDisp = DispCallFunc(pUnk, vtblIdx * 4, 4, vbLong, i, VType(0), VPtr(0), vtblCall)
+    HResDisp = DispCallFunc(pUnk, vtblIdx * 4, 4, retType, i, VType(0), VPtr(0), vtblCall)
 
     If HResDisp <> S_OK Then Err.Raise HResDisp
 
