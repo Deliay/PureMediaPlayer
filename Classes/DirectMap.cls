@@ -27,8 +27,17 @@ Public Function SetName(ByVal passstrName As String)
 
 End Function
 
-Friend Function AddPair(pPair As DirectPair)
+Friend Function AddPair(pPair As DirectPair) As DirectPair
     colPairs.Add pPair, pPair.Key
+
+End Function
+
+Friend Function AddKeyValue(ByVal strKey As String, ByVal strValue As String)
+
+    Dim tmp As New DirectPair
+
+    tmp.InitPair strKey, strValue
+    colPairs.Add tmp, strKey
 
 End Function
 
@@ -47,6 +56,23 @@ NoExist:
     Resume
 
 End Property
+
+Public Function Exist(sKey As String)
+
+    Dim objPair As DirectPair
+
+    For Each objPair In colPairs
+
+        If (objPair.Key = sKey) Then
+            Exist = True
+            Exit Function
+
+        End If
+
+    Next
+    Exist = False
+
+End Function
 
 Public Property Get Value(sKey As String) As String
 Attribute Value.VB_UserMemId = 0

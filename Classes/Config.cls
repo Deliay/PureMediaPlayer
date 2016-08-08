@@ -19,6 +19,8 @@ Public LastPlayList As DirectList
 
 Public FileDuration As DirectMap
 
+Public SubtitleBind As DirectMap
+
 Public Language     As String
 
 Public Renderer     As String
@@ -28,3 +30,24 @@ Public LastHwnd     As String
 Public LastOpenDir  As String
 
 Public LastSaveDir  As String
+
+Public Sub InitBind(binder As DirectINI)
+
+    On Error Resume Next
+
+    With binder
+        .CreateMap "LastPlayPos"
+        .CreateMap "FileDuration"
+        .CreateMap "SubtitleBind"
+        .CreateList "LastPlayList"
+        .CreatePair "Language", "chinese.ini"
+        .CreatePair "Renderer", "4"
+        .CreatePair "LastHwnd", "0"
+        .CreatePair "LastOpenDir", "."
+        .CreatePair "LastSaveDir", "."
+
+    End With
+
+    On Error GoTo 0
+
+End Sub

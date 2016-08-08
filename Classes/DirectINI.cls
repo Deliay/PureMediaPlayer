@@ -32,8 +32,9 @@ Public Function CreateMap(ByVal Name As String) As DirectMap
     Dim objMap As New DirectMap
 
     objMap.SetName Name
-    colMaps.Add objMap
+    colMaps.Add objMap, Name
     Set CreateMap = objMap
+    CreateMap.AddPair CreateKeyValuePair("@", "@")
 
 End Function
 
@@ -42,8 +43,9 @@ Public Function CreateList(ByVal Name As String) As DirectList
     Dim objList As New DirectList
 
     objList.SetName Name
-    colLists.Add objList
+    colLists.Add objList, Name
     Set CreateList = objList
+    CreateList.AddItem "@"
 
 End Function
 
@@ -54,6 +56,16 @@ Public Function CreateKeyValuePair(ByVal Key As String, _
 
     objPair.InitPair Key, Value
     Set CreateKeyValuePair = objPair
+
+End Function
+
+Public Function CreatePair(ByVal Key As String, ByVal Value As String) As DirectPair
+
+    Dim objPair As New DirectPair
+
+    objPair.InitPair Key, Value
+    colPairs.Add objPair, Key
+    Set CreatePair = objPair
 
 End Function
 
@@ -271,6 +283,9 @@ Public Function Bind(ByVal idTarget As Object) As Boolean
     '    m_Param
     '
     '    idTarget.Invoke m_dispid, m_rrid, m_lcid, DISPATCH_PROPERTYGET, m_Param, StrPtr(m_Str), m_e, ByVal 0
+    
+    idBind.InitBind Me
+    
     For Each k In colPairs
 
         CallByName idBind, k.Key, VbLet, k.Value
