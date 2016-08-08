@@ -322,6 +322,8 @@ Placement:
 RegisterCOMErr:
     'do gui com register
     RegisterServers
+    Shell App.Path & "\" & App.EXEName & ".exe --restart", vbNormalFocus
+    End
     Resume
 
 End Sub
@@ -764,7 +766,7 @@ Public Function ShowPropertyPage(ByVal FilterOrPin As olelib.IUnknown, _
 
     Set oUnkSpPP = CastToUnkByIID(FilterOrPin, IID_ISpecifyPropertyPages)
 
-    If vtblCall(ObjPtr(oUnkSpPP), VTbl_GetPages, VarPtr(CAUUID(0))) Then Exit Function
+    If vtblCall(ObjPtr(oUnkSpPP), vbLong, VTbl_GetPages, VarPtr(CAUUID(0))) Then Exit Function
     If CAUUID(0) = 0 Then Exit Function 'no PropPageCount was returned
 
     OleCreatePropertyFrame hwndOwner, 0, 0, StrPtr(Caption), 1, ObjPtr(FilterOrPin), CAUUID(0), CAUUID(1), 0, 0, 0
