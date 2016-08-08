@@ -242,7 +242,6 @@ Begin VB.Form frmMain
    End
    Begin VB.PictureBox frmPlayer 
       Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
       BackColor       =   &H00000000&
       BorderStyle     =   0  'None
       FillStyle       =   0  'Solid
@@ -265,6 +264,11 @@ Begin VB.Form frmMain
       TabStop         =   0   'False
       Top             =   0
       Width           =   10455
+      Begin VB.Timer tmrTextRender 
+         Enabled         =   0   'False
+         Left            =   3720
+         Top             =   2760
+      End
       Begin VB.PictureBox bbPlaylist 
          Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
@@ -487,7 +491,8 @@ Private Sub Form_KeyPress(KeyAscii As Integer)
         frmPaternAdd.Show vbModal, Me
     ElseIf (20 = KeyAscii) Then
         frmMenu.mmFile_LoadSubtitle_Click
-
+    ElseIf (26 = KeyAscii) Then
+        mdlToolBarAlphaer.ShowText InputBox("test")
     End If
 
 End Sub
@@ -693,6 +698,12 @@ Private Sub pbTimeBlock_MouseDown(Button As Integer, _
     
 End Sub
 
+Private Sub tmrTextRender_Timer()
+    tmrTextRender.Enabled = False
+    frmPlayer.Line (32, 0)-(frmPlayer.ScaleWidth, 16), vbBlack, BF
+    
+End Sub
+
 Private Sub tmrUpdateTime_Timer()
     Sleep 1
 
@@ -731,6 +742,17 @@ Private Sub tmrUpdateTime_Timer()
     
     End If
 
+
+    If (mdlGlobalPlayer.GlobalRenderType = EnhancedVideoRenderer) Then
+        If (EVRHoster.srcT > 0) Then
+            frmPlayer.Line (0, 0)-(frmMain.frmPlayer.ScaleWidth, EVRHoster.srcT - 1), vbBlack, BF
+            frmPlayer.Line (0, EVRHoster.srcH + EVRHoster.srcT)-(frmPlayer.ScaleWidth, frmPlayer.ScaleHeight), vbBlack, BF
+        End If
+        If (EVRHoster.srcL > 0) Then
+            frmPlayer.Line (0, 0)-(EVRHoster.srcL - 1, frmPlayer.ScaleHeight), vbBlack, BF
+            frmPlayer.Line (EVRHoster.srcL + EVRHoster.srcW, 0)-(frmPlayer.ScaleWidth, frmPlayer.ScaleHeight), vbBlack, BF
+        End If
+    End If
 End Sub
 
 Public Sub AutoPatern()
@@ -741,9 +763,4 @@ Public Sub AutoPatern()
     
 End Sub
 
-Private Sub lstPlaylist_KeyDown(KeyCode As Integer, Shift As Integer)
-    
-    If (KeyCode = vbKeySpace) Then SwitchPlayStauts
-    
-End Sub
 

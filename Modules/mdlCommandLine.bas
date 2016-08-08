@@ -359,7 +359,7 @@ End Sub
 Public Sub ExitProgram()
 
     If (mdlGlobalPlayer.Loaded) Then
-        GlobalConfig.LastPlayPos.Value(MD5String(mdlGlobalPlayer.File)) = CStr(mdlGlobalPlayer.CurrentTime)
+        GlobalConfig.LastPlayPos.Value(mdlGlobalPlayer.FileMD5) = CStr(mdlGlobalPlayer.CurrentTime)
 
     End If
     

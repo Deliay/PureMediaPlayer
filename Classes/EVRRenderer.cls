@@ -22,7 +22,7 @@ Const IID_MR_VIDEO_RENDER_SERVICE = "{1092a86c-ab1a-459a-a336-831fbc4d11ff}"
 
 Private ifPlayback As IMFVideoDisplayControl
 
-Private srcW       As Long, srcH As Long, srcL As Long, srcT As Long
+Public srcW       As Long, srcH As Long, srcL As Long, srcT As Long
 
 Private ifServices As IMFGetService
 
@@ -54,7 +54,7 @@ End Function
 
 Public Function SetPlayBackWindow(hWnd As Long)
     ifPlayback.SetVideoWindow hWnd
-
+    ifPlayback.SetBorderColor vbBlack
 End Function
 
 Public Function SetVideoSize(Left As Long, Top As Long, Width As Long, Height As Long)
@@ -69,7 +69,7 @@ Public Function SetVideoSize(Left As Long, Top As Long, Width As Long, Height As
     rect.Right = Width + Left
     rect.Bottom = Top + Height
     GetVideoSize videoSizeW, videoSizeH
-
+    
     If (Round((Width / Height), 1) = Round(videoSizeW / videoSizeH, 1)) Then
         ifPlayback.SetVideoPosition 0&, VarPtr(rect)
 
@@ -82,9 +82,9 @@ Public Function SetVideoSize(Left As Long, Top As Long, Width As Long, Height As
         srcH = Height
         srcT = Top
         srcL = Left
-
+        
     End If
-
+    DoEvents
 End Function
 
 Public Sub GetVideoSize(ByRef Width As Long, ByRef Heigth As Long)

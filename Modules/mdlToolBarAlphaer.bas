@@ -88,6 +88,8 @@ Private boolUIStatus      As Boolean
 
 Public boolPlaylistStatus As Boolean
 
+Public strShowText        As String
+
 Type MD5_CTX
 
     dwNUMa      As Long
@@ -305,3 +307,14 @@ Public Sub PlayPauseSwitch()
     End If
 
 End Sub
+
+Public Sub ShowText(ByVal strText As String, Optional lngDelay As Long = 3000)
+    strShowText = strText
+    frmMain.tmrTextRender.Interval = lngDelay
+    frmMain.frmPlayer.ForeColor = vbWhite
+    frmMain.frmPlayer.PSet (32, 0), vbBlack
+    frmMain.frmPlayer.Print strText
+    frmMain.frmPlayer.Refresh
+    frmMain.tmrTextRender.Enabled = True
+End Sub
+

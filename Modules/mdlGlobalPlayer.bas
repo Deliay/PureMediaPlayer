@@ -31,7 +31,7 @@ Private ifType            As IMediaTypeInfo
 
 Public GlobalRenderType   As RenderType
 
-Private EVRHoster         As EVRRenderer
+Public EVRHoster         As EVRRenderer
 
 Public Width              As Long
 
@@ -50,6 +50,8 @@ Private hasVideo_         As Boolean
 Private hasAudio_         As Boolean
 
 Private hasSubtitle_      As Boolean
+
+Private strFileOpenedMD5  As String
 
 Public Enum StatusBarEnum
 
@@ -82,6 +84,10 @@ Private Declare Sub SetLastError Lib "kernel32" (ByVal dwErrCode As Long)
 Public Property Get IsWindowed() As Boolean
     IsWindowed = Not boolIsFullScreen
 
+End Property
+
+Public Property Get FileMD5() As String
+    FileMD5 = strFileOpenedMD5
 End Property
 
 Public Property Get GlobalPlayStatus() As PlayStatus
@@ -147,7 +153,7 @@ End Property
 Public Property Let File(v As String)
     SaveCurrentPos
     strLastestFile = v
-
+    strFileOpenedMD5 = MD5String(v)
 End Property
 
 Public Property Get HasVideo() As Boolean
@@ -183,7 +189,8 @@ Public Sub RenderMediaFile()
     hasVideo_ = False: hasAudio_ = False: hasSubtitle_ = False
     GlobalRenderType = val(GlobalConfig.Renderer)
     mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
-    
+    boolLoadedFile = True
+
     If (HasVideo = False And hasAudio_ = False) Then GoTo DcodeErr
     UpdateTitle NameGet(File)
     Set ifPostion = GlobalFilGraph
@@ -253,7 +260,15 @@ hErr:
     PlayPauseSwitch
     DoEvents
     mdlGlobalPlayer.ResizePlayWindow
-    
+
+    Dim strFileMD5 As String
+
+    If (GlobalConfig.SubtitleBind.Exist(mdlGlobalPlayer.FileMD5)) Then
+        mdlFilterBuilder.SetVSFilterFileName GlobalConfig.SubtitleBind(mdlGlobalPlayer.FileMD5)
+    End If
+
+    mdlToolBarAlphaer.SwitchUI True, False
+    mdlToolBarAlphaer.SwitchUI True, True
     Exit Sub
 DcodeErr:
     MsgBox "Not Support this codes type yet!"
@@ -418,10 +433,9 @@ Public Sub ResizePlayWindow()
 
     If (GlobalRenderType = EnhancedVideoRenderer) Then
         EVRHoster.SetVideoSize resultL, resultT, resultW, resultH
-        
     Else
         ifPlayback.SetWindowPosition resultL, resultT, resultW, resultH
-
+        
     End If
 
 hErr:
@@ -515,8 +529,8 @@ Public Sub ResizeFullScreen()
     
 End Sub
 
-Public Sub SeekLastPos(ByVal strFullPath As String)
-    mdlGlobalPlayer.CurrentTime = val(GlobalConfig.LastPlayPos(MD5String(strFullPath)))
+Public Sub SeekLastPos(ByVal strMD5 As String)
+    mdlGlobalPlayer.CurrentTime = val(GlobalConfig.LastPlayPos(strMD5))
     
     If (mdlGlobalPlayer.CurrentTime = mdlGlobalPlayer.Duration) Then
         mdlGlobalPlayer.CurrentTime = 0
@@ -526,14 +540,14 @@ Public Sub SeekLastPos(ByVal strFullPath As String)
 End Sub
 
 Public Sub SeekCurrentPos()
-    SeekLastPos mdlGlobalPlayer.File
+    SeekLastPos mdlGlobalPlayer.FileMD5
 
 End Sub
 
 Public Sub SaveCurrentPos()
 
     If (mdlGlobalPlayer.Loaded) Then
-        GlobalConfig.LastPlayPos.Value(MD5String(mdlGlobalPlayer.File)) = CStr(mdlGlobalPlayer.CurrentTime)
+        GlobalConfig.LastPlayPos.Value(mdlGlobalPlayer.FileMD5) = CStr(mdlGlobalPlayer.CurrentTime)
 
     End If
 
