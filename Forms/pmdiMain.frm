@@ -242,6 +242,7 @@ Begin VB.Form frmMain
    End
    Begin VB.PictureBox frmPlayer 
       Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
       BackColor       =   &H00000000&
       BorderStyle     =   0  'None
       FillStyle       =   0  'Solid
@@ -552,7 +553,7 @@ Private Sub Form_Load()
     GlobalConfig.LastHwnd = CStr(Me.hWnd)
     mdlConfig.SaveConfig
     Me.Show
-
+    frmPlayer.AutoRedraw = False
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
