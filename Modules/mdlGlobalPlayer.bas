@@ -31,7 +31,7 @@ Private ifType            As IMediaTypeInfo
 
 Public GlobalRenderType   As RenderType
 
-Public EVRHoster         As EVRRenderer
+Public EVRHoster          As EVRRenderer
 
 Public Width              As Long
 
@@ -88,6 +88,7 @@ End Property
 
 Public Property Get FileMD5() As String
     FileMD5 = strFileOpenedMD5
+
 End Property
 
 Public Property Get GlobalPlayStatus() As PlayStatus
@@ -154,6 +155,7 @@ Public Property Let File(v As String)
     SaveCurrentPos
     strLastestFile = v
     strFileOpenedMD5 = MD5String(v)
+
 End Property
 
 Public Property Get HasVideo() As Boolean
@@ -234,17 +236,17 @@ Public Sub RenderMediaFile()
     mdlGlobalPlayer.CurrentTime = 0
     mdlPlaylist.SetItemLength strFilePath, FormatedDuration
     
-    If Not frmMain.nowPlaying Is Nothing Then frmMain.nowPlaying.ForeColor = vbWhite
+    If Not frmMain.NowPlaying Is Nothing Then frmMain.NowPlaying.NowPlaying = False
     
     On Error GoTo notLoadPlaylist
     
-    Set frmMain.nowPlaying = frmMain.lstPlaylist.ListItems(strFilePath)
+    Set frmMain.NowPlaying = frmMain.lstPlaylist(strFilePath)
     
 notLoadPlaylist:
 
     Resume Next
 
-    If Not frmMain.nowPlaying Is Nothing Then frmMain.nowPlaying.ForeColor = vbGrayText
+    If Not frmMain.NowPlaying Is Nothing Then frmMain.NowPlaying.NowPlaying = True
     
     boolLoadedFile = True
     
@@ -265,10 +267,13 @@ hErr:
 
     If (GlobalConfig.SubtitleBind.Exist(mdlGlobalPlayer.FileMD5)) Then
         mdlFilterBuilder.SetVSFilterFileName GlobalConfig.SubtitleBind(mdlGlobalPlayer.FileMD5)
+
     End If
 
     mdlToolBarAlphaer.SwitchUI True, False
     mdlToolBarAlphaer.SwitchUI True, True
+    
+    If (mdlToolBarAlphaer.boolPlaylistStatus) Then mdlToolBarAlphaer.PlaylistShow
     Exit Sub
 DcodeErr:
     MsgBox "Not Support this codes type yet!"
@@ -313,7 +318,7 @@ Public Property Get FormatedDuration() As String
 
 End Property
 
-Public Sub RaiseRegFileter(List As vbalListViewCtl)
+Public Sub RaiseRegFileter(List As ListBox)
     
     Dim objRegFilter As IRegFilterInfo
     
@@ -323,7 +328,7 @@ Public Sub RaiseRegFileter(List As vbalListViewCtl)
     
     For Each objRegFilter In GlobalFilGraph.RegFilterCollection
         
-        List.ListItems.Add , , objRegFilter.Name
+        List.AddItem objRegFilter.Name
     Next
     
 End Sub
@@ -459,19 +464,17 @@ Public Sub UpdateTitle(strCaption As String)
 
 End Sub
 
-Public Sub RaiseMediaFilter(List As vbalListViewCtl)
-    List.ListItems.Add , , mdlGlobalPlayer.File
+Public Sub RaiseMediaFilter(List As ListBox)
+    List.AddItem mdlGlobalPlayer.File
 
     Dim objFilter As IFilterInfo
-    
-    Dim objItem   As cListItem
     
     If (GlobalFilGraph Is Nothing) Then Exit Sub
     If (GlobalFilGraph.FilterCollection Is Nothing) Then Exit Sub
     
     For Each objFilter In GlobalFilGraph.FilterCollection
         
-        List.ListItems.Add , , objFilter.Name
+        List.AddItem objFilter.Name
         
     Next
     

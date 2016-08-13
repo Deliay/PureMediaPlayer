@@ -316,5 +316,6 @@ Public Sub ShowText(ByVal strText As String, Optional lngDelay As Long = 3000)
     frmMain.frmPlayer.Print strText
     frmMain.frmPlayer.Refresh
     frmMain.tmrTextRender.Enabled = True
+
 End Sub
 

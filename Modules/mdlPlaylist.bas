@@ -15,7 +15,7 @@ Public strPlaylist   As String
 Public playlistCount As Long
 
 Public Function LoadPlaylist(ByVal strPath As String)
-    frmMain.lstPlaylist.ListItems.Clear
+    frmMain.lstPlaylist.Clear
     strPlaylist = strPath
     Set colPlayItems = New Collection
     Open strPath For Input As #1
@@ -48,11 +48,11 @@ Public Function PlaylistPlayNext(Optional Prev As Boolean = False) As Boolean
 
     Dim flag As Long
 
-    If (GetItemIDByName(frmMain.nowPlaying.Text) = mdlPlaylist.colPlayItems.Count) Then Exit Function
+    If (GetItemIDByName(frmMain.NowPlaying.Title) = mdlPlaylist.colPlayItems.Count) Then Exit Function
     flag = 1
 
     If (Prev = True) Then flag = -1
-    PlaylistPlayNext = PlayByName(colPlayItems(GetItemIDByName(frmMain.nowPlaying.Text) + flag).FullPath)
+    PlaylistPlayNext = PlayByName(colPlayItems(GetItemIDByName(frmMain.NowPlaying.Title) + flag).FullPath)
 ResumePlay:
     mdlGlobalPlayer.CurrentTime = 0
     mdlGlobalPlayer.Play
@@ -79,7 +79,7 @@ Public Function SetItemLength(strFullPath As String, Length As String)
 
     If (GetItemByPath(strFullPath) Is Nothing) Then Exit Function
     GetItemByPath(strFullPath).Length = Length
-    frmMain.lstPlaylist.ListItems(strFullPath).SubItems(1).Caption = Length
+    frmMain.lstPlaylist(strFullPath).Duration = Length
     GlobalConfig.FileDuration.Value(MD5String(strFullPath)) = Length
 
     If (strPlaylist <> "") Then SavePlaylist
@@ -91,14 +91,14 @@ Public Function AddFileToPlaylist(ByVal strPath As String, _
     
     Dim Item    As New PlayListItem
     
-    Dim AddItem As cListItem
+    Dim AddItem As DirectViewItem
     
     Item.FullPath = strPath
     Item.Name = NameGet(strPath)
     
     On Error GoTo notExist
     
-    If (frmMain.lstPlaylist.ListItems(Item.FullPath) Is Nothing) Then
+    If (frmMain.lstPlaylist(Item.FullPath) Is Nothing) Then
 notExist:
         
         On Error GoTo 0
@@ -121,13 +121,12 @@ notExist:
         If (colPlayItems Is Nothing) Then Set colPlayItems = New Collection
         colPlayItems.Add Item, Item.FullPath
         playlistCount = playlistCount + 1
-        Set AddItem = frmMain.lstPlaylist.ListItems.Add(, Item.FullPath, Item.Name)
-        AddItem.SubItems.Item(1).Caption = IIf(Length = "", GlobalConfig.FileDuration(MD5String(Item.FullPath)), Length)
-        
+        Set AddItem = frmMain.lstPlaylist.AddItem(Item.FullPath, IIf(Length = "", GlobalConfig.FileDuration(MD5String(Item.FullPath)), Length))
+
         If (strPath = mdlGlobalPlayer.File) Then
-            Set frmMain.nowPlaying = AddItem
-            AddItem.SubItems(1).Caption = mdlGlobalPlayer.FormatedDuration
-            GetItemByPath(File).Length = AddItem.SubItems(1).Caption
+            Set frmMain.NowPlaying = AddItem
+            AddItem.Duration = mdlGlobalPlayer.FormatedDuration
+            GetItemByPath(File).Length = AddItem.Duration
 
         End If
         
@@ -159,12 +158,12 @@ End Function
 
 Public Sub PlaylistClear()
     Set colPlayItems = New Collection
-    frmMain.lstPlaylist.ListItems.Clear
+    frmMain.lstPlaylist.Clear
     
 End Sub
 
 Public Function PlayByName(ByVal strName As String) As Boolean
-    frmMain.lstPlaylist_ItemDblClick frmMain.lstPlaylist.ListItems(strName)
+    frmMain.lstPlaylist_ListItemDblClick 0, frmMain.lstPlaylist(strName)
     
 End Function
 

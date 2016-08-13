@@ -24,14 +24,6 @@ Private Declare Function RegisterVSFilter _
 Private Declare Function RegisterMadVRFilter _
                 Lib "madVR.ax" _
                 Alias "DllRegisterServer" () As Long
-                
-Private Declare Function RegisterSSubTmr6 _
-                Lib "SSubTmr6.dll" _
-                Alias "DllRegisterServer" () As Long
-                
-Private Declare Function RegistervbaListView6 _
-                Lib "vbaListView6.ocx" _
-                Alias "DllRegisterServer" () As Long
 
 Private Declare Function DispCallFunc& _
                 Lib "oleaut32" (ByVal ppv&, _
@@ -157,12 +149,7 @@ Private Declare Function GetLastError Lib "kernel32" () As Long
 Public isAdminPerm As Boolean
 
 Public Sub RegisterCOM()
-    ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\SSubTmr6.dll", App.Path & "\", 0
-    ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\vbaListView6.ocx", App.Path & "\", 0
-    RegisterSSubTmr6
-    RegistervbaListView6
-    ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\SSubTmr6.dll", App.Path & "\", 0
-    ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\vbaListView6.ocx", App.Path & "\", 0
+    'Released
     
 End Sub
 

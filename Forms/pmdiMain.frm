@@ -1,14 +1,13 @@
 VERSION 5.00
-Object = "{E910F8E1-8996-4EE9-90F1-3E7C64FA9829}#1.1#0"; "vbaListView6.ocx"
 Begin VB.Form frmMain 
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
-   BackColor       =   &H00000000&
+   BackColor       =   &H000000C0&
    Caption         =   "Pure Media Player"
    ClientHeight    =   6705
    ClientLeft      =   165
    ClientTop       =   210
-   ClientWidth     =   10455
+   ClientWidth     =   10485
    BeginProperty Font 
       Name            =   "Î¢ÈíÑÅºÚ"
       Size            =   9
@@ -23,8 +22,17 @@ Begin VB.Form frmMain
    LinkTopic       =   "Form1"
    ScaleHeight     =   447
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   697
+   ScaleWidth      =   699
    StartUpPosition =   2  'ÆÁÄ»ÖÐÐÄ
+   Begin PureMediaPlayer.DirectView lstPlaylist 
+      Height          =   5895
+      Left            =   10485
+      TabIndex        =   13
+      Top             =   0
+      Width           =   3735
+      _ExtentX        =   6588
+      _ExtentY        =   10398
+   End
    Begin VB.PictureBox sbStatusBar 
       Align           =   2  'Align Bottom
       Appearance      =   0  'Flat
@@ -36,11 +44,11 @@ Begin VB.Form frmMain
       Left            =   0
       ScaleHeight     =   57
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   697
-      TabIndex        =   4
+      ScaleWidth      =   699
+      TabIndex        =   3
       TabStop         =   0   'False
       Top             =   5850
-      Width           =   10455
+      Width           =   10485
       Begin VB.PictureBox bbPlaystatus 
          Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
@@ -54,7 +62,7 @@ Begin VB.Form frmMain
          ScaleHeight     =   32
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   32
-         TabIndex        =   11
+         TabIndex        =   10
          TabStop         =   0   'False
          Top             =   240
          Width           =   480
@@ -71,7 +79,7 @@ Begin VB.Form frmMain
          ScaleHeight     =   32
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   32
-         TabIndex        =   10
+         TabIndex        =   9
          TabStop         =   0   'False
          Top             =   240
          Width           =   480
@@ -88,7 +96,7 @@ Begin VB.Form frmMain
          ScaleHeight     =   32
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   32
-         TabIndex        =   9
+         TabIndex        =   8
          TabStop         =   0   'False
          Top             =   240
          Width           =   480
@@ -105,7 +113,7 @@ Begin VB.Form frmMain
          ScaleHeight     =   32
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   32
-         TabIndex        =   8
+         TabIndex        =   7
          TabStop         =   0   'False
          Top             =   240
          Width           =   480
@@ -122,7 +130,7 @@ Begin VB.Form frmMain
          ScaleHeight     =   32
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   32
-         TabIndex        =   7
+         TabIndex        =   6
          TabStop         =   0   'False
          Top             =   240
          Width           =   480
@@ -138,7 +146,7 @@ Begin VB.Form frmMain
          ScaleHeight     =   10
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   697
-         TabIndex        =   5
+         TabIndex        =   4
          TabStop         =   0   'False
          Top             =   0
          Width           =   10455
@@ -153,7 +161,7 @@ Begin VB.Form frmMain
             ScaleHeight     =   9
             ScaleMode       =   3  'Pixel
             ScaleWidth      =   1
-            TabIndex        =   6
+            TabIndex        =   5
             TabStop         =   0   'False
             Top             =   0
             Width           =   15
@@ -168,9 +176,9 @@ Begin VB.Form frmMain
          ForeColor       =   &H00FFFFFF&
          Height          =   300
          Left            =   3120
-         TabIndex        =   13
+         TabIndex        =   12
          Top             =   360
-         Width           =   660
+         Width           =   900
       End
       Begin VB.Label Label1 
          Appearance      =   0  'Flat
@@ -179,44 +187,11 @@ Begin VB.Form frmMain
          Caption         =   "0:00/0:00"
          ForeColor       =   &H00FFFFFF&
          Height          =   300
-         Left            =   3960
-         TabIndex        =   12
+         Left            =   4200
+         TabIndex        =   11
          Top             =   360
          Width           =   2970
       End
-   End
-   Begin vbalListViewLib6.vbalListViewCtl lstPlaylist 
-      Height          =   6255
-      Left            =   10440
-      TabIndex        =   3
-      Top             =   0
-      Width           =   3735
-      _ExtentX        =   6588
-      _ExtentY        =   11033
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Î¢ÈíÑÅºÚ"
-         Size            =   9
-         Charset         =   134
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   16777215
-      BackColor       =   1842204
-      View            =   1
-      MultiSelect     =   -1  'True
-      LabelEdit       =   0   'False
-      FullRowSelect   =   -1  'True
-      Appearance      =   0
-      BorderStyle     =   0
-      FlatScrollBar   =   -1  'True
-      HeaderButtons   =   0   'False
-      HeaderTrackSelect=   0   'False
-      HideSelection   =   0   'False
-      DoubleBuffer    =   -1  'True
-      NoColumnHeaders =   -1  'True
-      TileBackgroundPicture=   0   'False
    End
    Begin VB.PictureBox bbMenuBar 
       Appearance      =   0  'Flat
@@ -243,7 +218,7 @@ Begin VB.Form frmMain
    Begin VB.PictureBox frmPlayer 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
-      BackColor       =   &H00000000&
+      BackColor       =   &H80000007&
       BorderStyle     =   0  'None
       FillStyle       =   0  'Solid
       BeginProperty Font 
@@ -256,20 +231,15 @@ Begin VB.Form frmMain
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H80000008&
-      Height          =   5775
+      Height          =   5850
       Left            =   0
-      ScaleHeight     =   385
+      ScaleHeight     =   390
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   697
+      ScaleWidth      =   699
       TabIndex        =   1
       TabStop         =   0   'False
       Top             =   0
-      Width           =   10455
-      Begin VB.Timer tmrTextRender 
-         Enabled         =   0   'False
-         Left            =   3720
-         Top             =   2760
-      End
+      Width           =   10485
       Begin VB.PictureBox bbPlaylist 
          Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
@@ -277,14 +247,19 @@ Begin VB.Form frmMain
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
          Height          =   720
-         Left            =   9840
+         Left            =   9900
          ScaleHeight     =   48
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   24
          TabIndex        =   2
          TabStop         =   0   'False
-         Top             =   2880
+         Top             =   2520
          Width           =   360
+      End
+      Begin VB.Timer tmrTextRender 
+         Enabled         =   0   'False
+         Left            =   3720
+         Top             =   2760
       End
    End
 End
@@ -295,7 +270,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Public nowPlaying      As cListItem
+Public NowPlaying      As DirectViewItem
 
 Public isHide          As Boolean
 
@@ -303,13 +278,9 @@ Public mouseDownStatus As Boolean
 
 Public dragY           As Single
 
-Private ItemSelected   As cListItem
+Private ItemSelected   As DirectViewItem
 
 Public srcH            As Long, srcW As Long
-
-Private Sub asd_Click()
-
-End Sub
 
 Private Sub bbMenuBar_MouseDown(Button As Integer, _
                                 Shift As Integer, _
@@ -352,7 +323,6 @@ Private Sub bbPlaylist_Click()
 
         'RefreshUI
     End If
-    
 End Sub
 
 Private Sub bbPlaylist_MouseMove(Button As Integer, _
@@ -494,6 +464,7 @@ Private Sub Form_KeyPress(KeyAscii As Integer)
         frmMenu.mmFile_LoadSubtitle_Click
     ElseIf (26 = KeyAscii) Then
         mdlToolBarAlphaer.ShowText InputBox("test")
+
     End If
 
 End Sub
@@ -545,8 +516,6 @@ End Sub
 
 Private Sub Form_Load()
     Me.Show
-    lstPlaylist.Columns.Add , , "File", , 2400
-    lstPlaylist.Columns.Add , , "Duration", , 800
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
@@ -554,6 +523,7 @@ Private Sub Form_Load()
     mdlConfig.SaveConfig
     Me.Show
     frmPlayer.AutoRedraw = False
+
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
@@ -660,19 +630,28 @@ Private Sub frmPlayer_MouseMove(Button As Integer, _
 
 End Sub
 
-Public Sub lstPlaylist_ItemDblClick(Item As vbalListViewLib6.cListItem)
+Private Sub lstPlaylist_Click()
 
-    If (Not (NameGet(mdlGlobalPlayer.File) = Item.Text)) Then
+End Sub
+
+Private Sub lstPlaylist_ListItemClick(ByVal Index As Long, ListItem As DirectViewItem)
+    lstPlaylist_ListItemDblClick Index, ListItem
+
+End Sub
+
+Public Sub lstPlaylist_ListItemDblClick(ByVal Index As Long, ListItem As DirectViewItem)
+
+    If (Not (NameGet(mdlGlobalPlayer.File) = ListItem.Title)) Then
         mdlGlobalPlayer.CloseFile
-        mdlGlobalPlayer.File = mdlPlaylist.GetItemByPath(Item.Key).FullPath
+        mdlGlobalPlayer.File = mdlPlaylist.GetItemByPath(ListItem.Path).FullPath
         mdlGlobalPlayer.RenderMediaFile
-        
-        If Not nowPlaying Is Nothing Then nowPlaying.ForeColor = vbWhite
-        Set nowPlaying = Item
-        nowPlaying.ForeColor = vbGrayText
+
+        If Not NowPlaying Is Nothing Then NowPlaying.NowPlaying = False
+        Set NowPlaying = ListItem
+        ListItem.NowPlaying = True
         
     End If
-    
+
 End Sub
 
 Private Sub pbTimeBar_MouseDown(Button As Integer, _
@@ -743,17 +722,21 @@ Private Sub tmrUpdateTime_Timer()
     
     End If
 
-
     If (mdlGlobalPlayer.GlobalRenderType = EnhancedVideoRenderer) Then
         If (EVRHoster.srcT > 0) Then
             frmPlayer.Line (0, 0)-(frmMain.frmPlayer.ScaleWidth, EVRHoster.srcT - 1), vbBlack, BF
             frmPlayer.Line (0, EVRHoster.srcH + EVRHoster.srcT)-(frmPlayer.ScaleWidth, frmPlayer.ScaleHeight), vbBlack, BF
+
         End If
+
         If (EVRHoster.srcL > 0) Then
             frmPlayer.Line (0, 0)-(EVRHoster.srcL - 1, frmPlayer.ScaleHeight), vbBlack, BF
             frmPlayer.Line (EVRHoster.srcL + EVRHoster.srcW, 0)-(frmPlayer.ScaleWidth, frmPlayer.ScaleHeight), vbBlack, BF
+
         End If
+
     End If
+
 End Sub
 
 Public Sub AutoPatern()
@@ -763,5 +746,4 @@ Public Sub AutoPatern()
     frmPaternAdd.cmdAddToList_Click
     
 End Sub
-
 
