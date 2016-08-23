@@ -472,7 +472,7 @@ Private Sub Form_KeyPress(KeyAscii As Integer)
 
     If (22 = KeyAscii) Then
         If (OpenClipboard(Me.hWnd)) Then
-            mdlCommandLine.ReadDrapQueryFile GetClipboardData(CF_HDROP)
+            mdlMsgProc.ReadDrapQueryFile GetClipboardData(CF_HDROP)
             CloseClipboard
             
         End If
