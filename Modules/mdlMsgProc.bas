@@ -123,6 +123,13 @@ Public Sub ReadDrapQueryFile(ByVal hDrop As Long)
             sbuf = Mid(sbuf, 1, InStr(1, sbuf, Chr(0)) - 1)
 
         End If
+        
+        Select Case LCase((Right$(sbuf, 3)))
+        Case Is = "idx", Is = "sub", Is = "srt", Is = "ssa", Is = "smi", Is = "ssa", Is = "ass", Is = "sup"
+            mdlFilterBuilder.SetVSFilterFileName sbuf
+            Exit Sub
+            
+        End Select
 
         mdlPlaylist.AddFileToPlaylist sbuf
     Next
