@@ -626,7 +626,12 @@ Public Function SetVSFilterFileName(FileName As String) As Boolean
 
     Set oDirectVobSub = CastToUnkByIID(objSubtitleFilter.Filter, IID_IDirectVobSub)
     SetVSFilterFileName = vtblCall(ObjPtr(oDirectVobSub), VTbl_SetFileName, vbEmpty, StrPtr(FileName)) = S_OK
-
+    
+    If (GlobalConfig.SubtitleBind.Exist(mdlGlobalPlayer.FileMD5)) Then
+        GlobalConfig.SubtitleBind.Value(mdlGlobalPlayer.FileMD5) = FileName
+    Else
+        GlobalConfig.SubtitleBind.AddKeyValue mdlGlobalPlayer.FileMD5, FileName
+    End If
 End Function
 
 Private Function CheckForFileSinkAndSetFileName(ByVal Flt As olelib.IUnknown, _

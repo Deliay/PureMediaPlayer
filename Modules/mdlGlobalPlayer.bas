@@ -265,6 +265,7 @@ hErr:
 
     If (GlobalConfig.SubtitleBind.Exist(mdlGlobalPlayer.FileMD5)) Then
         mdlFilterBuilder.SetVSFilterFileName GlobalConfig.SubtitleBind(mdlGlobalPlayer.FileMD5)
+
     End If
 
     mdlToolBarAlphaer.SwitchUI True, False

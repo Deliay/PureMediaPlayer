@@ -218,11 +218,7 @@ Public Sub mmFile_LoadSubtitle_Click()
     If (mdlGlobalPlayer.File <> "" And mdlGlobalPlayer.Loaded = True And mdlGlobalPlayer.GlobalPlayStatus <> Stopped) Then
         cdlg.ShowOpen
         SetVSFilterFileName cdlg.FileName
-        If (GlobalConfig.SubtitleBind.Exist(mdlGlobalPlayer.FileMD5)) Then
-            GlobalConfig.SubtitleBind.Value(mdlGlobalPlayer.FileMD5) = cdlg.FileName
-        Else
-            GlobalConfig.SubtitleBind.AddKeyValue mdlGlobalPlayer.FileMD5, cdlg.FileName
-        End If
+
     End If
 
 End Sub
