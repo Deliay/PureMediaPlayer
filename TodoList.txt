@@ -54,3 +54,6 @@ Pending list:
 21.FT	VRM9离屏渲染(dx9+ scratch pool surface+buffer+lock)
 22.FT	注册表文件关联
 23.FT	获取到URL播放缓冲状态
+24.FT	拖拽添加文件列表池，智能处理字幕和影音文件
+25.FT	智能匹配当前文件同名当前文件夹下的字幕
+26.FT	自制列表
