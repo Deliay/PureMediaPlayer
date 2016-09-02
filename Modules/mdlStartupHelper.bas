@@ -21,7 +21,6 @@ Private Declare Function GetProcAddress _
                 Lib "kernel32" (ByVal hModule As Long, _
                                 ByVal lpProcName As String) As Long
 
-
 Private Declare Function SetProcessDpiAwareness _
                 Lib "Shcore.dll" (ByVal Value As Long) As Long
 
@@ -30,6 +29,7 @@ Private Declare Function TerminateProcess _
                                 ByVal uExitCode As Long) As Long
 
 Public Declare Function GetCurrentProcessId Lib "kernel32" () As Long
+
 Public Function SetProcessDpiAwareness_hard()
     SetProcessDpiAwareness 2&
 
@@ -76,7 +76,6 @@ Public Function GetIDEmode() As Boolean
 
 End Function
 
-
 Public Sub InitialCommandLine()
 
     Dim argc As Long, argv As IntPtr, i As Long
@@ -91,7 +90,6 @@ Public Sub InitialCommandLine()
     LocalFree argv
 
 End Sub
-
 
 Public Sub ExitProgram()
 

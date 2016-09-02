@@ -618,7 +618,9 @@ Public Function SetVSFilterFileName(FileName As String) As Boolean
         GlobalConfig.SubtitleBind.Value(mdlGlobalPlayer.FileMD5) = FileName
     Else
         GlobalConfig.SubtitleBind.AddKeyValue mdlGlobalPlayer.FileMD5, FileName
+
     End If
+
 End Function
 
 Private Function CheckForFileSinkAndSetFileName(ByVal Flt As olelib.IUnknown, _
@@ -722,16 +724,16 @@ Public Function ShowRendererConfig()
     
         Dim VMRVerSpec As Long
     
-        If (mdlGlobalPlayer.GlobalRenderType = VideoMixedRenderer9) Then
+        If (mdlConfig.GlobalConfig.Renderer = VideoMixedRenderer9) Then
             VMRVerSpec = VMR9Index
             
-        ElseIf (mdlGlobalPlayer.GlobalRenderType = VideoMixedRenderer) Then
+        ElseIf (mdlConfig.GlobalConfig.Renderer = VideoMixedRenderer) Then
             VMRVerSpec = VMR7Index
             
-        ElseIf (mdlGlobalPlayer.GlobalRenderType = EnhancedVideoRenderer) Then
+        ElseIf (mdlConfig.GlobalConfig.Renderer = EnhancedVideoRenderer) Then
             VMRVerSpec = EVRIndex
             
-        ElseIf (mdlGlobalPlayer.GlobalRenderType = MadVRednerer) Then
+        ElseIf (mdlConfig.GlobalConfig.Renderer = MadVRednerer) Then
             VMRVerSpec = MadVRIndex
             
         Else
