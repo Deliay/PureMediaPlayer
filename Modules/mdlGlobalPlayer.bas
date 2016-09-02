@@ -31,7 +31,7 @@ Private ifType            As IMediaTypeInfo
 
 Public GlobalRenderType   As RenderType
 
-Public EVRHoster         As EVRRenderer
+Public EVRHoster          As EVRRenderer
 
 Public Width              As Long
 
@@ -88,6 +88,7 @@ End Property
 
 Public Property Get FileMD5() As String
     FileMD5 = strFileOpenedMD5
+
 End Property
 
 Public Property Get GlobalPlayStatus() As PlayStatus
@@ -154,6 +155,7 @@ Public Property Let File(v As String)
     SaveCurrentPos
     strLastestFile = v
     strFileOpenedMD5 = MD5String(v)
+
 End Property
 
 Public Property Get HasVideo() As Boolean

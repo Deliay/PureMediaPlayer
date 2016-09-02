@@ -494,6 +494,7 @@ Private Sub Form_KeyPress(KeyAscii As Integer)
         frmMenu.mmFile_LoadSubtitle_Click
     ElseIf (26 = KeyAscii) Then
         mdlToolBarAlphaer.ShowText InputBox("test")
+
     End If
 
 End Sub
@@ -554,6 +555,7 @@ Private Sub Form_Load()
     mdlConfig.SaveConfig
     Me.Show
     frmPlayer.AutoRedraw = False
+
 End Sub
 
 Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
@@ -743,17 +745,21 @@ Private Sub tmrUpdateTime_Timer()
     
     End If
 
-
     If (mdlGlobalPlayer.GlobalRenderType = EnhancedVideoRenderer) Then
         If (EVRHoster.srcT > 0) Then
             frmPlayer.Line (0, 0)-(frmMain.frmPlayer.ScaleWidth, EVRHoster.srcT - 1), vbBlack, BF
             frmPlayer.Line (0, EVRHoster.srcH + EVRHoster.srcT)-(frmPlayer.ScaleWidth, frmPlayer.ScaleHeight), vbBlack, BF
+
         End If
+
         If (EVRHoster.srcL > 0) Then
             frmPlayer.Line (0, 0)-(EVRHoster.srcL - 1, frmPlayer.ScaleHeight), vbBlack, BF
             frmPlayer.Line (EVRHoster.srcL + EVRHoster.srcW, 0)-(frmPlayer.ScaleWidth, frmPlayer.ScaleHeight), vbBlack, BF
+
         End If
+
     End If
+
 End Sub
 
 Public Sub AutoPatern()
@@ -763,5 +769,4 @@ Public Sub AutoPatern()
     frmPaternAdd.cmdAddToList_Click
     
 End Sub
-
 

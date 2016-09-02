@@ -14,6 +14,7 @@ Private Declare Function SetWindowLong _
                 Alias "SetWindowLongW" (ByVal hWnd As Long, _
                                         ByVal nIndex As Long, _
                                         ByVal dwNewLong As Long) As Long
+
 Private Declare Function CallAsmCode _
                 Lib "user32" _
                 Alias "CallWindowProcA" (lpPrevWndFunc As Long, _
@@ -106,7 +107,6 @@ Public Declare Sub CopyMemory _
 
 Public Const MAX_PATH = 260
 
-
 Public Sub ReadDrapQueryFile(ByVal hDrop As Long)
 
     Dim i As Long, Count As Long, buf As String, sbuf As String
@@ -125,9 +125,11 @@ Public Sub ReadDrapQueryFile(ByVal hDrop As Long)
         End If
         
         Select Case LCase((Right$(sbuf, 3)))
-        Case "idx", "sub", "srt", "ssa", "smi", "ssa", "ass", "sup"
-            If (mdlGlobalPlayer.GlobalPlayStatus = Running) Then mdlFilterBuilder.SetVSFilterFileName sbuf
-            Exit Sub
+
+            Case "idx", "sub", "srt", "ssa", "smi", "ssa", "ass", "sup"
+
+                If (mdlGlobalPlayer.GlobalPlayStatus = Running) Then mdlFilterBuilder.SetVSFilterFileName sbuf
+                Exit Sub
             
         End Select
 
@@ -220,10 +222,12 @@ Public Sub MessageProc(lMsg As Long, wParam As Long, lParam As Long)
                 End If
 
                 Select Case LCase((Right$(sFileName, 3)))
-                Case "idx", "sub", "srt", "ssa", "smi", "ssa", "ass", "sup"
-                    If (mdlGlobalPlayer.GlobalPlayStatus = Running) Then mdlFilterBuilder.SetVSFilterFileName sFileName
 
-                    Exit Sub
+                    Case "idx", "sub", "srt", "ssa", "smi", "ssa", "ass", "sup"
+
+                        If (mdlGlobalPlayer.GlobalPlayStatus = Running) Then mdlFilterBuilder.SetVSFilterFileName sFileName
+
+                        Exit Sub
                     
                 End Select
 
@@ -331,5 +335,4 @@ Private Function CallAnyFunc(ByVal pFn As Long, _
     End If
 
 End Function
-
 
