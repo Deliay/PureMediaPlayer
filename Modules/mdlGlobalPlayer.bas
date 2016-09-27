@@ -317,21 +317,22 @@ Public Property Get FormatedDuration() As String
     FormatedDuration = (Duration \ 60) & ":" & (Duration Mod 60)
 
 End Property
-
-Public Sub RaiseRegFileter(List As ListBox)
-    
-    Dim objRegFilter As IRegFilterInfo
-    
-    Dim objFilter    As IFilterInfo
-    
-    If (GlobalFilGraph Is Nothing) Then Set GlobalFilGraph = New FilgraphManager
-    
-    For Each objRegFilter In GlobalFilGraph.RegFilterCollection
-        
-        List.AddItem objRegFilter.Name
-    Next
-    
-End Sub
+'
+'
+'Public Sub RaiseRegFileter(List As vbalListViewCtl)
+'
+'    Dim objRegFilter As IRegFilterInfo
+'
+'    Dim objFilter    As IFilterInfo
+'
+'    If (GlobalFilGraph Is Nothing) Then Set GlobalFilGraph = New FilgraphManager
+'
+'    For Each objRegFilter In GlobalFilGraph.RegFilterCollection
+'
+'        List.ListItems.Add , , objRegFilter.Name
+'    Next
+'
+'End Sub
 
 Public Sub Play()
     

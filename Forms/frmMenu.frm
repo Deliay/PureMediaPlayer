@@ -76,6 +76,9 @@ Begin VB.Form frmMenu
             Caption         =   "Random"
             Enabled         =   0   'False
          End
+         Begin VB.Menu mmStatus_AssociationCurrent 
+            Caption         =   "Association"
+         End
          Begin VB.Menu mmStatus_ShowPlaylist 
             Caption         =   "Playlist"
             Shortcut        =   ^F
@@ -248,6 +251,12 @@ End Sub
 
 Private Sub mmHelp_Web_Click()
     ShellExecute 0, "open", "http://www.remiliascarlet.com", vbNullString, vbNullString, 0
+    
+End Sub
+
+Private Sub mmStatus_AssociationCurrent_Click()
+    frmSystemInfo.cbExtName.Text = Mid(mdlGlobalPlayer.File, InStrRev(mdlGlobalPlayer.File, ".") + 1)
+    frmSystemInfo.Show
     
 End Sub
 

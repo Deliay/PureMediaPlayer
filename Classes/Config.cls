@@ -17,6 +17,8 @@ Public LastPlayPos  As DirectMap
 
 Public LastPlayList As DirectList
 
+Public BindedFileExts As DirectList
+
 Public FileDuration As DirectMap
 
 Public SubtitleBind As DirectMap
@@ -40,6 +42,7 @@ Public Sub InitBind(binder As DirectINI)
         .CreateMap "FileDuration"
         .CreateMap "SubtitleBind"
         .CreateList "LastPlayList"
+        .CreateList "BindedFileExts"
         .CreatePair "Language", "chinese.ini"
         .CreatePair "Renderer", "4"
         .CreatePair "LastHwnd", "0"

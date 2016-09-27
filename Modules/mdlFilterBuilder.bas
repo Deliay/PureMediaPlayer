@@ -149,11 +149,18 @@ Private Declare Function GetLastError Lib "kernel32" () As Long
 Public isAdminPerm As Boolean
 
 Public Sub RegisterCOM()
-    'Released
+    ReqAdminPerm
+    ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\SSubTmr6.dll", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\vbaListView6.ocx", App.Path & "\", 0
+    RegisterSSubTmr6
+    RegistervbaListView6
+    ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\SSubTmr6.dll", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\vbaListView6.ocx", App.Path & "\", 0
     
 End Sub
 
 Public Sub RegisterAllDecoder()
+    ReqAdminPerm
     ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\" & "LAVAudio.ax", App.Path & "\", 0
     ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\" & "LAVSplitter.ax", App.Path & "\", 0
     ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\" & "LAVVideo.ax", App.Path & "\", 0
@@ -184,7 +191,8 @@ Public Sub Main()
     End If
 
     If (Len(Command) = 6 And Left$(Command, 6) = "--perm") Then
-        RegisterServers
+        RegisterAllDecoder
+        RegisterCOM
         End
 
     End If
@@ -232,7 +240,7 @@ ReFill:
     FillDecoder mdlGlobalPlayer.GlobalFilGraph
 
     If (LAVAudioIndex = -1 Or LAVVideoIndex = -1 Or LAVSplitterIndex = -1 Or VSFilterIndex = -1 Or LAVSplitterSourceIndex = -1 Or MadVRIndex = -1) Then
-        RegisterServers
+        ReqAdminPerm
         Shell App.Path & "\" & App.EXEName & ".exe --restart", vbNormalFocus
         End
         GoTo ReFill
@@ -247,7 +255,7 @@ ReFill:
     
     If (LAVAudioIndex = -1 Or LAVVideoIndex = -1 Or LAVSplitterIndex = -1 Or VSFilterIndex = -1 Or LAVSplitterSourceIndex = -1 Or MadVRIndex = -1) Then
     
-        MsgBox "Cannot Register Decoder! Please run again with Administrator Permission"
+        MsgBox "Can't register decodes! Please allow permission request in UAC or other Security Software"
         End
 
     End If
@@ -274,7 +282,9 @@ ReFill:
     'Create A Clean FilgraphManager
     Set mdlGlobalPlayer.GlobalFilGraph = New FilgraphManager
     
-    If (Not IsIDE) Then RegisterCOM
+    'But Issue:
+    'Don't Register COM DLL whitout error
+    'If (Not IsIDE) Then RegisterCOM
     
     On Error GoTo RegisterCOMErr
 
@@ -308,7 +318,7 @@ Placement:
     Exit Sub
 RegisterCOMErr:
     'do gui com register
-    RegisterServers
+    RegisterCOM
     Shell App.Path & "\" & App.EXEName & ".exe --restart", vbNormalFocus
     End
     Resume
@@ -340,7 +350,7 @@ Public Sub InitPerm()
 
 End Sub
 
-Public Function RegisterServers()
+Public Function ReqAdminPerm()
     
     If (isAdminPerm = False) Then
 
@@ -357,16 +367,13 @@ Public Function RegisterServers()
         End With
         
         If (ShellExecuteEx(sLInfo) = 0) Then
-            MsgBox "您取消了管理员权限的授权，请允许使用管理员权限以注册解码器"
+            MsgBox "You deny the permission request! Exit."
             End
 
         End If
         
         WaitForSingleObject sLInfo.hProcess, INFINITE
         Sleep 1000
-    Else
-        RegisterAllDecoder
-        RegisterCOM
 
     End If
     
