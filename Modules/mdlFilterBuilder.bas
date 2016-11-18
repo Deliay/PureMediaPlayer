@@ -256,14 +256,14 @@ ReFill:
     End If
     
     If (VMR9Index = -1 And EVRIndex = -1 And VMR7Index = -1) Then
-        MsgBox "Bad Renderer Support!"
+        MsgBox mdlLanguageApplyer.StaticString(BAD_RENDERER_STATUS)
         End
 
     End If
     
     If (LAVAudioIndex = -1 Or LAVVideoIndex = -1 Or LAVSplitterIndex = -1 Or VSFilterIndex = -1 Or LAVSplitterSourceIndex = -1 Or MadVRIndex = -1) Then
     
-        MsgBox "Can't register decodes! Please allow permission request in UAC or other Security Software"
+        MsgBox mdlLanguageApplyer.StaticString(BAD_PERMISSION_TAKE)
         End
 
     End If
@@ -375,7 +375,8 @@ Public Function ReqAdminPerm()
         End With
         
         If (ShellExecuteEx(sLInfo) = 0) Then
-            MsgBox "You deny the permission request! Exit."
+            
+            MsgBox mdlLanguageApplyer.StaticString(BAD_PERMISSION_DENY)
             End
 
         End If

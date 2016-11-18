@@ -274,11 +274,11 @@ hErr:
     mdlToolBarAlphaer.SwitchUI True, True
     Exit Sub
 DcodeErr:
-    MsgBox "Not Support this codes type yet!"
+    MsgBox mdlLanguageApplyer.StaticString(TIPS_NOT_SUPPORT)
     mdlPlaylist.SetItemLength File, mdlLanguageApplyer.StaticString(FILE_NOT_SUPPORT)
     Exit Sub
 
-    MsgBox "Unknow Err"
+    MsgBox mdlLanguageApplyer.StaticString(TIPS_UNKNOW_ERR)
     Exit Sub
     
 End Sub
