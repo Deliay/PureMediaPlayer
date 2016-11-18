@@ -106,7 +106,106 @@ Public Sub ExitProgram()
 
     If (Not IsIDE) Then TerminateProcess GetCurrentProcessId, 5
     If (Not IsIDE) Then Shell "taskkill /F /PID " & GetCurrentProcessId
+    
     End
 
 End Sub
 
+Public Sub AssociationRegister()
+
+    Dim reg As New RegisterEditor
+    Dim strCurrPath As String
+    strCurrPath = "Applications\PureMediaPlayer.exe"
+    
+    '1. perhap the Application Register
+    If Not (reg.ItemExits(HKEY_CLASSES_ROOT, strCurrPath)) Then
+    
+        If Not (reg.CreateKey(HKEY_CLASSES_ROOT, strCurrPath)) Then
+            MsgBox "Fail on Create Application Key"
+            
+        End If
+        
+    End If
+    
+    strCurrPath = strCurrPath & "\shell\open\Command"
+    reg.SetString HKEY_CLASSES_ROOT, strCurrPath, "", """" & App.Path & "\" & App.EXEName & ".exe"" " & """%1"""
+    
+    '2. ready the class
+    If Not (reg.ItemExits(HKEY_CLASSES_ROOT, "PureMediaPlayer")) Then
+    
+        If Not (reg.CreateKey(HKEY_CLASSES_ROOT, "PureMediaPlayer")) Then
+            MsgBox "Fail on Create ProgID"
+            
+        End If
+        
+    End If
+    
+    strCurrPath = "PureMediaPlayer\shell\open\Command"
+    reg.SetString HKEY_CLASSES_ROOT, strCurrPath, "", """" & App.Path & "\" & App.EXEName & ".exe"" " & """%1"""
+    
+    GlobalConfig.AppRegistered = "1"
+    mdlConfig.SaveConfig
+    
+End Sub
+
+Public Sub BindExt(ByVal strExt As String)
+    Dim reg As New RegisterEditor
+    
+    If Not (reg.ItemExits(HKEY_CLASSES_ROOT, strExt)) Then
+    
+        If Not (reg.CreateKey(HKEY_CLASSES_ROOT, strExt)) Then
+            MsgBox "Fail on Create System Associations"
+            
+        End If
+        
+    End If
+    
+    reg.SetString HKEY_CLASSES_ROOT, strExt, "", "PureMediaPlayer"
+    
+    MsgBox mdlLanguageApplyer.StaticString(EXT_BIND_SUCCESS)
+    
+End Sub
+
+Public Sub Uninstall()
+
+    Dim reg As New RegisterEditor
+    
+    reg.DelKey HKEY_CLASSES_ROOT, "PureMediaPlayer"
+    reg.DelKey HKEY_CLASSES_ROOT, "Applications\PureMediaPlayer.exe"
+    
+    'remove main key
+    UnBindAll
+    
+End Sub
+
+Public Sub UnBindAll()
+
+    Dim i As Variant, k As String
+    GlobalConfig.BindedFileExts.Remove 1
+    
+    For Each i In GlobalConfig.BindedFileExts
+        k = i
+        UnBindExt k
+        
+    Next
+    
+    GlobalConfig.BindedFileExts.Clear
+End Sub
+
+Public Sub UnBindExt(ByVal strExt As String)
+
+    If (GlobalConfig.OldBindExts.Exist(strExt)) Then
+        'exist a old value/setting
+        Dim reg As New RegisterEditor
+        reg.SetString HKEY_CLASSES_ROOT, strExt, "", GlobalConfig.OldBindExts(strExt)
+        
+    Else
+    
+        If (reg.GetString(HKEY_CLASSES_ROOT, strExt, "") = "PureMediaPlayer") Then
+            reg.DelKey HKEY_CLASSES_ROOT, strExt
+            
+        End If
+        
+    End If
+    
+End Sub

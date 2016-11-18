@@ -157,22 +157,20 @@ Private Declare Function GetLastError Lib "kernel32" () As Long
 Public isAdminPerm As Boolean
 
 Public Sub RegisterCOM()
-    ReqAdminPerm
     ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\SSubTmr6.dll", App.Path & "\", 0
     ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\vbaListView6.ocx", App.Path & "\", 0
     RegisterSSubTmr6
     RegistervbaListView6
     ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\SSubTmr6.dll", App.Path & "\", 0
     ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\vbaListView6.ocx", App.Path & "\", 0
-    
 End Sub
 
 Public Sub RegisterAllDecoder()
-    ReqAdminPerm
     ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\" & "LAVAudio.ax", App.Path & "\", 0
     ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\" & "LAVSplitter.ax", App.Path & "\", 0
     ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\" & "LAVVideo.ax", App.Path & "\", 0
     ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\" & "madVR.ax", App.Path & "\", 0
+    ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\" & "vsfilter.dll", App.Path & "\", 0
     RegisterLAVAudio
     RegisterLAVSplitter
     RegisterLAVVideo
@@ -182,10 +180,11 @@ Public Sub RegisterAllDecoder()
     ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\" & "LAVSplitter.ax", App.Path & "\", 0
     ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\" & "LAVVideo.ax", App.Path & "\", 0
     ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\" & "madVR.ax", App.Path & "\", 0
-
+    ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\" & "vsfilter.dll", App.Path & "\", 0
 End Sub
 
 Public Sub Main()
+
     IsIDE = GetIDEmode
     InitPerm
     
@@ -197,6 +196,18 @@ Public Sub Main()
         SetProcessDpiAwareness_hard
 
     End If
+    
+    If (Len(Command) = 12 And Left$(Command, 12) = "--regdecodes") Then
+        RegisterAllDecoder
+        End
+
+    End If
+
+    If (Len(Command) = 8 And Left$(Command, 8) = "--regocx") Then
+        RegisterCOM
+        End
+
+    End If
 
     If (Len(Command) = 6 And Left$(Command, 6) = "--perm") Then
         RegisterAllDecoder
@@ -204,6 +215,37 @@ Public Sub Main()
         End
 
     End If
+    
+    If (Len(Command) > 11 And Left$(Command, 9) = "--bindext") Then
+        BindExt Mid(Command, 11)
+        End
+        
+    End If
+
+    If (Len(Command) > 13 And Left$(Command, 11) = "--unbindext") Then
+        UnBindExt Mid(Command, 13)
+        End
+        
+    End If
+    
+    If (Len(Command) = 11 And Left$(Command, 11) = "--unbindall") Then
+        UnBindAll
+        End
+        
+    End If
+
+    If (Len(Command) = 13 And Left$(Command, 13) = "--association") Then
+        AssociationRegister
+        End
+        
+    End If
+
+    If (Len(Command) = 11 And Left$(Command, 11) = "--uninstall") Then
+        Uninstall
+        End
+        
+    End If
+
 
     If (Len(Command) = 9 And Left$(Command, 9) = "--restart") Then
         IsRestart = True
@@ -248,11 +290,9 @@ ReFill:
     FillDecoder mdlGlobalPlayer.GlobalFilGraph
 
     If (LAVAudioIndex = -1 Or LAVVideoIndex = -1 Or LAVSplitterIndex = -1 Or VSFilterIndex = -1 Or LAVSplitterSourceIndex = -1 Or MadVRIndex = -1) Then
-        ReqAdminPerm
+        ReqAdminPerm "--regdecodes"
         Shell App.Path & "\" & App.EXEName & ".exe --restart", vbNormalFocus
         End
-        GoTo ReFill
-
     End If
     
     If (VMR9Index = -1 And EVRIndex = -1 And VMR7Index = -1) Then
@@ -326,7 +366,7 @@ Placement:
     Exit Sub
 RegisterCOMErr:
     'do gui com register
-    RegisterCOM
+    ReqAdminPerm "--regocx"
     Shell App.Path & "\" & App.EXEName & ".exe --restart", vbNormalFocus
     End
     Resume
@@ -358,33 +398,29 @@ Public Sub InitPerm()
 
 End Sub
 
-Public Function ReqAdminPerm()
-    
-    If (isAdminPerm = False) Then
+Public Function ReqAdminPerm(Optional strAction As String = "--perm")
 
-        Dim sLInfo As SHELLEXECUTEINFO2
+    Dim sLInfo As SHELLEXECUTEINFO2
 
-        With sLInfo
-            .cbSize = Len(sLInfo)
-            .lpVerb = StrPtr("runas")
-            .lpFile = StrPtr(App.Path & "\" & App.EXEName & ".exe")
-            .hWnd = 0
-            .nShow = 1
-            .lpParameters = StrPtr("--perm")
-            
-        End With
+    With sLInfo
+        .cbSize = Len(sLInfo)
+        .lpVerb = StrPtr("runas")
+        .lpFile = StrPtr(App.Path & "\" & App.EXEName & ".exe")
+        .hWnd = 0
+        .nShow = 1
+        .lpParameters = StrPtr(strAction)
         
-        If (ShellExecuteEx(sLInfo) = 0) Then
-            
-            MsgBox mdlLanguageApplyer.StaticString(BAD_PERMISSION_DENY)
-            End
-
-        End If
+    End With
+    If (ShellExecuteEx(sLInfo) = 0) Then
         
-        WaitForSingleObject sLInfo.hProcess, INFINITE
-        Sleep 1000
+        MsgBox mdlLanguageApplyer.StaticString(BAD_PERMISSION_DENY)
+        End
 
     End If
+    
+    WaitForSingleObject sLInfo.hProcess, INFINITE
+    Sleep 1000
+
     
 End Function
 

@@ -1,11 +1,10 @@
 VERSION 5.00
 Begin VB.Form frmSystemInfo 
    AutoRedraw      =   -1  'True
-   BorderStyle     =   1  'Fixed Single
-   Caption         =   "File Associator"
+   Caption         =   "App Register / File Associator"
    ClientHeight    =   5850
-   ClientLeft      =   45
-   ClientTop       =   390
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   5550
    BeginProperty Font 
       Name            =   "Î¢ÈíÑÅºÚ"
@@ -19,13 +18,27 @@ Begin VB.Form frmSystemInfo
    Icon            =   "smdiSystemInfo.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
-   MinButton       =   0   'False
    ScaleHeight     =   390
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   370
-   ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'ÆÁÄ»ÖÐÐÄ
-   Begin VB.CommandButton Command1 
+   Begin VB.CommandButton cmdUninstall 
+      Caption         =   "Uninstall"
+      Height          =   375
+      Left            =   4320
+      TabIndex        =   8
+      Top             =   4800
+      Width           =   1095
+   End
+   Begin VB.CommandButton cmdFix 
+      Caption         =   "Fix"
+      Height          =   375
+      Left            =   4320
+      TabIndex        =   7
+      Top             =   3840
+      Width           =   1095
+   End
+   Begin VB.CommandButton cmdRemoveAll 
       Caption         =   "Remove All"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -39,7 +52,7 @@ Begin VB.Form frmSystemInfo
       Height          =   375
       Left            =   4320
       TabIndex        =   6
-      Top             =   4800
+      Top             =   4320
       Width           =   1095
    End
    Begin VB.ComboBox cbExtName 
@@ -158,7 +171,23 @@ Option Explicit
 Private Sub cmdAdd_Click()
     If (GlobalConfig.BindedFileExts.Exist(cbExtName.Text)) Then
         MsgBox mdlLanguageApplyer.StaticString(EXT_ALREADY_BIND)
+        Exit Sub
+        
+    Else
+        Dim reg As New RegisterEditor
+        Dim strOldValue As String
+        strOldValue = reg.GetString(HKEY_CLASSES_ROOT, cbExtName.Text, "")
+        
+        If Not (strOldValue = "PureMediaPlayer") Then
+            'storage old value
+            GlobalConfig.OldBindExts.AddKeyValue cbExtName.Text, strOldValue
+        End If
+        GlobalConfig.BindedFileExts.AddItem cbExtName.Text
+        ReqAdminPerm "--bindext " & cbExtName.Text
     End If
+    
+    Me.lstTypes.AddItem cbExtName.Text
+    mdlConfig.SaveConfig
 End Sub
 
 Private Sub cmdClose_Click()
@@ -166,10 +195,50 @@ Private Sub cmdClose_Click()
     
 End Sub
 
+Private Sub cmdDelete_Click()
+    If (lstTypes.Text = "") Then Exit Sub
+    'revocer old setting
+    ReqAdminPerm "--unbindext " & lstTypes.Text
+    GlobalConfig.OldBindExts.Remove lstTypes.Text
+    lstTypes.RemoveItem lstTypes.ListIndex
+    GlobalConfig.BindedFileExts.TakeFrom lstTypes
+    mdlConfig.SaveConfig
+End Sub
+
+Private Sub cmdFix_Click()
+    ReqAdminPerm "--association"
+    GlobalConfig.AppRegistered = "1"
+    mdlConfig.SaveConfig
+End Sub
+
+Private Sub cmdRemoveAll_Click()
+    lstTypes.Clear
+    ReqAdminPerm "--unbindall"
+    GlobalConfig.BindedFileExts.TakeTo lstTypes
+    
+End Sub
+
+Private Sub cmdUninstall_Click()
+    If (MsgBox(mdlLanguageApplyer.StaticString(TIPS_MAKSURE_UNINSTALL), vbYesNo, "Tips") = vbYes) Then
+        lstTypes.Clear
+        ReqAdminPerm "--uninstall"
+        GlobalConfig.BindedFileExts.TakeTo lstTypes
+        GlobalConfig.AppRegistered = "0"
+    End If
+    Unload Me
+End Sub
+
 Private Sub Form_Load()
+        
+    If (GlobalConfig.AppRegistered = "0") Then
+        cmdFix_Click
+    End If
+    
     Me.ZOrder 0
     GlobalConfig.BindedFileExts.TakeTo Me.lstTypes
     'Load already associated ext form ini
+    
+    Me.cbExtName.ListIndex = 0
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
