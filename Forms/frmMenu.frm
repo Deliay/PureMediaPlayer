@@ -255,7 +255,7 @@ Private Sub mmHelp_Web_Click()
 End Sub
 
 Private Sub mmStatus_AssociationCurrent_Click()
-    frmSystemInfo.cbExtName.Text = Mid(mdlGlobalPlayer.File, InStrRev(mdlGlobalPlayer.File, ".") + 1)
+    frmSystemInfo.cbExtName.Text = Mid(mdlGlobalPlayer.File, InStrRev(mdlGlobalPlayer.File, "."))
     frmSystemInfo.Show
     
 End Sub
