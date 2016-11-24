@@ -193,7 +193,8 @@ Public Sub RenderMediaFile()
 
     GlobalRenderType = val(GlobalConfig.Renderer)
 
-    mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
+    'mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
+    mdlFilterProductor.BuildGraph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
     boolLoadedFile = True
 
     If (hasVideo = False And hasAudio_ = False) Then GoTo DcodeErr

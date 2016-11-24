@@ -251,12 +251,12 @@ Public Function RaiseRender(enumRenderType As RenderType) As IBaseFilter
 
 End Function
 
-Public Function BuildGraph(ByVal strMediaFile As String, _
+Public Sub BuildGraph(ByVal strMediaFile As String, _
                            ByRef objFilGraph As FilgraphManager, _
                            ByRef hasVideo As Boolean, _
                            ByRef hasAudio As Boolean, _
                            ByRef hasSubtitle As Boolean, _
-                           Optional ByRef Renderer As RenderType = MadVRednerer) As FilgraphManager
+                           Optional ByRef Renderer As RenderType = MadVRednerer)
     Set objGlobalFilManager = New FilgraphManager
     
     Dim objGraph       As IGraphBuilder
@@ -321,7 +321,7 @@ Public Function BuildGraph(ByVal strMediaFile As String, _
 
         Set objSubtitle = GetVSFilterInstance
         .AddFilter objSubtitle, "Subtitle"
-        objSrc.Run
+        .Render obj_OUT_SrcPin
     End With
     
-End Function
+End Sub
