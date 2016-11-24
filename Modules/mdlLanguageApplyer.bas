@@ -245,8 +245,8 @@ Public Function EnumLanguageFile()
         CreateLanguagePart frmMain
         CreateLanguagePart frmMenu
         CreateLanguagePart frmPaternAdd
-        CreateLanguagePart frmSystemInfo
-
+        CreateLanguagePart frmAssociation
+        
     End If
 
 End Function
@@ -254,8 +254,8 @@ End Function
 Public Sub SetLanguage(Index As Long)
 
     GlobalConfig.Language = GetFileNameByIndex(Index)
-
     LanguageIndex = Index
+    ReApplyLanguage
     mdlConfig.SaveConfig
 
 End Sub
@@ -263,5 +263,6 @@ End Sub
 Public Function ReApplyLanguage()
     ApplyLanguageToForm frmMain
     ApplyLanguageToForm frmMenu
-
+    ApplyLanguageToForm frmAssociation
+    ApplyLanguageToForm frmPaternAdd
 End Function

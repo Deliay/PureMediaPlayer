@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form frmSystemInfo 
+Begin VB.Form frmAssociation 
    AutoRedraw      =   -1  'True
    Caption         =   "App Register / File Associator"
    ClientHeight    =   5850
@@ -15,7 +15,7 @@ Begin VB.Form frmSystemInfo
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   Icon            =   "smdiSystemInfo.frx":0000
+   Icon            =   "frmAssociation.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    ScaleHeight     =   390
@@ -66,9 +66,9 @@ Begin VB.Form frmSystemInfo
          Strikethrough   =   0   'False
       EndProperty
       Height          =   330
-      ItemData        =   "smdiSystemInfo.frx":000C
+      ItemData        =   "frmAssociation.frx":000C
       Left            =   120
-      List            =   "smdiSystemInfo.frx":0022
+      List            =   "frmAssociation.frx":0022
       TabIndex        =   5
       Text            =   ".mp4"
       Top             =   480
@@ -161,7 +161,7 @@ Begin VB.Form frmSystemInfo
       Width           =   1035
    End
 End
-Attribute VB_Name = "frmSystemInfo"
+Attribute VB_Name = "frmAssociation"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True

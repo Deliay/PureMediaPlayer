@@ -258,8 +258,8 @@ End Sub
 
 Private Sub mmStatus_AssociationCurrent_Click()
 
-    If (mdlGlobalPlayer.File <> "") Then frmSystemInfo.cbExtName.Text = Mid(mdlGlobalPlayer.File, InStrRev(mdlGlobalPlayer.File, "."))
-    frmSystemInfo.Show
+    If (mdlGlobalPlayer.File <> "") Then frmAssociation.cbExtName.Text = Mid(mdlGlobalPlayer.File, InStrRev(mdlGlobalPlayer.File, "."))
+    frmAssociation.Show
     
 End Sub
 
@@ -357,7 +357,7 @@ Private Sub mmInfo_Software_Click()
 End Sub
 
 Private Sub mmInfo_System_Click()
-    frmSystemInfo.Show
+    frmAssociation.Show
     
 End Sub
 
