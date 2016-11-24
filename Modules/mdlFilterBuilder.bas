@@ -199,12 +199,14 @@ Public Sub Main()
     
     If (Len(Command) = 12 And Left$(Command, 12) = "--regdecodes") Then
         RegisterAllDecoder
+
         End
 
     End If
 
     If (Len(Command) = 8 And Left$(Command, 8) = "--regocx") Then
         RegisterCOM
+
         End
 
     End If
@@ -212,40 +214,45 @@ Public Sub Main()
     If (Len(Command) = 6 And Left$(Command, 6) = "--perm") Then
         RegisterAllDecoder
         RegisterCOM
+
         End
 
     End If
     
     If (Len(Command) > 11 And Left$(Command, 9) = "--bindext") Then
         BindExt Mid(Command, 11)
+
         End
         
     End If
 
     If (Len(Command) > 13 And Left$(Command, 11) = "--unbindext") Then
         UnBindExt Mid(Command, 13)
+
         End
         
     End If
     
     If (Len(Command) = 11 And Left$(Command, 11) = "--unbindall") Then
         UnBindAll
+
         End
         
     End If
 
     If (Len(Command) = 13 And Left$(Command, 13) = "--association") Then
         AssociationRegister
+
         End
         
     End If
 
     If (Len(Command) = 11 And Left$(Command, 11) = "--uninstall") Then
         Uninstall
+
         End
         
     End If
-
 
     If (Len(Command) = 9 And Left$(Command, 9) = "--restart") Then
         IsRestart = True
@@ -269,7 +276,9 @@ Public Sub Main()
         End If
         
         SendMessageW val(GlobalConfig.LastHwnd), PM_ACTIVE, 0&, 0&
+
         End
+
         Exit Sub
 
     End If
@@ -292,11 +301,14 @@ ReFill:
     If (LAVAudioIndex = -1 Or LAVVideoIndex = -1 Or LAVSplitterIndex = -1 Or VSFilterIndex = -1 Or LAVSplitterSourceIndex = -1 Or MadVRIndex = -1) Then
         ReqAdminPerm "--regdecodes"
         Shell App.Path & "\" & App.EXEName & ".exe --restart", vbNormalFocus
+
         End
+
     End If
     
     If (VMR9Index = -1 And EVRIndex = -1 And VMR7Index = -1) Then
         MsgBox mdlLanguageApplyer.StaticString(BAD_RENDERER_STATUS)
+
         End
 
     End If
@@ -304,6 +316,7 @@ ReFill:
     If (LAVAudioIndex = -1 Or LAVVideoIndex = -1 Or LAVSplitterIndex = -1 Or VSFilterIndex = -1 Or LAVSplitterSourceIndex = -1 Or MadVRIndex = -1) Then
     
         MsgBox mdlLanguageApplyer.StaticString(BAD_PERMISSION_TAKE)
+
         End
 
     End If
@@ -364,11 +377,14 @@ Placement:
     If (Not IsRestart And Not IsIDE) Then InitialCommandLine
     
     Exit Sub
+
 RegisterCOMErr:
     'do gui com register
     ReqAdminPerm "--regocx"
     Shell App.Path & "\" & App.EXEName & ".exe --restart", vbNormalFocus
+
     End
+
     Resume
 
 End Sub
@@ -411,16 +427,17 @@ Public Function ReqAdminPerm(Optional strAction As String = "--perm")
         .lpParameters = StrPtr(strAction)
         
     End With
+
     If (ShellExecuteEx(sLInfo) = 0) Then
         
         MsgBox mdlLanguageApplyer.StaticString(BAD_PERMISSION_DENY)
+
         End
 
     End If
     
     WaitForSingleObject sLInfo.hProcess, INFINITE
     Sleep 1000
-
     
 End Function
 
@@ -544,6 +561,7 @@ ParserPins:
 
                 If (LCase(objPinVSInput.Name) = "input") Then Exit For
             Next
+
             objSubtitlePin.Connect objPinVSInput
             objVideoPin.Render
         Else
@@ -555,6 +573,7 @@ ParserPins:
 
                 If (LCase$(objPinForceVSInput.Name) = "video") Then Exit For
             Next
+
             objVideoPin.Connect objPinForceVSInput
 
             Dim objRendererInput As IPinInfo
@@ -570,6 +589,7 @@ ParserPins:
 
                 If (LCase$(objVSFilterOutput.Name) = "output") Then Exit For
             Next
+
             objVSFilterOutput.Connect objRendererInput
 
         End If
@@ -580,9 +600,12 @@ ParserPins:
     End If
 
     Exit Sub
+
 notExist:
     Set GlobalFilGraph = Nothing
+
     Exit Sub
+
 regControl:
     mdlFilterBuilder.RegisterAllDecoder
 
@@ -625,9 +648,12 @@ Private Sub FillDecoder(m_GraphManager As FilgraphManager)
 
                 If (LCase$(objTestPin.Name) = "vmr input0") Then
                     VMR7Index = i - 1
+
                     Exit For
+
                 ElseIf (LCase$(objTestPin.Name) = "input") Then
                     VRIndex = i - 1
+
                     Exit For
 
                 End If
@@ -667,8 +693,11 @@ Public Function SetVSFilterFileName(FileName As String) As Boolean
     SetVSFilterFileName = vtblCall(ObjPtr(oDirectVobSub), VTbl_SetFileName, vbEmpty, StrPtr(FileName)) = S_OK
     
     If (GlobalConfig.SubtitleBind.Exist(mdlGlobalPlayer.FileMD5)) Then
+
         GlobalConfig.SubtitleBind.Value(mdlGlobalPlayer.FileMD5) = FileName
+
     Else
+
         GlobalConfig.SubtitleBind.AddKeyValue mdlGlobalPlayer.FileMD5, FileName
 
     End If

@@ -90,6 +90,7 @@ Public Function SaveToString() As String
 
             SaveToString = SaveToString & k.Key & "=" & k.Value & vbCrLf
         Next
+
     Else
 
         For Each k In colPairs
@@ -183,7 +184,9 @@ Public Function ReadFormString(ByVal strContent As String) As Boolean
                 colLists.Add dCurrentList, strName
                 dCurrentList.SetName strName
             ElseIf lngLines + 1 > UBound(astrLines) Then
+
                 Exit For
+
             ElseIf Len(Trim$(astrLines(lngLines + 1))) = 0 Then
                 GoTo NextLine
             Else

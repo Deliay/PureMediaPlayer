@@ -520,6 +520,7 @@ Public Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
         If (KeyCode = vbKeyRight) Then flag = 1
         If (flag <> 0) Then
             mdlGlobalPlayer.CurrentTime = mdlGlobalPlayer.CurrentTime + 5 * flag
+
             Exit Sub
 
         End If
@@ -528,6 +529,7 @@ Public Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
         If (KeyCode = vbKeyDown) Then flag = -1
         If (flag <> 0) Then
             mdlGlobalPlayer.Volume = mdlGlobalPlayer.Volume + flag
+
             Exit Sub
 
         End If
@@ -536,6 +538,7 @@ Public Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
         If (KeyCode = vbKeySubtract) Then flag = -1
         If (flag <> 0) Then
             mdlGlobalPlayer.Rate = mdlGlobalPlayer.Rate + flag * 10
+
             Exit Sub
 
         End If
@@ -551,7 +554,9 @@ Private Sub Form_Load()
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     UpdateStatus StaticString(FILE_STATUS_NOFILE), StatusBarEnum.FileName
+
     GlobalConfig.LastHwnd = CStr(Me.hWnd)
+
     mdlConfig.SaveConfig
     Me.Show
     frmPlayer.AutoRedraw = False
@@ -735,6 +740,7 @@ Private Sub tmrUpdateTime_Timer()
 
             'resize
             If (srcH <> Me.Height Or srcW <> Me.Width) Then
+
                 Form_Resize
                 srcH = Me.Height
                 srcW = Me.Width

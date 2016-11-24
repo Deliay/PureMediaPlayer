@@ -169,20 +169,29 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cmdAdd_Click()
+
     If (GlobalConfig.BindedFileExts.Exist(cbExtName.Text)) Then
         MsgBox mdlLanguageApplyer.StaticString(EXT_ALREADY_BIND)
+
         Exit Sub
         
     Else
-        Dim reg As New RegisterEditor
+
+        Dim reg         As New RegisterEditor
+
         Dim strOldValue As String
+
         strOldValue = reg.GetString(HKEY_CLASSES_ROOT, cbExtName.Text, "")
         
         If Not (strOldValue = "PureMediaPlayer") Then
+
             'storage old value
             GlobalConfig.OldBindExts.AddKeyValue cbExtName.Text, strOldValue
+
         End If
+
         GlobalConfig.BindedFileExts.AddItem cbExtName.Text
+
         ReqAdminPerm "--bindext " & cbExtName.Text
     End If
     
@@ -196,35 +205,48 @@ Private Sub cmdClose_Click()
 End Sub
 
 Private Sub cmdDelete_Click()
+
     If (lstTypes.Text = "") Then Exit Sub
     'revocer old setting
     ReqAdminPerm "--unbindext " & lstTypes.Text
+
     GlobalConfig.OldBindExts.Remove lstTypes.Text
+
     lstTypes.RemoveItem lstTypes.ListIndex
+
     GlobalConfig.BindedFileExts.TakeFrom lstTypes
+
     mdlConfig.SaveConfig
 End Sub
 
 Private Sub cmdFix_Click()
     ReqAdminPerm "--association"
+
     GlobalConfig.AppRegistered = "1"
+
     mdlConfig.SaveConfig
 End Sub
 
 Private Sub cmdRemoveAll_Click()
     lstTypes.Clear
     ReqAdminPerm "--unbindall"
+
     GlobalConfig.BindedFileExts.TakeTo lstTypes
     
 End Sub
 
 Private Sub cmdUninstall_Click()
+
     If (MsgBox(mdlLanguageApplyer.StaticString(TIPS_MAKSURE_UNINSTALL), vbYesNo, "Tips") = vbYes) Then
         lstTypes.Clear
         ReqAdminPerm "--uninstall"
+
         GlobalConfig.BindedFileExts.TakeTo lstTypes
+
         GlobalConfig.AppRegistered = "0"
+
     End If
+
     Unload Me
 End Sub
 
@@ -235,14 +257,18 @@ Private Sub Form_Load()
     End If
     
     Me.ZOrder 0
+
     GlobalConfig.BindedFileExts.TakeTo Me.lstTypes
+
     'Load already associated ext form ini
     
     Me.cbExtName.ListIndex = 0
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
+
     GlobalConfig.BindedFileExts.TakeFrom Me.lstTypes
+
     mdlConfig.SaveConfig
     'Save association status to current config file
 End Sub

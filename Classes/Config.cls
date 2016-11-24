@@ -11,31 +11,32 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+
 Option Explicit
 
-Public LastPlayPos  As DirectMap
+Public LastPlayPos    As DirectMap
 
-Public LastPlayList     As DirectList
+Public LastPlayList   As DirectList
 
-Public BindedFileExts   As DirectList
+Public BindedFileExts As DirectList
 
-Public OldBindExts      As DirectMap
+Public OldBindExts    As DirectMap
 
-Public FileDuration     As DirectMap
+Public FileDuration   As DirectMap
 
-Public SubtitleBind     As DirectMap
+Public SubtitleBind   As DirectMap
 
-Public Language         As String
+Public Language       As String
 
-Public Renderer         As String
+Public Renderer       As String
 
-Public LastHwnd         As String
+Public LastHwnd       As String
 
-Public LastOpenDir      As String
+Public LastOpenDir    As String
 
-Public LastSaveDir      As String
+Public LastSaveDir    As String
 
-Public AppRegistered    As String
+Public AppRegistered  As String
 
 Public Sub InitBind(binder As DirectINI)
 

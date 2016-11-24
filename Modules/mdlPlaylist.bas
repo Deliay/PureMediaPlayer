@@ -53,7 +53,9 @@ Public Function PlaylistPlayNext(Optional Prev As Boolean = False) As Boolean
 
     If (Prev = True) Then flag = -1
     PlaylistPlayNext = PlayByName(colPlayItems(GetItemIDByName(frmMain.nowPlaying.Text) + flag).FullPath)
+
 ResumePlay:
+
     mdlGlobalPlayer.CurrentTime = 0
     mdlGlobalPlayer.Play
 
@@ -67,6 +69,7 @@ Public Function GetItemIDByName(ByVal strName As String) As Long
         
         If (strName = colPlayItems(lngIter).Name) Then
             GetItemIDByName = lngIter
+
             Exit Function
             
         End If
@@ -80,6 +83,7 @@ Public Function SetItemLength(strFullPath As String, Length As String)
     If (GetItemByPath(strFullPath) Is Nothing) Then Exit Function
     GetItemByPath(strFullPath).Length = Length
     frmMain.lstPlaylist.ListItems(strFullPath).SubItems(1).Caption = Length
+
     GlobalConfig.FileDuration.Value(MD5String(strFullPath)) = Length
 
     If (strPlaylist <> "") Then SavePlaylist
@@ -114,6 +118,7 @@ notExist:
         'item.Length = (ifPOS.Duration \ 60) & ":" & (ifPOS.Duration Mod 60)
         
         If (Not GlobalConfig.LastPlayList.Exist(Item.FullPath)) Then
+
             GlobalConfig.LastPlayList.AddItem Item.FullPath
 
         End If
@@ -153,6 +158,7 @@ Public Function SavePlaylist()
         Print #1, varIter.FullPath
         Print #1, varIter.Length
     Next
+
     Close #1
     
 End Function
@@ -176,6 +182,7 @@ Public Function GetItemByPath(ByVal strPath As String) As PlayListItem
 
         If (playItem.FullPath = strPath) Then
             Set GetItemByPath = playItem
+
             Exit Function
 
         End If

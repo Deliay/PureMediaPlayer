@@ -202,8 +202,10 @@ Private Declare Function ShellExecute _
 Private Sub Language_Select_Click(Index As Integer)
 
     If (mdlLanguageApplyer.GetLanguageName = Language_Select(Index).Caption) Then
+
         'same item reclicked
         Exit Sub
+
     Else
         'else item click
 
@@ -255,6 +257,7 @@ Private Sub mmHelp_Web_Click()
 End Sub
 
 Private Sub mmStatus_AssociationCurrent_Click()
+
     If (mdlGlobalPlayer.File <> "") Then frmSystemInfo.cbExtName.Text = Mid(mdlGlobalPlayer.File, InStrRev(mdlGlobalPlayer.File, "."))
     frmSystemInfo.Show
     
@@ -265,6 +268,7 @@ Private Sub mmStatus_ClearPlayList_Click()
     frmMain.lstPlaylist.Columns.Clear
     frmMain.lstPlaylist.Refresh
     Set mdlPlaylist.colPlayItems = New Collection
+
     GlobalConfig.LastPlayList.Clear
 
 End Sub
@@ -387,6 +391,7 @@ Public Sub Renderers_Click(Index As Integer)
     frmMenu.Renderers(val(GlobalConfig.Renderer)).Checked = False
     
     GlobalConfig.Renderer = CStr(Index)
+
     mdlConfig.SaveConfig
     frmMenu.Renderers(Index).Checked = True
 

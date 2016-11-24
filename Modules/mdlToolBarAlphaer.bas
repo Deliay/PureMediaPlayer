@@ -179,6 +179,7 @@ Public Sub LoadUI()
         apPlayControl(i).hDC = frmMain.bbPlaystatus(i).hDC
         apPlayControl(i).LoadImageWH App.Path & "\Image\playcontrol_" & i & ".png", 32, 32
     Next
+
     frmMain.Show
     
     mdlLanguageApplyer.EnumLanguageFile

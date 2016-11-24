@@ -47,6 +47,7 @@ Public Function IsSupportDIPSet() As Boolean
 
         If (hAddress <> 0) Then
             IsSupportDIPSet = True
+
             Exit Function
 
         End If
@@ -94,6 +95,7 @@ End Sub
 Public Sub ExitProgram()
 
     If (mdlGlobalPlayer.Loaded) Then
+
         GlobalConfig.LastPlayPos.Value(mdlGlobalPlayer.FileMD5) = CStr(mdlGlobalPlayer.CurrentTime)
 
     End If
@@ -113,8 +115,10 @@ End Sub
 
 Public Sub AssociationRegister()
 
-    Dim reg As New RegisterEditor
+    Dim reg         As New RegisterEditor
+
     Dim strCurrPath As String
+
     strCurrPath = "Applications\PureMediaPlayer.exe"
     
     '1. perhap the Application Register
@@ -144,11 +148,13 @@ Public Sub AssociationRegister()
     reg.SetString HKEY_CLASSES_ROOT, strCurrPath, "", """" & App.Path & "\" & App.EXEName & ".exe"" " & """%1"""
     
     GlobalConfig.AppRegistered = "1"
+
     mdlConfig.SaveConfig
     
 End Sub
 
 Public Sub BindExt(ByVal strExt As String)
+
     Dim reg As New RegisterEditor
     
     If Not (reg.ItemExits(HKEY_CLASSES_ROOT, strExt)) Then
@@ -181,22 +187,27 @@ End Sub
 Public Sub UnBindAll()
 
     Dim i As Variant, k As String
+
     GlobalConfig.BindedFileExts.Remove 1
     
     For Each i In GlobalConfig.BindedFileExts
+
         k = i
         UnBindExt k
         
     Next
     
     GlobalConfig.BindedFileExts.Clear
+
 End Sub
 
 Public Sub UnBindExt(ByVal strExt As String)
 
     If (GlobalConfig.OldBindExts.Exist(strExt)) Then
+
         'exist a old value/setting
         Dim reg As New RegisterEditor
+
         reg.SetString HKEY_CLASSES_ROOT, strExt, "", GlobalConfig.OldBindExts(strExt)
         
     Else

@@ -32,6 +32,7 @@ Public Enum STATIC_STRING_ENUM
     EXT_BIND_SUCCESS
     
     TIPS_MAKSURE_UNINSTALL
+
 End Enum
 
 Const DEFAULT_PLAY_STATUS_PLAYING    As String = "Playing"
@@ -169,10 +170,12 @@ Public Sub CreateLanguagePart(frm As Form)
 End Sub
 
 Public Function StaticString(ctype As STATIC_STRING_ENUM)
+
     StaticString = InI.INI_GetString(GetLanguageFile, "StaticString", "String" & ctype)
 
     If (Len(StaticString) = 0) Then
         InI.INI_WriteString GetLanguageFile, "StaticString", "String" & ctype, DefaultStaticString(ctype)
+
         StaticString = DefaultStaticString(ctype)
     
     End If
@@ -249,7 +252,9 @@ Public Function EnumLanguageFile()
 End Function
 
 Public Sub SetLanguage(Index As Long)
+
     GlobalConfig.Language = GetFileNameByIndex(Index)
+
     LanguageIndex = Index
     mdlConfig.SaveConfig
 
