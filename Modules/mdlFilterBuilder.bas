@@ -456,13 +456,12 @@ Public Sub BuildGrph(ByVal srcFile As String, _
     'objGraphManager.AddSourceFilter srcFile, objSrcSplitterFilter
 
     'If (Not objSrcSplitterFilter Is Nothing And objSrcSplitterFilter.Pins.Count > 0) Then GoTo ParserPins
-
     objGraphManager.RegFilterCollection.Item LAVSplitterSourceIndex, objSrcSplitterReg
-
+    
     On Error GoTo regControl
 
     objSrcSplitterReg.Filter objSrcSplitterFilter
-
+    
     On Error GoTo notExist
 
     objSrcSplitterFilter.FileName = srcFile
