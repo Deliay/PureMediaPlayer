@@ -256,7 +256,7 @@ Public Sub Main()
 
     If (Len(Command) = 9 And Left$(Command, 9) = "--restart") Then
         IsRestart = True
-        GoTo FillDecoder
+        'GoTo FillDecoder
 
     End If
     
@@ -283,55 +283,7 @@ Public Sub Main()
 
     End If
 
-FillDecoder:
-    LAVVideoIndex = -1
-    LAVAudioIndex = -1
-    LAVSplitterIndex = -1
-    LAVSplitterSourceIndex = -1
-    VSFilterIndex = -1
-    VMR9Index = -1
-    EVRIndex = -1
-    MadVRIndex = -1
-
-    Dim lngRertyCount As Long
-
-ReFill:
-    FillDecoder mdlGlobalPlayer.GlobalFilGraph
-
-    If (LAVAudioIndex = -1 Or LAVVideoIndex = -1 Or LAVSplitterIndex = -1 Or VSFilterIndex = -1 Or LAVSplitterSourceIndex = -1 Or MadVRIndex = -1) Then
-        ReqAdminPerm "--regdecodes"
-        Shell App.Path & "\" & App.EXEName & ".exe --restart", vbNormalFocus
-
-        End
-
-    End If
-    
-    If (VMR9Index = -1 And EVRIndex = -1 And VMR7Index = -1) Then
-        MsgBox mdlLanguageApplyer.StaticString(BAD_RENDERER_STATUS)
-
-        End
-
-    End If
-    
-    If (LAVAudioIndex = -1 Or LAVVideoIndex = -1 Or LAVSplitterIndex = -1 Or VSFilterIndex = -1 Or LAVSplitterSourceIndex = -1 Or MadVRIndex = -1) Then
-    
-        MsgBox mdlLanguageApplyer.StaticString(BAD_PERMISSION_TAKE)
-
-        End
-
-    End If
-
     Load frmMenu
-
-    If (VMR9Index = -1) Then
-        frmMenu.Renderers(RenderType.VideoMixedRenderer9).Enabled = False
-
-    End If
-
-    If (EVRIndex = -1) Then
-        frmMenu.Renderers(RenderType.EnhancedVideoRenderer).Enabled = False
-
-    End If
 
     If (GlobalConfig.Renderer = "") Then
         frmMenu.Renderers_Click RenderType.MadVRednerer
@@ -340,13 +292,6 @@ ReFill:
 
     End If
 
-    'Create A Clean FilgraphManager
-    Set mdlGlobalPlayer.GlobalFilGraph = New FilgraphManager
-    
-    'But Issue:
-    'Don't Register COM DLL whitout error
-    'If (Not IsIDE) Then RegisterCOM
-    
     On Error GoTo RegisterCOMErr
 
     mdlToolBarAlphaer.LoadUI
@@ -606,7 +551,7 @@ notExist:
     Exit Sub
 
 regControl:
-    mdlFilterBuilder.RegisterAllDecoder
+    mdlFilterBuilder.RegisterCOM
 
 End Sub
 

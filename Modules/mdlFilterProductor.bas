@@ -51,7 +51,9 @@ Private Function getClassFactoryUUID() As olelib.UUID
 
     If (uuidIClassFactoryInited = False) Then
         '00000001-0000-0000-C000-000000000046
-        DEFINE_GUID uuidIClassFactory, &H1, &H0, &H0, &HC0, &H0, &H0, &H0, &H0, &H0, &H0, &H46
+        'DEFINE_GUID uuidIClassFactory, &H1, &H0, &H0, &HC0, &H0, &H0, &H0, &H0, &H0, &H0, &H46
+        CLSIDFromString "{00000001-0000-0000-C000-000000000046}", uuidIClassFactory
+        uuidIClassFactoryInited = True
     End If
 
     getClassFactoryUUID = uuidIClassFactory
@@ -62,7 +64,9 @@ Private Function getUnknownUUID() As olelib.UUID
 
     If (uuidIUnknownInited = False) Then
         '00000000-0000-0000-C000-000000000046
-        DEFINE_GUID uuidIUnknown, &H0, &H0, &H0, &HC0, &H0, &H0, &H0, &H0, &H0, &H0, &H46
+        'DEFINE_GUID uuidIUnknown, &H0, &H0, &H0, &HC0, &H0, &H0, &H0, &H0, &H0, &H0, &H46
+        CLSIDFromString "{00000000-0000-0000-C000-000000000046}", uuidIUnknown
+        uuidIUnknownInited = True
     End If
 
     getUnknownUUID = uuidIUnknown
@@ -79,7 +83,7 @@ Public Function DEFINE_GUID(ByRef ruuid As olelib.UUID, _
                             ByVal h As Byte, _
                             ByVal i As Byte, _
                             ByVal j As Byte, _
-                            ByVal k As Byte) As olelib.UUID
+                            ByVal k As Byte)
 
     With ruuid
         .Data1 = a
@@ -98,114 +102,152 @@ Public Function DEFINE_GUID(ByRef ruuid As olelib.UUID, _
 
 End Function
 
-Public Function GetLAVAudioInstance() As IBaseFilter
+Public Sub GetLAVAudioInstance(ByRef instance As IBaseFilter)
 
     Dim uuidSrc As olelib.UUID, objClassFactory As IClassFactory
 
     '{E8E73B6B-4CB3-44A4-BE99-4F7BCB96E491}
-    DEFINE_GUID uuidSrc, &HE8E73B6B, &H4CB3, &H44A4, &HBE, &H99, &H4F, &H7B, &HCB, &H96, &HE4, &H91
-    
+    'DEFINE_GUID uuidSrc, &HE8E73B6B, &H4CB3, &H44A4, &HBE, &H99, &H4F, &H7B, &HCB, &H96, &HE4, &H91
+    CLSIDFromString "{E8E73B6B-4CB3-44A4-BE99-4F7BCB96E491}", uuidSrc
+
     If (LAVAudioInstance(uuidSrc, getClassFactoryUUID, objClassFactory) = 0) Then
-        objClassFactory.CreateInstance Nothing, getUnknownUUID, GetLAVAudioInstance
+
+        Dim objUnknown As olelib.IUnknown
+
+        objClassFactory.CreateInstance Nothing, getUnknownUUID, objUnknown
+        Set instance = objUnknown
     End If
     
-End Function
+End Sub
 
-Public Function GetLAVVideoInstance() As IBaseFilter
+Public Sub GetLAVVideoInstance(ByRef instance As IBaseFilter)
 
     Dim uuidSrc As olelib.UUID, objClassFactory As IClassFactory
 
     'EE30215D-164F-4A92-A4EB-9D4C13390F9F
-    DEFINE_GUID uuidSrc, &HEE30215D, &H164F, &H4A92, &HA4, &HEB, &H9D, &H4C, &H13, &H39, &HF, &H9F
+    CLSIDFromString "{EE30215D-164F-4A92-A4EB-9D4C13390F9F}", uuidSrc
+    'DEFINE_GUID uuidSrc, &HEE30215D, &H164F, &H4A92, &HA4, &HEB, &H9D, &H4C, &H13, &H39, &HF, &H9F
     
     If (LAVVideoInstance(uuidSrc, getClassFactoryUUID, objClassFactory) = 0) Then
-        objClassFactory.CreateInstance Nothing, getUnknownUUID, GetLAVVideoInstance
+
+        Dim objUnknown As olelib.IUnknown
+
+        objClassFactory.CreateInstance Nothing, getUnknownUUID, objUnknown
+        Set instance = objUnknown
     End If
     
-End Function
+End Sub
 
-Public Function GetLAVSplitterInstance() As IBaseFilter
+Public Sub GetLAVSplitterInstance(ByRef instance As IBaseFilter)
 
     Dim uuidSrc As olelib.UUID, objClassFactory As IClassFactory
 
+    'B98D13E7-55DB-4385-A33D-09FD1BA26338
     '171252A0-8820-4AFE-9DF8-5C92B2D66B04
-    DEFINE_GUID uuidSrc, &H171252A0, &H8820, &HA4FE, &H9D, &HF8, &H5C, &H92, &HB2, &HD6, &H6B, &H4
-    
+    'DEFINE_GUID uuidSrc, &H171252A0, &H8820, &H4AFE, &H9D, &HF8, &H5C, &H92, &HB2, &HD6, &H6B, &H4
+    'DEFINE_GUID uuidSrc, &HB98D13E7, &H55DB, &H4385, &HA3, &H3D, &H9, &HFD, &H1B, &HA2, &H63, &H38
+    CLSIDFromString "{171252A0-8820-4AFE-9DF8-5C92B2D66B04}", uuidSrc
+
     If (LAVSplitterInstance(uuidSrc, getClassFactoryUUID, objClassFactory) = 0) Then
-        objClassFactory.CreateInstance Nothing, getUnknownUUID, GetLAVSplitterInstance
+
+        Dim objUnknown As olelib.IUnknown
+
+        objClassFactory.CreateInstance Nothing, getUnknownUUID, objUnknown
+        Set instance = objUnknown
     End If
     
-End Function
+End Sub
 
-Public Function GetVSFilterInstance() As IBaseFilter
+Public Sub GetVSFilterInstance(ByRef instance As IBaseFilter)
 
     Dim uuidSrc As olelib.UUID, objClassFactory As IClassFactory
 
     '93A22E7A-5091-45ef-BA61-6DA26156A5D0
-    DEFINE_GUID uuidSrc, &H93A22E7A, &H5091, &H45EF, &HBA, &H61, &H6D, &HA2, &H61, &H56, &HA5, &HD0
+    CLSIDFromString "{93A22E7A-5091-45ef-BA61-6DA26156A5D0}", uuidSrc
+    'DEFINE_GUID uuidSrc, &H93A22E7A, &H5091, &H45EF, &HBA, &H61, &H6D, &HA2, &H61, &H56, &HA5, &HD0
     
     If (VSFilterInstance(uuidSrc, getClassFactoryUUID, objClassFactory) = 0) Then
-        objClassFactory.CreateInstance Nothing, getUnknownUUID, GetVSFilterInstance
+
+        Dim objUnknown As olelib.IUnknown
+
+        objClassFactory.CreateInstance Nothing, getUnknownUUID, objUnknown
+        Set instance = objUnknown
     End If
     
-End Function
+End Sub
 
-Public Function GetMadVRInstance() As IBaseFilter
+Public Sub GetMadVRInstance(ByRef instance As IBaseFilter)
 
     Dim uuidSrc As olelib.UUID, objClassFactory As IClassFactory
 
     'e1a8b82a-32ce-4b0d-be0d-aa68c772e423
-    DEFINE_GUID uuidSrc, &HE1A8B82A, &H32CE, &H4B0D, &H4B, &HD, &HAA, &H68, &HC7, &H72, &HE4, &H23
+    CLSIDFromString "{e1a8b82a-32ce-4b0d-be0d-aa68c772e423}", uuidSrc
+    'DEFINE_GUID uuidSrc, &HE1A8B82A, &H32CE, &H4B0D, &H4B, &HD, &HAA, &H68, &HC7, &H72, &HE4, &H23
     
     If (MadVRInstance(uuidSrc, getClassFactoryUUID, objClassFactory) = 0) Then
-        objClassFactory.CreateInstance Nothing, getUnknownUUID, GetMadVRInstance
+
+        Dim objUnknown As olelib.IUnknown
+
+        objClassFactory.CreateInstance Nothing, getUnknownUUID, objUnknown
+        Set instance = objUnknown
     End If
     
-End Function
+End Sub
 
-Public Function GetVMR9Instance() As IBaseFilter
+Public Sub GetVMR9Instance(ByRef instance As IBaseFilter)
 
     ' &H51b4abf3, &H748f, &H4e3b, &Ha2, &H76, &Hc8, &H28, &H33, &H0e, &H92, &H6a
     Dim uuidSrc As olelib.UUID, objClassFactory As IClassFactory
-
-    'e1a8b82a-32ce-4b0d-be0d-aa68c772e423
-    DEFINE_GUID uuidSrc, &H51B4ABF3, &H748F, &H4E3B, &HA2, &H76, &HC8, &H28, &H33, &HE, &H92, &H6A
     
+    DEFINE_GUID uuidSrc, &H51B4ABF3, &H748F, &H4E3B, &HA2, &H76, &HC8, &H28, &H33, &HE, &H92, &H6A
+
     If (VRInstance(uuidSrc, getClassFactoryUUID, objClassFactory) = 0) Then
-        objClassFactory.CreateInstance Nothing, getUnknownUUID, GetVMR9Instance
+
+        Dim objUnknown As olelib.IUnknown
+
+        objClassFactory.CreateInstance Nothing, getUnknownUUID, objUnknown
+        Set instance = objUnknown
     End If
     
-End Function
+End Sub
 
-Public Function GetVMR7Instance() As IBaseFilter
+Public Sub GetVMR7Instance(ByRef instance As IBaseFilter)
 
     '&Hb87beb7b, &H8d29, &H423f, &Hae, &H4d, &H65, &H82, &Hc1, &H01, &H75, &Hac
     Dim uuidSrc As olelib.UUID, objClassFactory As IClassFactory
 
-    'e1a8b82a-32ce-4b0d-be0d-aa68c772e423
     DEFINE_GUID uuidSrc, &HB87BEB7B, &H8D29, &H423F, &HAE, &H4D, &H65, &H82, &HC1, &H1, &H75, &HAC
     
     If (VRInstance(uuidSrc, getClassFactoryUUID, objClassFactory) = 0) Then
-        objClassFactory.CreateInstance Nothing, getUnknownUUID, GetVMR7Instance
+
+        Dim objUnknown As olelib.IUnknown
+
+        objClassFactory.CreateInstance Nothing, getUnknownUUID, objUnknown
+        Set instance = objUnknown
     End If
 
-End Function
+End Sub
 
-Public Function GetVRInstance() As IBaseFilter
+Public Sub GetVRInstance(ByRef instance As IBaseFilter)
 
     '&H6bc1cffa, &H8fc1, &H4261, &Hac, &H22, &Hcf, &Hb4, &Hcc, &H38, &Hdb, &H50
     Dim uuidSrc As olelib.UUID, objClassFactory As IClassFactory
 
     'e1a8b82a-32ce-4b0d-be0d-aa68c772e423
-    DEFINE_GUID uuidSrc, &H6BC1CFFA, &H8FC1, &H4261, &HAC, &H22, &HCF, &HB4, &HCC, &H38, &HDB, &H50
-    
+    'DEFINE_GUID uuidSrc, &H6BC1CFFA, &H8FC1, &H4261, &HAC, &H22, &HCF, &HB4, &HCC, &H38, &HDB, &H50
+    CLSIDFromString "{e1a8b82a-32ce-4b0d-be0d-aa68c772e423}", uuidSrc
+
     If (VRInstance(uuidSrc, getClassFactoryUUID, objClassFactory) = 0) Then
-        objClassFactory.CreateInstance Nothing, getUnknownUUID, GetVRInstance
+
+        Dim objUnknown As olelib.IUnknown
+
+        objClassFactory.CreateInstance Nothing, getUnknownUUID, objUnknown
+        Set instance = objUnknown
     End If
 
-End Function
+End Sub
 
-Public Function GetEVRInstance() As IBaseFilter
+Public Sub GetEVRInstance(ByRef instance As IBaseFilter)
 
     '&Hfa10746c, &H9b63, &H4b6c, &Hbc, &H49, &Hfc, &H30, &H0e, &Ha5, &Hf2, &H56
     Dim uuidSrc As olelib.UUID, objClassFactory As IClassFactory
@@ -214,10 +256,14 @@ Public Function GetEVRInstance() As IBaseFilter
     DEFINE_GUID uuidSrc, &HFA10746C, &H9B63, &H4B6C, &HBC, &H49, &HFC, &H30, &HE, &HA5, &HF2, &H56
     
     If (VRInstance(uuidSrc, getClassFactoryUUID, objClassFactory) = 0) Then
-        objClassFactory.CreateInstance Nothing, getUnknownUUID, GetVRInstance
+
+        Dim objUnknown As olelib.IUnknown
+
+        objClassFactory.CreateInstance Nothing, getUnknownUUID, objUnknown
+        Set instance = objUnknown
     End If
 
-End Function
+End Sub
 
 Private Function GetIGraphBuilder(Optional objFilManager As FilgraphManager = Nothing) As IGraphBuilder
 
@@ -229,36 +275,35 @@ Private Function GetIGraphBuilder(Optional objFilManager As FilgraphManager = No
 
 End Function
 
-Public Function RaiseRender(enumRenderType As RenderType) As IBaseFilter
+Public Sub RaiseRender(enumRenderType As RenderType, ByRef instance As IBaseFilter)
 
     Select Case enumRenderType
     
         Case RenderType.MadVRednerer
-            Set RaiseRender = GetMadVRInstance
+            GetMadVRInstance instance
             
         Case RenderType.VideoMixedRenderer9
-            Set RaiseRender = GetVMR9Instance
+            GetVMR9Instance instance
         
         Case RenderType.VideoMixedRenderer
-            Set RaiseRender = GetVMR7Instance
+            GetVMR7Instance instance
             
         Case RenderType.EnhancedVideoRenderer
-            Set RaiseRender = GetEVRInstance
+            GetEVRInstance instance
             
         Case RenderType.VideoRenderer
-            Set RaiseRender = GetVRInstance
+            GetVRInstance instance
     End Select
 
-End Function
+End Sub
 
 Public Sub BuildGraph(ByVal strMediaFile As String, _
-                           ByRef objFilGraph As FilgraphManager, _
-                           ByRef hasVideo As Boolean, _
-                           ByRef hasAudio As Boolean, _
-                           ByRef hasSubtitle As Boolean, _
-                           Optional ByRef Renderer As RenderType = MadVRednerer)
-    Set objGlobalFilManager = New FilgraphManager
-    
+                      ByRef objFilGraph As FilgraphManager, _
+                      ByRef hasVideo As Boolean, _
+                      ByRef hasAudio As Boolean, _
+                      ByRef hasSubtitle As Boolean, _
+                      Optional ByRef Renderer As RenderType = MadVRednerer)
+
     Dim objGraph       As IGraphBuilder
 
     Dim objSplitter    As IBaseFilter, objAudio As IBaseFilter, objVideo As IBaseFilter, objSubtitle As IBaseFilter, objRender As IBaseFilter
@@ -267,61 +312,134 @@ Public Sub BuildGraph(ByVal strMediaFile As String, _
     
     Dim obj_OUT_SrcPin As IPin, obj_IN_Splitter As IPin, objSplitterEnums As IEnumPins
 
-    Dim obj_OUT_Splitter_Audio As IPin
+    Dim obj_OUT_Audio  As IPin, obj_OUT_Video As IPin, obj_OUT_Subtitle As IPin
     
-    Set objGraph = objGlobalFilManager
-    Set objSplitter = GetLAVSplitterInstance
+    Set objFilGraph = New FilgraphManager
+    Set objGraph = objFilGraph
+    
+    GetLAVSplitterInstance objSplitter
     
     With objGraph
-        .AddSourceFilter strMediaFile, "Source", objSrc
+
         .AddFilter objSplitter, "Splitter"
-    
+        .AddSourceFilter strMediaFile, "Source", objSrc
+
         objSrc.FindPin "Output", obj_OUT_SrcPin
         objSplitter.FindPin "Input", obj_IN_Splitter
-        obj_OUT_SrcPin.ConnectedTo obj_IN_Splitter
+        .Connect obj_OUT_SrcPin, obj_IN_Splitter
         
         objSplitter.EnumPins objSplitterEnums
-
+    
         Dim lngCount   As Long
-
+    
         Dim lngCurrent As Long
-
+    
         Dim objCurrPin As IPin
-
+    
+        Dim sPinInfo As [_PinInfo], sPinName As String
+    
         lngCurrent = 1
-        objSplitterEnums.Next lngCurrent, objCurrPin, lngCount
 
-        While (objSplitterEnums.Next(lngCurrent, objCurrPin, lngCount) <> 0)
-
-            Dim sPinInfo As [_PinInfo], sPinName As String
+        While (objSplitterEnums.Next(lngCurrent, objCurrPin, lngCount) = 0)
 
             objCurrPin.QueryPinInfo sPinInfo
             sPinName = AllocStr(sPinInfo.achName(0))
-
+    
             If (sPinName = "Video") Then
-                'Exist Video
-                
-                Set objVideo = GetLAVVideoInstance
-                Set objRender = RaiseRender(Renderer)
-                .AddFilter objVideo, "Video"
-                .AddFilter objRender, "Render"
+                Set obj_OUT_Video = objCurrPin
                 hasVideo = True
                 
             ElseIf (sPinName = "Audio") Then
-                Set objAudio = GetLAVAudioInstance
-                .AddFilter objAudio, "Audio"
+                Set obj_OUT_Audio = objCurrPin
                 hasAudio = True
                 
             ElseIf (sPinName = "Subtitle") Then
+                Set obj_OUT_Subtitle = objCurrPin
                 hasSubtitle = True
                 
             End If
             
         Wend
 
-        Set objSubtitle = GetVSFilterInstance
-        .AddFilter objSubtitle, "Subtitle"
-        .Render obj_OUT_SrcPin
+        Dim objAudioPinInput As IPin, objAudioPinOutput As IPin
+
+        Dim objVideoPinInput As IPin, objVideoPinOutput As IPin
+
+        Dim objSubPinInput   As IPin, objSubPinVideo As IPin, objSubPinOutput As IPin
+        
+        Dim objRenderPinInput As IPin
+
+        If (hasAudio) Then
+            GetLAVAudioInstance objAudio
+            .AddFilter objAudio, "Audio"
+            
+            objAudio.FindPin "Input", objAudioPinInput
+            objAudio.FindPin "Output", objAudioPinOutput
+            
+            .Connect obj_OUT_Audio, objAudioPinInput
+        End If
+
+        If (hasVideo) Then
+            GetLAVVideoInstance objVideo
+            RaiseRender Renderer, objRender
+            GetVSFilterInstance objSubtitle
+
+            .AddFilter objVideo, "Video"
+            .AddFilter objRender, "Render"
+            .AddFilter objSubtitle, "Subtitle"
+
+            objSubtitle.EnumPins objSplitterEnums
+            lngCurrent = 1
+
+            While (objSplitterEnums.Next(lngCurrent, objCurrPin, lngCount) = 0)
+
+                objCurrPin.QueryPinInfo sPinInfo
+                sPinName = AllocStr(sPinInfo.achName(0))
+
+                If (sPinName = "Video") Then
+                    Set objSubPinVideo = objCurrPin
+                ElseIf (sPinName = "Output") Then
+                    Set objSubPinOutput = objCurrPin
+                ElseIf (sPinName = "Input") Then
+                    Set objSubPinInput = objCurrPin
+                End If
+
+            Wend
+
+            If (hasSubtitle) Then
+                objSubtitle.FindPin "Input", objSubPinInput
+                .Connect obj_OUT_Subtitle, objSubPinInput
+            End If
+
+            objVideo.EnumPins objSplitterEnums
+            lngCurrent = 1
+
+            While (objSplitterEnums.Next(lngCurrent, objCurrPin, lngCount) = 0)
+
+                objCurrPin.QueryPinInfo sPinInfo
+                sPinName = AllocStr(sPinInfo.achName(0))
+
+                If (sPinName = "Input") Then
+                    Set objVideoPinInput = objCurrPin
+                ElseIf (sPinName = "Output") Then
+                    Set objVideoPinOutput = objCurrPin
+                End If
+
+            Wend
+
+            .Connect obj_OUT_Video, objVideoPinInput
+            .Connect objVideoPinOutput, objSubPinVideo
+            MsgBox "-7"
+            objRender.EnumPins objSplitterEnums
+            lngCurrent = 1
+            objSplitterEnums.Next lngCurrent, objRenderPinInput, lngCount
+            objRenderPinInput.QueryPinInfo sPinInfo
+            sPinName = AllocStr(sPinInfo.achName(0))
+            MsgBox sPinName
+            .Connect objSubPinOutput, objRenderPinInput
+        End If
+
+        
     End With
-    
+
 End Sub
