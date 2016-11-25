@@ -362,27 +362,27 @@ Private Sub mmInfo_System_Click()
 End Sub
 
 Private Sub Propertys_Audio_Click()
-    mdlFilterBuilder.ShowAudioDecoderConfig
+    mdlFilterProductor.ShowAudioDecoderConfig
 
 End Sub
 
 Private Sub Propertys_Renderer_Click()
-    mdlFilterBuilder.ShowRendererConfig
+    mdlFilterProductor.ShowRendererConfig
 
 End Sub
 
 Private Sub Propertys_Splitter_Click()
-    mdlFilterBuilder.ShowSpliterConfig
+    mdlFilterProductor.ShowSpliterConfig
 
 End Sub
 
 Private Sub Propertys_Subtitle_Click()
-    mdlFilterBuilder.ShowSubtitleConfig
+    mdlFilterProductor.ShowSubtitleConfig
 
 End Sub
 
 Private Sub Propertys_Video_Click()
-    mdlFilterBuilder.ShowVideoDecoderConfig
+    mdlFilterProductor.ShowVideoDecoderConfig
 
 End Sub
 

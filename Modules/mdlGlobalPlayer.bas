@@ -106,7 +106,7 @@ End Property
 
 Public Property Get Volume() As Long
 
-    If (ifVolume Is Nothing And Not mdlGlobalPlayer.HasAudio) Then Exit Property
+    If (ifVolume Is Nothing And Not mdlGlobalPlayer.hasAudio) Then Exit Property
     Volume = 100 + ifVolume.Volume / 100
     UpdateStatus StaticString(PLAYER_VIOCE_RATE) & ":" & Volume, PlayBack
 
@@ -159,21 +159,21 @@ Public Property Let File(v As String)
 
 End Property
 
-Public Property Get HasVideo() As Boolean
+Public Property Get hasVideo() As Boolean
     
-    HasVideo = hasVideo_
+    hasVideo = hasVideo_
     
 End Property
 
-Public Property Get HasAudio() As Boolean
+Public Property Get hasAudio() As Boolean
 
-    HasAudio = hasAudio_
+    hasAudio = hasAudio_
 
 End Property
 
-Public Property Get HasSubtitle() As Boolean
+Public Property Get hasSubtitle() As Boolean
 
-    HasSubtitle = hasSubtitle_
+    hasSubtitle = hasSubtitle_
 
 End Property
 
@@ -193,20 +193,21 @@ Public Sub RenderMediaFile()
 
     GlobalRenderType = val(GlobalConfig.Renderer)
 
-    mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
+    'mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
+    mdlFilterProductor.BuildGraph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
     boolLoadedFile = True
 
-    If (HasVideo = False And hasAudio_ = False) Then GoTo DcodeErr
+    If (hasVideo = False And hasAudio_ = False) Then GoTo DcodeErr
     UpdateTitle NameGet(File)
     Set ifPostion = GlobalFilGraph
 
     If (GlobalRenderType = EnhancedVideoRenderer) Then
         Set EVRHoster = New EVRRenderer
-        EVRHoster.CreateInterface mdlFilterBuilder.EVRFilterStorage
+        EVRHoster.CreateInterface mdlFilterProductor.EVRFilterStorage
 
     End If
 
-    If (HasVideo) Then
+    If (hasVideo) Then
         If (GlobalRenderType <> EnhancedVideoRenderer) Then
             Set ifVideo = GlobalFilGraph
             Set ifPlayback = GlobalFilGraph
@@ -234,7 +235,7 @@ Public Sub RenderMediaFile()
         
     End If
     
-    If (HasAudio) Then
+    If (hasAudio) Then
         Set ifVolume = GlobalFilGraph
 
     End If
@@ -273,7 +274,7 @@ hErr:
     Dim strFileMD5 As String
 
     If (GlobalConfig.SubtitleBind.Exist(mdlGlobalPlayer.FileMD5)) Then
-        mdlFilterBuilder.SetVSFilterFileName GlobalConfig.SubtitleBind(mdlGlobalPlayer.FileMD5)
+        mdlFilterProductor.SetVSFilterFileName GlobalConfig.SubtitleBind(mdlGlobalPlayer.FileMD5)
 
     End If
 
@@ -504,7 +505,7 @@ End Sub
 Public Sub SwitchFullScreen(Optional force As Boolean = False, _
                             Optional forceValue As Boolean = False)
 
-    If (Not HasVideo) Then Exit Sub
+    If (Not hasVideo) Then Exit Sub
     If (ifVideo Is Nothing) Then
         If (GlobalRenderType <> EnhancedVideoRenderer) Then
 
