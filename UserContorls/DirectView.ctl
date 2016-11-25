@@ -71,6 +71,10 @@ Public Event ListItemClick(ByVal Index As Long, ListItem As DirectViewItem)
 
 Public Event ListItemDblClick(ByVal Index As Long, ListItem As DirectViewItem)
 
+Public Function MouseWheelEvent(ByVal Direction As Boolean, ByVal Key As Integer)
+
+End Function
+
 Private Sub diList_onClick(Index As Integer)
     RaiseEvent ListItemClick(CLng(Index), diList(Index))
     Render

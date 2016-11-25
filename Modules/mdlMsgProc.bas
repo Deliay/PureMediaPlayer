@@ -45,6 +45,8 @@ Private Const WM_HOTKEY = &H312
 
 Private Const WM_CLOSE = &H10
 
+Private Const WM_MOUSEWHEEL = &H20A
+
 'wParam
 Public Const PM_ADDMEDIAFILE = &HFFF
 
@@ -104,6 +106,11 @@ Public Declare Sub CopyMemory _
                Alias "RtlMoveMemory" (hpvDest As Any, _
                                       hpvSource As Any, _
                                       ByVal cbCopy As Long)
+
+Public Declare Sub ShowWindow _
+               Lib "user32" (ByVal hWnd As Long, _
+                             ByVal nCmdShow As Long)
+               
 
 Public Const MAX_PATH = 260
 
@@ -273,15 +280,25 @@ Public Sub MessageProc(lMsg As Long, wParam As Long, lParam As Long)
         Case PM_ACTIVE
 
             Dim bPid As Long, nPid As Long
-
-            bPid = GetWindowThreadProcessId(GetForegroundWindow(), ByVal 0&)
+            frmMain.SetFocus
+            GetWindowThreadProcessId GetForegroundWindow(), bPid
             nPid = GetCurrentProcessId()
             AttachThreadInput bPid, nPid, True
             SetForegroundWindow frmMain.hWnd
             BringWindowToTop frmMain.hWnd
             AttachThreadInput bPid, nPid, False
-            frmMain.SetFocus
-
+            ShowWindow frmMain.hWnd, 4
+            
+        Case WM_MOUSEWHEEL
+            Dim wzDelta As Integer, wKeys As Integer
+            'wzDelta < 0 , Wheel down scroll
+            'wzDelta > 0 , Wheel up scroll
+            If (mdlToolBarAlphaer.boolPlaylistStatus) Then
+                wzDelta = (wParam And &HFFFF0000) \ &H10000
+                wKeys = (wParam And &HFFFF&)
+                frmMain.lstPlaylist.MouseWheelEvent wzDelta > 0, wKeys
+            End If
+            
     End Select
 
 End Sub
