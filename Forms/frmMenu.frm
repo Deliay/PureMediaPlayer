@@ -202,8 +202,10 @@ Private Declare Function ShellExecute _
 Private Sub Language_Select_Click(Index As Integer)
 
     If (mdlLanguageApplyer.GetLanguageName = Language_Select(Index).Caption) Then
+
         'same item reclicked
         Exit Sub
+
     Else
         'else item click
 
@@ -255,8 +257,9 @@ Private Sub mmHelp_Web_Click()
 End Sub
 
 Private Sub mmStatus_AssociationCurrent_Click()
-    frmSystemInfo.cbExtName.Text = Mid(mdlGlobalPlayer.File, InStrRev(mdlGlobalPlayer.File, ".") + 1)
-    frmSystemInfo.Show
+
+    If (mdlGlobalPlayer.File <> "") Then frmAssociation.cbExtName.Text = Mid(mdlGlobalPlayer.File, InStrRev(mdlGlobalPlayer.File, "."))
+    frmAssociation.Show
     
 End Sub
 
@@ -264,6 +267,7 @@ Private Sub mmStatus_ClearPlayList_Click()
     frmMain.lstPlaylist.Clear
     frmMain.lstPlaylist.Render
     Set mdlPlaylist.colPlayItems = New Collection
+
     GlobalConfig.LastPlayList.Clear
 
 End Sub
@@ -352,32 +356,32 @@ Private Sub mmInfo_Software_Click()
 End Sub
 
 Private Sub mmInfo_System_Click()
-    frmSystemInfo.Show
+    frmAssociation.Show
     
 End Sub
 
 Private Sub Propertys_Audio_Click()
-    mdlFilterBuilder.ShowAudioDecoderConfig
+    mdlFilterProductor.ShowAudioDecoderConfig
 
 End Sub
 
 Private Sub Propertys_Renderer_Click()
-    mdlFilterBuilder.ShowRendererConfig
+    mdlFilterProductor.ShowRendererConfig
 
 End Sub
 
 Private Sub Propertys_Splitter_Click()
-    mdlFilterBuilder.ShowSpliterConfig
+    mdlFilterProductor.ShowSpliterConfig
 
 End Sub
 
 Private Sub Propertys_Subtitle_Click()
-    mdlFilterBuilder.ShowSubtitleConfig
+    mdlFilterProductor.ShowSubtitleConfig
 
 End Sub
 
 Private Sub Propertys_Video_Click()
-    mdlFilterBuilder.ShowVideoDecoderConfig
+    mdlFilterProductor.ShowVideoDecoderConfig
 
 End Sub
 
@@ -386,6 +390,7 @@ Public Sub Renderers_Click(Index As Integer)
     frmMenu.Renderers(val(GlobalConfig.Renderer)).Checked = False
     
     GlobalConfig.Renderer = CStr(Index)
+
     mdlConfig.SaveConfig
     frmMenu.Renderers(Index).Checked = True
 

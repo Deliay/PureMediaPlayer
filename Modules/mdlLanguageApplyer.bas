@@ -20,6 +20,18 @@ Public Enum STATIC_STRING_ENUM
     PLAYER_VIOCE_RATE
 
     TIPS_ALREADY_RUN
+    TIPS_NOT_SUPPORT
+    TIPS_UNKNOW_ERR
+
+    EXT_ALREADY_BIND
+    
+    BAD_RENDERER_STATUS
+    BAD_PERMISSION_TAKE
+    BAD_PERMISSION_DENY
+    
+    EXT_BIND_SUCCESS
+    
+    TIPS_MAKSURE_UNINSTALL
 
 End Enum
 
@@ -158,10 +170,12 @@ Public Sub CreateLanguagePart(frm As Form)
 End Sub
 
 Public Function StaticString(ctype As STATIC_STRING_ENUM)
+
     StaticString = InI.INI_GetString(GetLanguageFile, "StaticString", "String" & ctype)
 
     If (Len(StaticString) = 0) Then
         InI.INI_WriteString GetLanguageFile, "StaticString", "String" & ctype, DefaultStaticString(ctype)
+
         StaticString = DefaultStaticString(ctype)
     
     End If
@@ -231,15 +245,17 @@ Public Function EnumLanguageFile()
         CreateLanguagePart frmMain
         CreateLanguagePart frmMenu
         CreateLanguagePart frmPaternAdd
-        CreateLanguagePart frmSystemInfo
-
+        CreateLanguagePart frmAssociation
+        
     End If
 
 End Function
 
 Public Sub SetLanguage(Index As Long)
+
     GlobalConfig.Language = GetFileNameByIndex(Index)
     LanguageIndex = Index
+    ReApplyLanguage
     mdlConfig.SaveConfig
 
 End Sub
@@ -247,5 +263,6 @@ End Sub
 Public Function ReApplyLanguage()
     ApplyLanguageToForm frmMain
     ApplyLanguageToForm frmMenu
-
+    ApplyLanguageToForm frmAssociation
+    ApplyLanguageToForm frmPaternAdd
 End Function

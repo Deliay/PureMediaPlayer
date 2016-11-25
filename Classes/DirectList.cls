@@ -69,6 +69,7 @@ Public Function TakeTo(List As Control)
         List.AddItem i
     Next
 
+    List.RemoveItem 0
 End Function
 
 Public Function Exist(Item As String) As Boolean
@@ -79,6 +80,7 @@ Public Function Exist(Item As String) As Boolean
 
         If (i = Item) Then
             Exist = True
+
             Exit Function
 
         End If
@@ -97,6 +99,8 @@ Public Function TakeFrom(List As Control)
 
     Set colList = New Collection
     lngCount = List.ListCount - 1
+
+    colList.Add "@"
 
     For lngIter = 0 To lngCount
         colList.Add List.List(lngIter)

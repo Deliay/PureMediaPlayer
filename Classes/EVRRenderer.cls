@@ -42,6 +42,7 @@ Public Sub CreateInterface(baseFilter As olelib.IUnknown)
     Set ifServices = baseFilter
     
     Set ifPlayback = ifServices.GetService(uuidMVR, uuidVideoDisplayCtrl)
+
     ifPlayback.SetAspectRatioMode 0
     ifPlayback.SetBorderColor 0
 
@@ -53,6 +54,7 @@ Public Function GetInterface() As IMFVideoDisplayControl
 End Function
 
 Public Function SetPlayBackWindow(hWnd As Long)
+
     ifPlayback.SetVideoWindow hWnd
     ifPlayback.SetBorderColor vbBlack
 

@@ -171,6 +171,7 @@ Public Function GetString(hKey As RegRootEnum, strPath As String, strValue As St
     If iRet <> ERROR_SUCCESS Then
         RegKeyRead = vbNullString
         ReturnStr = vbNullString
+
         Exit Function
 
     End If
@@ -388,14 +389,21 @@ Public Function DelKey(hKey As RegRootEnum, Key As String) As Boolean
     
     Idx = 0
     Name = String(256, Chr(0))
+
     Do
         Ret = RegEnumKey(sKey, Idx, Name, Len(Name))
 
+        If InStr(1, Name, Chr(0)) > 0 Then Name = Left$(Name, InStr(1, Name, Chr(0)) - 1)
+        If (Name = "") Then Exit Do
+        DelKey hKey, Key & "\" & Name
+
         If Ret = 0 Then
+            
             DeleteValue hKey, Key, Name
 
         End If
 
+        Name = String(256, Chr(0))
     Loop Until Ret <> 0
     
     If RegDeleteKey(hKey, Key) <> ERROR_SUCCESS Then

@@ -11,27 +11,32 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+
 Option Explicit
 
-Public LastPlayPos  As DirectMap
+Public LastPlayPos    As DirectMap
 
-Public LastPlayList As DirectList
+Public LastPlayList   As DirectList
 
 Public BindedFileExts As DirectList
 
-Public FileDuration As DirectMap
+Public OldBindExts    As DirectMap
 
-Public SubtitleBind As DirectMap
+Public FileDuration   As DirectMap
 
-Public Language     As String
+Public SubtitleBind   As DirectMap
 
-Public Renderer     As String
+Public Language       As String
 
-Public LastHwnd     As String
+Public Renderer       As String
 
-Public LastOpenDir  As String
+Public LastHwnd       As String
 
-Public LastSaveDir  As String
+Public LastOpenDir    As String
+
+Public LastSaveDir    As String
+
+Public AppRegistered  As String
 
 Public Sub InitBind(binder As DirectINI)
 
@@ -41,6 +46,7 @@ Public Sub InitBind(binder As DirectINI)
         .CreateMap "LastPlayPos"
         .CreateMap "FileDuration"
         .CreateMap "SubtitleBind"
+        .CreateMap "OldBindExts"
         .CreateList "LastPlayList"
         .CreateList "BindedFileExts"
         .CreatePair "Language", "chinese.ini"
@@ -48,7 +54,7 @@ Public Sub InitBind(binder As DirectINI)
         .CreatePair "LastHwnd", "0"
         .CreatePair "LastOpenDir", "."
         .CreatePair "LastSaveDir", "."
-
+        .CreatePair "AppRegistered", "0"
     End With
 
     On Error GoTo 0

@@ -252,6 +252,7 @@ Public Property Get Row(Y) As Long()
     For i = 0 To UBound(laRow)
         laRow(i) = GetPixel(phDC, i + 1, Y)
     Next
+
     Row = laRow
     Erase laRow
 
@@ -269,6 +270,7 @@ Public Property Get lin(X) As Long()
     For i = 0 To UBound(laLin)
         laLin(i) = GetPixel(phDC, X, i + 1)
     Next
+
     lin = laLin
     Erase laLin
 

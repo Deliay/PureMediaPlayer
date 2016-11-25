@@ -92,6 +92,7 @@ Public Property Get FileMD5() As String
 End Property
 
 Public Property Get GlobalPlayStatus() As PlayStatus
+
     GlobalFilGraph.GetState 500, GlobalPlayStatus
 
 End Property
@@ -105,7 +106,7 @@ End Property
 
 Public Property Get Volume() As Long
 
-    If (ifVolume Is Nothing And Not mdlGlobalPlayer.HasAudio) Then Exit Property
+    If (ifVolume Is Nothing And Not mdlGlobalPlayer.hasAudio) Then Exit Property
     Volume = 100 + ifVolume.Volume / 100
     UpdateStatus StaticString(PLAYER_VIOCE_RATE) & ":" & Volume, PlayBack
 
@@ -158,21 +159,21 @@ Public Property Let File(v As String)
 
 End Property
 
-Public Property Get HasVideo() As Boolean
+Public Property Get hasVideo() As Boolean
     
-    HasVideo = hasVideo_
+    hasVideo = hasVideo_
     
 End Property
 
-Public Property Get HasAudio() As Boolean
+Public Property Get hasAudio() As Boolean
 
-    HasAudio = hasAudio_
+    hasAudio = hasAudio_
 
 End Property
 
-Public Property Get HasSubtitle() As Boolean
+Public Property Get hasSubtitle() As Boolean
 
-    HasSubtitle = hasSubtitle_
+    hasSubtitle = hasSubtitle_
 
 End Property
 
@@ -189,24 +190,28 @@ Public Sub RenderMediaFile()
     UpdateStatus NameGet(strFilePath), FileName
     
     hasVideo_ = False: hasAudio_ = False: hasSubtitle_ = False
+
     GlobalRenderType = val(GlobalConfig.Renderer)
-    mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
+
+    'mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
+    mdlFilterProductor.BuildGraph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
     boolLoadedFile = True
 
-    If (HasVideo = False And hasAudio_ = False) Then GoTo DcodeErr
+    If (hasVideo = False And hasAudio_ = False) Then GoTo DcodeErr
     UpdateTitle NameGet(File)
     Set ifPostion = GlobalFilGraph
 
     If (GlobalRenderType = EnhancedVideoRenderer) Then
         Set EVRHoster = New EVRRenderer
-        EVRHoster.CreateInterface mdlFilterBuilder.EVRFilterStorage
+        EVRHoster.CreateInterface mdlFilterProductor.EVRFilterStorage
 
     End If
 
-    If (HasVideo) Then
+    If (hasVideo) Then
         If (GlobalRenderType <> EnhancedVideoRenderer) Then
             Set ifVideo = GlobalFilGraph
             Set ifPlayback = GlobalFilGraph
+
             'ifPlayback.Caption = "PureMediaPlayer - LayerWindow"
             ifPlayback.Owner = frmMain.frmPlayer.hWnd
             ifPlayback.MessageDrain = frmMain.frmPlayer.hWnd
@@ -217,8 +222,10 @@ Public Sub RenderMediaFile()
             lngSrcStyle = lngSrcStyle And Not WS_BORDER
             lngSrcStyle = lngSrcStyle And Not WS_CAPTION
             lngSrcStyle = lngSrcStyle And Not WS_SIZEBOX
+
             ifPlayback.WindowStyle = lngSrcStyle
             mdlGlobalPlayer.ResizePlayWindow
+
             ifPlayback.HideCursor False
         Else
             EVRHoster.SetPlayBackWindow frmMain.frmPlayer.hWnd
@@ -228,7 +235,7 @@ Public Sub RenderMediaFile()
         
     End If
     
-    If (HasAudio) Then
+    If (hasAudio) Then
         Set ifVolume = GlobalFilGraph
 
     End If
@@ -260,27 +267,31 @@ hErr:
     SeekCurrentPos
     mdlGlobalPlayer.Play
     PlayPauseSwitch
+
     DoEvents
     mdlGlobalPlayer.ResizePlayWindow
 
     Dim strFileMD5 As String
 
     If (GlobalConfig.SubtitleBind.Exist(mdlGlobalPlayer.FileMD5)) Then
-        mdlFilterBuilder.SetVSFilterFileName GlobalConfig.SubtitleBind(mdlGlobalPlayer.FileMD5)
+        mdlFilterProductor.SetVSFilterFileName GlobalConfig.SubtitleBind(mdlGlobalPlayer.FileMD5)
 
     End If
 
     mdlToolBarAlphaer.SwitchUI True, False
     mdlToolBarAlphaer.SwitchUI True, True
-    
     If (mdlToolBarAlphaer.boolPlaylistStatus) Then mdlToolBarAlphaer.PlaylistShow
-    Exit Sub
-DcodeErr:
-    MsgBox "Not Support this codes type yet!"
-    mdlPlaylist.SetItemLength File, mdlLanguageApplyer.StaticString(FILE_NOT_SUPPORT)
+
     Exit Sub
 
-    MsgBox "Unknow Err"
+DcodeErr:
+    MsgBox mdlLanguageApplyer.StaticString(TIPS_NOT_SUPPORT)
+    mdlPlaylist.SetItemLength File, mdlLanguageApplyer.StaticString(FILE_NOT_SUPPORT)
+
+    Exit Sub
+
+    MsgBox mdlLanguageApplyer.StaticString(TIPS_UNKNOW_ERR)
+
     Exit Sub
     
 End Sub
@@ -295,6 +306,7 @@ End Property
 Public Property Get FormatedCurrentTime() As String
 
     If ifPostion Is Nothing Then Exit Property
+
     FormatedCurrentTime = (CurrentTime \ 60) & ":" & (CurrentTime Mod 60)
 
 End Property
@@ -314,6 +326,7 @@ Public Property Get Duration() As Double
 End Property
 
 Public Property Get FormatedDuration() As String
+
     FormatedDuration = (Duration \ 60) & ":" & (Duration Mod 60)
 
 End Property
@@ -340,6 +353,7 @@ Public Sub Play()
     UpdateStatus StaticString(PLAY_STATUS_PLAYING), PlayBack
     
 hErr:
+
     GlobalFilGraph.Run
     
     frmMain.tmrUpdateTime.Enabled = True
@@ -353,7 +367,9 @@ End Sub
 Public Sub Pause()
     
     If (mdlGlobalPlayer.Loaded = False) Then Exit Sub
+
     GlobalFilGraph.Pause
+
     UpdateStatus StaticString(PLAY_STATUS_PAUSED), PlayBack
     
     SaveCurrentPos
@@ -366,6 +382,7 @@ Public Sub StopPlay()
     UpdateStatus StaticString(PLAY_STATUS_STOPED), PlayBack
     
     If Not GlobalFilGraph Is Nothing And Len(File) <> 0 Then
+
         GlobalFilGraph.Stop
 
     End If
@@ -403,6 +420,7 @@ Public Sub ResizePlayWindow()
     
     If (ifVideo Is Nothing) Then
         If (GlobalRenderType <> EnhancedVideoRenderer) Then
+
             Exit Sub
 
         End If
@@ -420,6 +438,7 @@ Public Sub ResizePlayWindow()
     If (GlobalRenderType = EnhancedVideoRenderer) Then
         EVRHoster.GetVideoSize commonW, commonH
     Else
+
         ifVideo.GetVideoSize commonW, commonH
 
     End If
@@ -440,6 +459,7 @@ Public Sub ResizePlayWindow()
     If (GlobalRenderType = EnhancedVideoRenderer) Then
         EVRHoster.SetVideoSize resultL, resultT, resultW, resultH
     Else
+
         ifPlayback.SetWindowPosition resultL, resultT, resultW, resultH
         
     End If
@@ -484,9 +504,10 @@ End Sub
 Public Sub SwitchFullScreen(Optional force As Boolean = False, _
                             Optional forceValue As Boolean = False)
 
-    If (Not HasVideo) Then Exit Sub
+    If (Not hasVideo) Then Exit Sub
     If (ifVideo Is Nothing) Then
         If (GlobalRenderType <> EnhancedVideoRenderer) Then
+
             Exit Sub
 
         End If
@@ -496,6 +517,7 @@ Public Sub SwitchFullScreen(Optional force As Boolean = False, _
     If force = True Then
         boolIsFullScreen = forceValue
         ResizeFullScreen
+
         Exit Sub
 
     End If
@@ -551,6 +573,7 @@ End Sub
 Public Sub SaveCurrentPos()
 
     If (mdlGlobalPlayer.Loaded) Then
+
         GlobalConfig.LastPlayPos.Value(mdlGlobalPlayer.FileMD5) = CStr(mdlGlobalPlayer.CurrentTime)
 
     End If

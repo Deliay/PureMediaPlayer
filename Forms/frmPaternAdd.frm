@@ -138,6 +138,7 @@ Public Sub cmdAddToList_Click()
         AddFileToPlaylist varIter
         
     Next
+
     Unload Me
     
 End Sub
@@ -174,7 +175,9 @@ Private Sub cmdTestParten_Click()
             lstTestView.AddItem strFile
             filesCol.Add DirGet(File) & "\" & strFile
             strFile = Dir
+
         Wend
+
     Else
         rx.MultiLine = False
         rx.IgnoreCase = True
@@ -197,8 +200,11 @@ Private Sub cmdTestParten_Click()
             End If
             
             strFile = Dir()
+
         Wend
+
         Exit Sub
+
 ErrExp:
         txtRegExp.Text = "Error Regular Expression!"
         
