@@ -511,6 +511,29 @@ Public Function SetVSFilterFileName(FileName As String) As Boolean
 
 End Function
 
+Public Function GetVSFilterLangCount() As Long
+    Const IID_IDirectVobSub = "{EBE1FB08-3957-47ca-AF13-5827E5442E56}", VTbl_get_LanguageCount = 5
+
+    Dim oDirectVobSub As stdole.IUnknown
+
+    Set oDirectVobSub = CastToUnkByIID(objSubtitle, IID_IDirectVobSub)
+    vtblCall ObjPtr(oDirectVobSub), VTbl_get_LanguageCount, vbEmpty, VarPtr(GetVSFilterLangCount)
+
+End Function
+
+Public Function GetVSFilterLangName(ByVal iLanguage As Long) As String
+    Const IID_IDirectVobSub = "{EBE1FB08-3957-47ca-AF13-5827E5442E56}", VTbl_get_LanguageName = 6
+
+    Dim oDirectVobSub As stdole.IUnknown
+
+    Set oDirectVobSub = CastToUnkByIID(objSubtitle, IID_IDirectVobSub)
+    
+    Dim stringbuf As String
+    stringbuf = Space(256)
+    vtblCall ObjPtr(oDirectVobSub), VTbl_get_LanguageName, vbEmpty, iLanguage, StrPtr(stringbuf)
+    GetVSFilterLangName = stringbuf
+End Function
+
 Private Function CheckForFileSinkAndSetFileName(ByVal Flt As olelib.IUnknown, _
                                                 FileName As String) As Boolean
 

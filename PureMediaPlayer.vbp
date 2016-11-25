@@ -10,6 +10,7 @@ Reference=*\G{8B5287A0-EB99-4C93-B625-375F65015AEB}#1.0#0#Library\EVRImport2.tlb
 Reference=*\G{00000000-0000-0000-0000-000000000000}#1.1#0#Library\D3D9Import.tlb#Dircet 3D 9.0 ¿‡–Õø‚£®≤‚ ‘∞Ê£©
 Reference=*\G{71A2702D-C7D8-11D2-BEF8-525400DFB47A}#1.0#0#Library\SSubTmr6.dll#vbAccelerator VB6 Subclassing and Timer Assistant (with configurable message response, multi-control support + timer bug fix)
 Reference=*\G{000204EF-0000-0000-C000-000000000047}#6.0#0#Library\msvbvm60.tlb#Visual Basic For Applications Extends
+Reference=*\G{00000000-0000-0000-0000-000000000001}#1.0#0#Library\MSVidCtl.tlb#MS Video Control 1.0 TLB VB6 Port
 Object={E910F8E1-8996-4EE9-90F1-3E7C64FA9829}#1.1#0; Library\vbaListView6.ocx
 Form=Forms\pmdiMain.frm
 Module=mdlGlobalPlayer; Modules\mdlGlobalPlayer.bas
