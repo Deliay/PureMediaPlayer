@@ -128,7 +128,7 @@ Public Sub ReadDrapQueryFile(ByVal hDrop As Long)
 
             Case "idx", "sub", "srt", "ssa", "smi", "ssa", "ass", "sup"
 
-                If (mdlGlobalPlayer.GlobalPlayStatus = Running) Then mdlFilterBuilder.SetVSFilterFileName sbuf
+                If (mdlGlobalPlayer.GlobalPlayStatus = Running) Then mdlFilterProductor.SetVSFilterFileName sbuf
 
                 Exit Sub
             
@@ -226,7 +226,7 @@ Public Sub MessageProc(lMsg As Long, wParam As Long, lParam As Long)
 
                     Case "idx", "sub", "srt", "ssa", "smi", "ssa", "ass", "sup"
 
-                        If (mdlGlobalPlayer.GlobalPlayStatus = Running) Then mdlFilterBuilder.SetVSFilterFileName sFileName
+                        If (mdlGlobalPlayer.GlobalPlayStatus = Running) Then mdlFilterProductor.SetVSFilterFileName sFileName
 
                         Exit Sub
                     

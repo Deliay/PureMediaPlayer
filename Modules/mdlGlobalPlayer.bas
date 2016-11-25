@@ -203,7 +203,7 @@ Public Sub RenderMediaFile()
 
     If (GlobalRenderType = EnhancedVideoRenderer) Then
         Set EVRHoster = New EVRRenderer
-        EVRHoster.CreateInterface mdlFilterBuilder.EVRFilterStorage
+        EVRHoster.CreateInterface mdlFilterProductor.EVRFilterStorage
 
     End If
 
@@ -274,7 +274,7 @@ hErr:
     Dim strFileMD5 As String
 
     If (GlobalConfig.SubtitleBind.Exist(mdlGlobalPlayer.FileMD5)) Then
-        mdlFilterBuilder.SetVSFilterFileName GlobalConfig.SubtitleBind(mdlGlobalPlayer.FileMD5)
+        mdlFilterProductor.SetVSFilterFileName GlobalConfig.SubtitleBind(mdlGlobalPlayer.FileMD5)
 
     End If
 

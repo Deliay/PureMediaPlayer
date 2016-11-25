@@ -47,6 +47,37 @@ Private uuidIUnknownInited      As Boolean
 
 Private objGlobalFilManager     As FilgraphManager
 
+Private objSplitter             As IBaseFilter, objAudio As IBaseFilter, objVideo As IBaseFilter, objSubtitle As IBaseFilter, objRender As IBaseFilter
+
+Public EVRFilterStorage   As IBaseFilter
+
+Private Declare Function DispCallFunc& _
+                Lib "oleaut32" (ByVal ppv&, _
+                                ByVal oVft&, _
+                                ByVal CC As Long, _
+                                ByVal rtTYP%, _
+                                ByVal paCount&, _
+                                paTypes%, _
+                                paValues&, _
+                                fuReturn)
+
+Private Declare Function OleCreatePropertyFrame& _
+                Lib "oleaut32" (ByVal hwndOwner&, _
+                                ByVal X&, _
+                                ByVal Y&, _
+                                ByVal lpszCaption&, _
+                                ByVal cObjects&, _
+                                ByRef ppUnk&, _
+                                ByVal cPages&, _
+                                ByVal pPageClsID&, _
+                                ByVal lcid&, _
+                                ByVal dwReserved&, _
+                                ByVal pvReserved&)
+
+Private Const CLSID_ActiveMovieCategories = "{DA4E3DA0-D07D-11d0-BD50-00A0C911CE86}"
+
+Private Const CLSID_VideoInputDeviceCategory = "{860BB310-5D01-11d0-BD3B-00A0C911CE86}"
+
 Private Function getClassFactoryUUID() As olelib.UUID
 
     If (uuidIClassFactoryInited = False) Then
@@ -72,7 +103,7 @@ Private Function getUnknownUUID() As olelib.UUID
     getUnknownUUID = uuidIUnknown
 End Function
 
-Public Function DEFINE_GUID(ByRef ruuid As olelib.UUID, _
+Private Function DEFINE_GUID(ByRef ruuid As olelib.UUID, _
                             ByVal a As Long, _
                             ByVal b As Integer, _
                             ByVal c As Integer, _
@@ -306,8 +337,6 @@ Public Sub BuildGraph(ByVal strMediaFile As String, _
 
     Dim objGraph       As IGraphBuilder
 
-    Dim objSplitter    As IBaseFilter, objAudio As IBaseFilter, objVideo As IBaseFilter, objSubtitle As IBaseFilter, objRender As IBaseFilter
-
     Dim objSrc         As IBaseFilter
     
     Dim obj_OUT_SrcPin As IPin, obj_IN_Splitter As IPin, objSplitterEnums As IEnumPins
@@ -373,10 +402,24 @@ Public Sub BuildGraph(ByVal strMediaFile As String, _
             GetLAVAudioInstance objAudio
             .AddFilter objAudio, "Audio"
             
-            objAudio.FindPin "Input", objAudioPinInput
-            objAudio.FindPin "Output", objAudioPinOutput
+            objAudio.EnumPins objSplitterEnums
+            lngCurrent = 1
+
+            While (objSplitterEnums.Next(lngCurrent, objCurrPin, lngCount) = 0)
+
+                objCurrPin.QueryPinInfo sPinInfo
+                sPinName = AllocStr(sPinInfo.achName(0))
+
+                If (sPinName = "Output") Then
+                    Set objAudioPinOutput = objCurrPin
+                ElseIf (sPinName = "Input") Then
+                    Set objAudioPinInput = objCurrPin
+                End If
+
+            Wend
             
             .Connect obj_OUT_Audio, objAudioPinInput
+            .Render objAudioPinOutput
         End If
 
         If (hasVideo) Then
@@ -407,7 +450,6 @@ Public Sub BuildGraph(ByVal strMediaFile As String, _
             Wend
 
             If (hasSubtitle) Then
-                objSubtitle.FindPin "Input", objSubPinInput
                 .Connect obj_OUT_Subtitle, objSubPinInput
             End If
 
@@ -429,13 +471,11 @@ Public Sub BuildGraph(ByVal strMediaFile As String, _
 
             .Connect obj_OUT_Video, objVideoPinInput
             .Connect objVideoPinOutput, objSubPinVideo
-            MsgBox "-7"
             objRender.EnumPins objSplitterEnums
             lngCurrent = 1
             objSplitterEnums.Next lngCurrent, objRenderPinInput, lngCount
             objRenderPinInput.QueryPinInfo sPinInfo
             sPinName = AllocStr(sPinInfo.achName(0))
-            MsgBox sPinName
             .Connect objSubPinOutput, objRenderPinInput
         End If
 
@@ -443,3 +483,154 @@ Public Sub BuildGraph(ByVal strMediaFile As String, _
     End With
 
 End Sub
+
+
+Private Function CastToIUnknow(ByVal Flt As olelib.IUnknown) As olelib.IUnknown
+    Set CastToIUnknow = Flt
+
+End Function
+
+Public Function SetVSFilterFileName(FileName As String) As Boolean
+
+    Const IID_IDirectVobSub = "{EBE1FB08-3957-47ca-AF13-5827E5442E56}", VTbl_SetFileName = 4
+
+    Dim oDirectVobSub As stdole.IUnknown
+
+    Set oDirectVobSub = CastToUnkByIID(objSubtitle, IID_IDirectVobSub)
+    SetVSFilterFileName = vtblCall(ObjPtr(oDirectVobSub), VTbl_SetFileName, vbEmpty, StrPtr(FileName)) = S_OK
+    
+    If (GlobalConfig.SubtitleBind.Exist(mdlGlobalPlayer.FileMD5)) Then
+
+        GlobalConfig.SubtitleBind.Value(mdlGlobalPlayer.FileMD5) = FileName
+
+    Else
+
+        GlobalConfig.SubtitleBind.AddKeyValue mdlGlobalPlayer.FileMD5, FileName
+
+    End If
+
+End Function
+
+Private Function CheckForFileSinkAndSetFileName(ByVal Flt As olelib.IUnknown, _
+                                                FileName As String) As Boolean
+
+    Const IID_IFileSinkFilter = "{A2104830-7C70-11CF-8BCE-00AA00A3F1A6}", VTbl_SetFileName = 3
+
+    Dim oUnkFSink As stdole.IUnknown
+
+    Set oUnkFSink = CastToUnkByIID(Flt, IID_IFileSinkFilter)
+    CheckForFileSinkAndSetFileName = vtblCall(ObjPtr(oUnkFSink), VTbl_SetFileName, vbLong, StrPtr(FileName), 0&) = S_OK
+
+End Function
+
+Private Function CastToUnkByIID(ByVal ObjToCastFrom As olelib.IUnknown, _
+                                IID As String) As stdole.IUnknown
+
+    Dim UUID As olelib.UUID
+
+    olelib.CLSIDFromString IID, UUID
+    ObjToCastFrom.QueryInterface UUID, CastToUnkByIID
+
+End Function
+
+Private Function vtblCall(ByVal pUnk As Long, _
+                          ByVal vtblIdx As Long, _
+                          ByVal retType As VbVarType, _
+                          ParamArray P() As Variant)
+
+    Static VType(0 To 31) As Integer, VPtr(0 To 31) As Long
+
+    Dim i As Long, v(), HResDisp As Long
+
+    If pUnk = 0 Then vtblCall = 5: Exit Function
+
+    v = P 'make a copy of the params, to prevent problems with VT_ByRef-Members in the ParamArray
+
+    For i = 0 To UBound(v)
+        VType(i) = VarType(v(i))
+        VPtr(i) = VarPtr(v(i))
+    Next i
+    
+    HResDisp = DispCallFunc(pUnk, vtblIdx * 4, 4, retType, i, VType(0), VPtr(0), vtblCall)
+
+    If HResDisp <> S_OK Then Err.Raise HResDisp
+
+End Function
+
+Public Function ShowVideoDecoderConfig()
+
+    If (IsEmpty(objVideo) Or objVideo Is Nothing) Then
+        
+        GetLAVVideoInstance objVideo
+
+    End If
+
+    ShowPropertyPage objVideo, "PureMediaPlayer - Video", frmMain.hWnd
+
+End Function
+
+Public Function ShowAudioDecoderConfig()
+
+    If (IsEmpty(objAudio) Or objAudio Is Nothing) Then
+        GetLAVAudioInstance objAudio
+
+    End If
+
+    ShowPropertyPage objAudio, "PureMediaPlayer - Audio", frmMain.hWnd
+
+End Function
+
+Public Function ShowSpliterConfig()
+
+    If (IsEmpty(objSplitter) Or objSplitter Is Nothing) Then
+        GetLAVSplitterInstance objSplitter
+
+    End If
+
+    ShowPropertyPage objSplitter, "PureMediaPlayer - Splitter", frmMain.hWnd
+
+End Function
+
+Public Function ShowSubtitleConfig()
+
+    If (IsEmpty(objSubtitle) Or objSubtitle Is Nothing) Then
+        GetVSFilterInstance objSubtitle
+
+    End If
+
+    ShowPropertyPage objSubtitle, "PureMediaPlayer - Subtitle", frmMain.hWnd
+
+End Function
+
+Public Function ShowRendererConfig()
+
+    If (IsEmpty(objRender) Or objRender Is Nothing) Then
+    
+        RaiseRender GlobalRenderType, objRender
+
+    End If
+    
+    ShowPropertyPage objRender, "PureMediaPlayer - Renderer", frmMain.hWnd
+
+End Function
+
+Public Function ShowPropertyPage(ByVal FilterOrPin As olelib.IUnknown, _
+                                 Optional Caption As String, _
+                                 Optional ByVal hwndOwner As Long) As Boolean
+
+    Const IID_ISpecifyPropertyPages = "{B196B28B-BAB4-101A-B69C-00AA00341D07}", VTbl_GetPages = 3
+
+    Dim oUnkSpPP As stdole.IUnknown, CAUUID(0 To 1) As Long
+
+    Set oUnkSpPP = CastToUnkByIID(FilterOrPin, IID_ISpecifyPropertyPages)
+
+    If vtblCall(ObjPtr(oUnkSpPP), vbLong, VTbl_GetPages, VarPtr(CAUUID(0))) Then Exit Function
+    If CAUUID(0) = 0 Then Exit Function 'no PropPageCount was returned
+
+    OleCreatePropertyFrame hwndOwner, 0, 0, StrPtr(Caption), 1, ObjPtr(FilterOrPin), CAUUID(0), CAUUID(1), 0, 0, 0
+
+    CoTaskMemFree CAUUID(1)
+    ShowPropertyPage = True
+
+End Function
+
