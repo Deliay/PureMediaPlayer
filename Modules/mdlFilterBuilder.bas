@@ -63,7 +63,7 @@ Private Declare Function SetProcessDPIAware Lib "user32" () As BOOL
 
 Private Declare Function ShellExecute _
                 Lib "shell32.dll" _
-                Alias "ShellExecuteA" (ByVal hWnd As Long, _
+                Alias "ShellExecuteA" (ByVal hwnd As Long, _
                                        ByVal lpOperation As String, _
                                        ByVal lpFile As String, _
                                        ByVal lpParameters As String, _
@@ -71,6 +71,8 @@ Private Declare Function ShellExecute _
                                        ByVal nShowCmd As Long) As Long
 
 Private Declare Function GetLastError Lib "kernel32" () As Long
+
+Private Declare Function SetForegroundWindow Lib "user32.dll" (ByVal hwnd As Long) As Long
 
 Public isAdminPerm As Boolean
 
@@ -167,8 +169,9 @@ Public Sub Main()
 
         End If
         
-        SendMessageW val(GlobalConfig.LastHwnd), PM_ACTIVE, 0&, 0&
-
+        'SendMessageW val(GlobalConfig.LastHwnd), PM_ACTIVE, 0&, 0&
+        SetForegroundWindow GlobalConfig.LastHwnd
+        
         End
 
         Exit Sub
@@ -188,7 +191,7 @@ Public Sub Main()
 
     mdlToolBarAlphaer.LoadUI
     
-    If (Not IsIDE) Then StartHook frmMain.hWnd
+    If (Not IsIDE) Then StartHook frmMain.hwnd
     
     If (isAdminPerm) Then
         frmMain.Caption = "π‹¿Ì‘±: " & frmMain.Caption
@@ -259,7 +262,7 @@ Public Function ReqAdminPerm(Optional strAction As String = "--perm")
         .cbSize = Len(sLInfo)
         .lpVerb = StrPtr("runas")
         .lpFile = StrPtr(App.Path & "\" & App.EXEName & ".exe")
-        .hWnd = 0
+        .hwnd = 0
         .nShow = 1
         .lpParameters = StrPtr(strAction)
         
