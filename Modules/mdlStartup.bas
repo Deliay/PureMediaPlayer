@@ -5,14 +5,6 @@ Global IsIDE     As Boolean
 
 Global IsRestart As Boolean
 
-Private Declare Function RegisterSSubTmr6 _
-                Lib "SSubTmr6.dll" _
-                Alias "DllRegisterServer" () As Long
-                
-Private Declare Function RegistervbaListView6 _
-                Lib "vbaListView6.ocx" _
-                Alias "DllRegisterServer" () As Long
-
 Private pAdminGroup       As IntPtr
 
 Type SID_IDENTIFIER_AUTHORITY
@@ -76,15 +68,6 @@ Private Declare Function SetForegroundWindow Lib "user32.dll" (ByVal hWnd As Lon
 
 Public isAdminPerm As Boolean
 
-Public Sub RegisterCOM()
-    ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\SSubTmr6.dll", App.Path & "\", 0
-    ShellExecute 0, "open", "regsvr32.exe", "/u /s " & App.Path & "\vbaListView6.ocx", App.Path & "\", 0
-    RegisterSSubTmr6
-    RegistervbaListView6
-    ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\SSubTmr6.dll", App.Path & "\", 0
-    ShellExecute 0, "open", "regsvr32.exe", "/s " & App.Path & "\vbaListView6.ocx", App.Path & "\", 0
-End Sub
-
 Public Sub Main()
 
     IsIDE = GetIDEmode
@@ -99,20 +82,6 @@ Public Sub Main()
 
     End If
 
-    If (Len(Command) = 8 And Left$(Command, 8) = "--regocx") Then
-        RegisterCOM
-
-        End
-
-    End If
-
-    If (Len(Command) = 6 And Left$(Command, 6) = "--perm") Then
-        RegisterCOM
-
-        End
-
-    End If
-    
     If (Len(Command) > 11 And Left$(Command, 9) = "--bindext") Then
         BindExt Mid(Command, 11)
 
@@ -219,13 +188,11 @@ Placement:
     Exit Sub
 
 RegisterCOMErr:
-    'do gui com register
-    ReqAdminPerm "--regocx"
-    Shell App.Path & "\" & App.EXEName & ".exe --restart", vbNormalFocus
-
+    If MsgBox("程序遇到错误:" & Err.Description & "(" & Err.Number & ")" & vbCrLf & vbCrLf & "是否重启?", vbCritical + vbYesNo) = vbYes Then
+        Shell App.Path & "\" & App.EXEName & ".exe --restart", vbNormalFocus
+    End If
+    
     End
-
-    Resume
 
 End Sub
 
