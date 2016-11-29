@@ -168,7 +168,7 @@ Begin VB.Form frmMain
          End
       End
       Begin VB.Label Label2 
-         Alignment       =   1  'Right Justify
+         Alignment       =   2  'Center
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
@@ -178,7 +178,7 @@ Begin VB.Form frmMain
          Left            =   3120
          TabIndex        =   12
          Top             =   360
-         Width           =   900
+         Width           =   1260
       End
       Begin VB.Label Label1 
          Appearance      =   0  'Flat
@@ -187,7 +187,7 @@ Begin VB.Form frmMain
          Caption         =   "0:00/0:00"
          ForeColor       =   &H00FFFFFF&
          Height          =   300
-         Left            =   4200
+         Left            =   4560
          TabIndex        =   11
          Top             =   360
          Width           =   2970
