@@ -122,8 +122,7 @@ Private Sub UserControl_Resize()
     Width = 3735
     vsPageControl.Height = ScaleHeight
     vsPageControl.Max = (Fix((lngLastIndex + 1) / (ScaleHeight / diList(0).Height) - 1)) * 2
-    vsPageControl.Visible = (vsPageControl.Max <> 0)
-    
+
 End Sub
 
 Public Property Get NewEnum() As IUnknown
@@ -162,7 +161,6 @@ Public Function AddItem(ByVal strPath As String, _
     DoEvents
     vsPageControl.Min = 0
     vsPageControl.Max = (Fix((lngLastIndex + 1) / (ScaleHeight / diList(0).Height)) - 1) * 2
-    vsPageControl.Visible = (vsPageControl.Max <> 0)
     
 End Function
 

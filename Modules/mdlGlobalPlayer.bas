@@ -194,8 +194,7 @@ Public Sub RenderMediaFile()
     GlobalRenderType = val(GlobalConfig.Renderer)
 
     If (Not GlobalFilGraph Is Nothing) Then
-        GlobalFilGraph.Pause
-        GlobalFilGraph.Stop
+        mdlGlobalPlayer.CloseFile
         Set GlobalFilGraph = Nothing
     End If
     'mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
@@ -416,6 +415,8 @@ Public Sub CloseFile()
     strLastestFile = ""
     UpdateTitle StaticString(PLAYER_STATUS_IDLE)
     UpdateStatus StaticString(PLAYER_STATUS_READY), Action
+    mdlGlobalPlayer.Pause
+    mdlGlobalPlayer.StopPlay
     
 End Sub
 
