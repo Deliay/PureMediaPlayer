@@ -193,6 +193,11 @@ Public Sub RenderMediaFile()
 
     GlobalRenderType = val(GlobalConfig.Renderer)
 
+    If (Not GlobalFilGraph Is Nothing) Then
+        GlobalFilGraph.Pause
+        GlobalFilGraph.Stop
+        Set GlobalFilGraph = Nothing
+    End If
     'mdlFilterBuilder.BuildGrph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
     mdlFilterProductor.BuildGraph strFilePath, GlobalFilGraph, hasVideo_, hasAudio_, hasSubtitle_, GlobalRenderType
     boolLoadedFile = True
