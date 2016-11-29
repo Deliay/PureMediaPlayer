@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.UserControl DirectViewItem 
    BackColor       =   &H80000006&
-   ClientHeight    =   780
+   ClientHeight    =   1035
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3495
@@ -14,15 +14,16 @@ Begin VB.UserControl DirectViewItem
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   ScaleHeight     =   52
+   ScaleHeight     =   69
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   233
    Begin VB.Label lblPlayStatus 
       BackStyle       =   0  'Transparent
+      ForeColor       =   &H80000010&
       Height          =   195
       Left            =   120
       TabIndex        =   2
-      Top             =   465
+      Top             =   720
       Width           =   1500
    End
    Begin VB.Label lblTime 
@@ -32,26 +33,27 @@ Begin VB.UserControl DirectViewItem
       Height          =   195
       Left            =   1740
       TabIndex        =   1
-      Top             =   480
+      Top             =   720
       Width           =   1620
    End
    Begin VB.Label lblCaption 
       BackStyle       =   0  'Transparent
       BeginProperty Font 
-         Name            =   "Î¢ÈíÑÅºÚ"
-         Size            =   11.25
+         Name            =   "Î¢ÈíÑÅºÚ Light"
+         Size            =   9.75
          Charset         =   0
-         Weight          =   400
+         Weight          =   290
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00FFFFFF&
-      Height          =   315
+      Height          =   675
       Left            =   120
       TabIndex        =   0
       Top             =   120
       Width           =   3225
+      WordWrap        =   -1  'True
    End
 End
 Attribute VB_Name = "DirectViewItem"
@@ -131,7 +133,7 @@ End Sub
 
 Private Sub UserControl_Resize()
     Width = 3495
-    Height = 780
+    Height = 1035
 
 End Sub
 

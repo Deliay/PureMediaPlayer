@@ -18,7 +18,6 @@ Begin VB.UserControl DirectView
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   249
    Begin VB.PictureBox diContenter 
-      Align           =   3  'Align Left
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000006&
@@ -34,14 +33,14 @@ Begin VB.UserControl DirectView
       Top             =   0
       Width           =   3495
       Begin PureMediaPlayer.DirectViewItem diList 
-         Height          =   780
+         Height          =   1035
          Index           =   0
          Left            =   0
          TabIndex        =   2
          Top             =   0
          Width           =   3495
          _ExtentX        =   6165
-         _ExtentY        =   1376
+         _ExtentY        =   1826
       End
    End
    Begin VB.VScrollBar vsPageControl 
@@ -72,7 +71,11 @@ Public Event ListItemClick(ByVal Index As Long, ListItem As DirectViewItem)
 Public Event ListItemDblClick(ByVal Index As Long, ListItem As DirectViewItem)
 
 Public Function MouseWheelEvent(ByVal Direction As Boolean, ByVal Key As Integer)
-
+    If (Direction And vsPageControl.Value > 0) Then
+        vsPageControl.Value = vsPageControl.Value - 1
+    ElseIf (Not Direction And vsPageControl.Value < vsPageControl.Max) Then
+        vsPageControl.Value = vsPageControl.Value + 1
+    End If
 End Function
 
 Private Sub diList_onClick(Index As Integer)
@@ -96,7 +99,11 @@ Private Sub diList_onMouseMove(Index As Integer, _
     If (lngLastMouseMove > -1) Then
         diList(lngLastMouseMove).onIdleStatus
 
-        If (Not diList(Index).NowPlaying) Then diList(Index).onMoveStatus
+        If (Not diList(Index).NowPlaying) Then
+            diList(Index).onMoveStatus
+        Else
+            diList(Index).onSelectStatus
+        End If
 
     End If
     lngLastMouseMove = Index
@@ -113,7 +120,10 @@ End Sub
 
 Private Sub UserControl_Resize()
     Width = 3735
-    vsPageControl.Height = Height
+    vsPageControl.Height = ScaleHeight
+    vsPageControl.Max = (Fix((lngLastIndex + 1) / (ScaleHeight / diList(0).Height) - 1)) * 2
+    vsPageControl.Visible = (vsPageControl.Max <> 0)
+    
 End Sub
 
 Public Property Get NewEnum() As IUnknown
@@ -147,13 +157,13 @@ Public Function AddItem(ByVal strPath As String, _
     diList(lngLastIndex).Duration = strLength
     Set AddItem = diList(lngLastIndex)
     colContorls.Add diList(lngLastIndex)
+    diContenter.Height = diList(0).Height * (lngLastIndex + 1)
     Render
-    
+    DoEvents
     vsPageControl.Min = 0
-    vsPageControl.Max = Fix((lngLastIndex + 1) / (Height / diList(0).Height))
-    
+    vsPageControl.Max = (Fix((lngLastIndex + 1) / (ScaleHeight / diList(0).Height)) - 1) * 2
     vsPageControl.Visible = (vsPageControl.Max <> 0)
-
+    
 End Function
 
 Public Sub Render()
@@ -200,3 +210,13 @@ Attribute ItemOf.VB_UserMemId = 0
 
 End Property
 
+Private Sub vsPageControl_Change()
+    vsPageControl_Scroll
+End Sub
+
+Private Sub vsPageControl_Scroll()
+    Dim dblPrecent As Double
+    dblPrecent = vsPageControl.Value / vsPageControl.Max
+    diContenter.Top = -dblPrecent * (diContenter.ScaleHeight - ScaleHeight)
+    diContenter.SetFocus
+End Sub
