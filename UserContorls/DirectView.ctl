@@ -151,6 +151,9 @@ Public Function AddItem(ByVal strPath As String, _
     
     vsPageControl.Min = 0
     vsPageControl.Max = Fix((lngLastIndex + 1) / (Height / diList(0).Height))
+    
+    vsPageControl.Visible = (vsPageControl.Max <> 0)
+
 End Function
 
 Public Sub Render()
