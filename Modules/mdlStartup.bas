@@ -1,4 +1,4 @@
-Attribute VB_Name = "mdlFilterBuilder"
+Attribute VB_Name = "mdlStarup"
 Option Explicit
 
 Global IsIDE     As Boolean
@@ -71,6 +71,8 @@ Private Declare Function ShellExecute _
                                        ByVal nShowCmd As Long) As Long
 
 Private Declare Function GetLastError Lib "kernel32" () As Long
+
+Private Declare Function SetForegroundWindow Lib "user32.dll" (ByVal hWnd As Long) As Long
 
 Public isAdminPerm As Boolean
 
@@ -167,8 +169,9 @@ Public Sub Main()
 
         End If
         
-        SendMessageW val(GlobalConfig.LastHwnd), PM_ACTIVE, 0&, 0&
-
+        'SendMessageW val(GlobalConfig.LastHwnd), PM_ACTIVE, 0&, 0&
+        SetForegroundWindow GlobalConfig.LastHwnd
+        
         End
 
         Exit Sub
