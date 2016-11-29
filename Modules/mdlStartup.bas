@@ -1,4 +1,4 @@
-Attribute VB_Name = "mdlFilterBuilder"
+Attribute VB_Name = "mdlStarup"
 Option Explicit
 
 Global IsIDE     As Boolean
@@ -63,7 +63,7 @@ Private Declare Function SetProcessDPIAware Lib "user32" () As BOOL
 
 Private Declare Function ShellExecute _
                 Lib "shell32.dll" _
-                Alias "ShellExecuteA" (ByVal hwnd As Long, _
+                Alias "ShellExecuteA" (ByVal hWnd As Long, _
                                        ByVal lpOperation As String, _
                                        ByVal lpFile As String, _
                                        ByVal lpParameters As String, _
@@ -72,7 +72,7 @@ Private Declare Function ShellExecute _
 
 Private Declare Function GetLastError Lib "kernel32" () As Long
 
-Private Declare Function SetForegroundWindow Lib "user32.dll" (ByVal hwnd As Long) As Long
+Private Declare Function SetForegroundWindow Lib "user32.dll" (ByVal hWnd As Long) As Long
 
 Public isAdminPerm As Boolean
 
@@ -191,7 +191,7 @@ Public Sub Main()
 
     mdlToolBarAlphaer.LoadUI
     
-    If (Not IsIDE) Then StartHook frmMain.hwnd
+    If (Not IsIDE) Then StartHook frmMain.hWnd
     
     If (isAdminPerm) Then
         frmMain.Caption = "π‹¿Ì‘±: " & frmMain.Caption
@@ -262,7 +262,7 @@ Public Function ReqAdminPerm(Optional strAction As String = "--perm")
         .cbSize = Len(sLInfo)
         .lpVerb = StrPtr("runas")
         .lpFile = StrPtr(App.Path & "\" & App.EXEName & ".exe")
-        .hwnd = 0
+        .hWnd = 0
         .nShow = 1
         .lpParameters = StrPtr(strAction)
         
