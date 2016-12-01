@@ -28,7 +28,18 @@ Private Declare Function TerminateProcess _
                 Lib "kernel32" (ByVal hProcess As Long, _
                                 ByVal uExitCode As Long) As Long
 
+Private Declare Sub MD5Init Lib "advapi32" (lpContext As MD5_CTX)
+
+Private Declare Sub MD5Final Lib "advapi32" (lpContext As MD5_CTX)
+
+Private Declare Sub MD5Update _
+                Lib "advapi32" (lpContext As MD5_CTX, _
+                                ByRef lpBuffer As Any, _
+                                ByVal BufSize As Long)
+                                
 Public Declare Function GetCurrentProcessId Lib "kernel32" () As Long
+
+Private stcContext As MD5_CTX
 
 Public Function SetProcessDpiAwareness_hard()
     SetProcessDpiAwareness 2&
@@ -220,3 +231,35 @@ Public Sub UnBindExt(ByVal strExt As String)
     End If
     
 End Sub
+
+Public Function MD5String(strText As String) As String
+
+    Dim aBuffer() As Byte
+ 
+    Call MD5Init(stcContext)
+
+    If (Len(strText) > 0) Then
+        aBuffer = StrConv(strText, vbFromUnicode)
+        Call MD5Update(stcContext, aBuffer(0), UBound(aBuffer) + 1)
+    Else
+        Call MD5Update(stcContext, 0, 0)
+
+    End If
+
+    Call MD5Final(stcContext)
+    MD5String = stcContext.cDig
+    
+    Dim i&
+
+    If (stcContext.dwNUMa = 0) Then
+        MD5String = vbNullString
+    Else
+        MD5String = Space$(32)
+
+        For i = 0 To 15
+            Mid$(MD5String, i + i + 1) = Right$("0" & Hex$(stcContext.cDig(i)), 2)
+        Next
+
+    End If
+   
+End Function
