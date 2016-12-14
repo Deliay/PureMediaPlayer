@@ -102,6 +102,17 @@ Begin VB.Form frmMenu
          Begin VB.Menu mmStatus_SpeedReset 
             Caption         =   "Reset Speed 1.0x"
          End
+         Begin VB.Menu mmStatus_Spec3 
+            Caption         =   "-"
+         End
+         Begin VB.Menu mmStatus_Streams 
+            Caption         =   "Streams"
+            Begin VB.Menu mmStatus_Streams_Select 
+               Caption         =   "Default"
+               Checked         =   -1  'True
+               Index           =   0
+            End
+         End
       End
       Begin VB.Menu Renderer 
          Caption         =   "Renderer"
@@ -340,7 +351,7 @@ Public Sub mmFile_Open_Click()
         frmMain.isHide = True
         frmMain.AutoPatern
         RenderMediaFile
-
+        QueryMediaStreams
     End If
     
 End Sub
@@ -358,6 +369,11 @@ End Sub
 Private Sub mmInfo_System_Click()
     frmAssociation.Show
     
+End Sub
+
+Private Sub mmStatus_Streams_Select_Click(Index As Integer)
+    EnableMediaStreams Index
+    QueryMediaStreams
 End Sub
 
 Private Sub Propertys_Audio_Click()

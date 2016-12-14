@@ -251,7 +251,9 @@ Private Sub cmdUninstall_Click()
 End Sub
 
 Private Sub Form_Load()
-        
+
+    mdlLanguageApplyer.ApplyLanguageToForm Me
+    
     If (GlobalConfig.AppRegistered = "0") Then
         cmdFix_Click
     End If

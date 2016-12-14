@@ -263,6 +263,5 @@ End Sub
 Public Function ReApplyLanguage()
     ApplyLanguageToForm frmMain
     ApplyLanguageToForm frmMenu
-    ApplyLanguageToForm frmAssociation
     ApplyLanguageToForm frmPaternAdd
 End Function
