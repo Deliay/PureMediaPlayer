@@ -39,6 +39,8 @@ Public Height             As Long
 
 Private boolLoadedFile    As Boolean
 
+Private boolIsNetFile     As Boolean
+
 Private boolIsFullScreen  As Boolean
 
 Private strLastestFile    As String
@@ -80,6 +82,11 @@ Private Const WS_THICKFRAME = &H40000
 Private Const WS_SIZEBOX = WS_THICKFRAME
 
 Private Declare Sub SetLastError Lib "kernel32" (ByVal dwErrCode As Long)
+
+Public Property Get IsNetFile() As Boolean
+    IsNetFile = boolIsNetFile
+
+End Property
 
 Public Property Get IsWindowed() As Boolean
     IsWindowed = Not boolIsFullScreen
@@ -285,7 +292,7 @@ hErr:
     mdlToolBarAlphaer.SwitchUI True, False
     mdlToolBarAlphaer.SwitchUI True, True
     If (mdlToolBarAlphaer.boolPlaylistStatus) Then mdlToolBarAlphaer.PlaylistShow
-
+    
     Exit Sub
 
 DcodeErr:

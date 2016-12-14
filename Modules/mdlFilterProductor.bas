@@ -657,3 +657,47 @@ Public Function ShowPropertyPage(ByVal FilterOrPin As olelib.IUnknown, _
 
 End Function
 
+Public Sub QueryMediaStreams()
+
+    Dim objStreams As Strmif.IAMStreamSelect
+    Dim lngCount As Long, lngIter As Long, lngFlag As Long, lngGroup As Long, strName As String, strCpyName As String
+    Dim lngCurrGroup As Long
+    Set objStreams = objSplitter
+    strName = Space$(255)
+    
+    objStreams.Count lngCount
+    For lngIter = 0 To lngCount - 1
+
+        objStreams.Info lngIter, 0#, lngFlag, 0, lngGroup, strName, 0#, 0#
+        If (lngIter > frmMenu.mmStatus_Streams_Select.Count - 1) Then Load frmMenu.mmStatus_Streams_Select(lngIter)
+        strCpyName = Mid(strName, 1, InStr(1, strName, Chr(0)))
+        frmMenu.mmStatus_Streams_Select(lngIter).Caption = CStr(strCpyName)
+        If (lngFlag <> 0) Then
+            frmMenu.mmStatus_Streams_Select(lngIter).Checked = True
+            
+        Else
+            frmMenu.mmStatus_Streams_Select(lngIter).Checked = False
+
+        End If
+        CoTaskMemFree StrPtr(strName)
+        
+    Next
+    
+    If (frmMenu.mmStatus_Streams_Select.Count > lngCount) Then
+        For lngIter = lngCount To frmMenu.mmStatus_Streams_Select.Count
+            frmMenu.mmStatus_Streams_Select(lngIter).Visible = False
+
+        Next
+        
+    End If
+    
+End Sub
+
+Public Sub EnableMediaStreams(ByVal enableIndex As Long)
+
+    Dim objStreams As Strmif.IAMStreamSelect
+    Set objStreams = objSplitter
+    
+    objStreams.Enable enableIndex, ByVal 3
+    
+End Sub
