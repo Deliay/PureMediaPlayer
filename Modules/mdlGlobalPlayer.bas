@@ -209,7 +209,7 @@ Public Sub RenderMediaFile()
     boolLoadedFile = True
 
     If (hasVideo = False And hasAudio_ = False) Then GoTo DcodeErr
-    UpdateTitle NameGet(File)
+    UpdateTitle NameGet(strFilePath)
     Set ifPostion = GlobalFilGraph
 
     If (GlobalRenderType = EnhancedVideoRenderer) Then
