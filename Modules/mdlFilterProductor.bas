@@ -177,7 +177,7 @@ Public Sub GetLAVSplitterInstance(ByRef instance As IBaseFilter)
     '171252A0-8820-4AFE-9DF8-5C92B2D66B04
     'DEFINE_GUID uuidSrc, &H171252A0, &H8820, &H4AFE, &H9D, &HF8, &H5C, &H92, &HB2, &HD6, &H6B, &H4
     'DEFINE_GUID uuidSrc, &HB98D13E7, &H55DB, &H4385, &HA3, &H3D, &H9, &HFD, &H1B, &HA2, &H63, &H38
-    CLSIDFromString "{171252A0-8820-4AFE-9DF8-5C92B2D66B04}", uuidSrc
+    CLSIDFromString "{B98D13E7-55DB-4385-A33D-09FD1BA26338}", uuidSrc
 
     If (LAVSplitterInstance(uuidSrc, getClassFactoryUUID, objClassFactory) = 0) Then
 
@@ -351,12 +351,11 @@ Public Sub BuildGraph(ByVal strMediaFile As String, _
     With objGraph
 
         .AddFilter objSplitter, "Splitter"
-        .AddSourceFilter strMediaFile, "Source", objSrc
-
-        objSrc.FindPin "Output", obj_OUT_SrcPin
-        objSplitter.FindPin "Input", obj_IN_Splitter
-        .Connect obj_OUT_SrcPin, obj_IN_Splitter
         
+        Dim objSplitterInfo As IFilterInfo
+        objFilGraph.FilterCollection.Item 0, objSplitterInfo
+        objSplitterInfo.FileName = strMediaFile
+ 
         objSplitter.EnumPins objSplitterEnums
     
         Dim lngCount   As Long

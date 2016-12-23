@@ -351,7 +351,6 @@ Public Sub mmFile_Open_Click()
         frmMain.isHide = True
         frmMain.AutoPatern
         RenderMediaFile
-        QueryMediaStreams
     End If
     
 End Sub

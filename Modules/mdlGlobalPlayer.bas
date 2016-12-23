@@ -293,6 +293,8 @@ hErr:
     mdlToolBarAlphaer.SwitchUI True, True
     If (mdlToolBarAlphaer.boolPlaylistStatus) Then mdlToolBarAlphaer.PlaylistShow
     
+    QueryMediaStreams
+    
     Exit Sub
 
 DcodeErr:
